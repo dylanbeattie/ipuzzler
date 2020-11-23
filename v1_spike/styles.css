@@ -1,0 +1,92 @@
+html {
+    font-family: Arial;
+    font-size: 12px;
+}
+
+div#puzzle {
+    display: grid;
+    grid-template: 1fr / 450px 1fr 1fr;
+    grid-gap: 8px;
+}
+
+div.grid {
+    border: 1px solid #000;
+    display: grid;
+    width: 450px;
+    height: 450px;
+    grid-template: repeat(15, 1fr) / repeat(15, 1fr);
+    grid-gap: 1px;
+    background-color: #000;
+}
+
+span.cell {
+    background-color: #fff;
+    text-align: center;
+    position: relative;
+}
+
+span.cell span.clue-number {
+    font-size: 8px;
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    top: 2px;
+    left: 2px;
+    z-index: 1;
+}
+
+span.cell input {
+    font-size: 16px;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    caret-color: transparent;
+}
+
+span.cell.highlight input:focus {
+    background-color: #99f;
+}
+
+span.cell.highlight input {
+    background-color: #ccf;
+}
+
+span.cell.block {
+    background-color: #000;
+}
+
+ul.clue-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.clue-list li {
+    margin-left: 30px;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+ul.clue-list li a {
+    text-decoration: none;
+    color: #000;
+    position: relative;
+}
+
+ul.clue-list li a span.clue-number {
+    display: inline-block;
+    min-width: 30px;
+    width: auto;
+    font-weight: bold;
+}
+
+ul.clue-list li.highlight {
+    background-color: #ccf;
+}
+
