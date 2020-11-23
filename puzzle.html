@@ -71,13 +71,15 @@
             return (cell && cell.content == ":" || cell.content == 0);
         }
 
-        function inputFocus() {
+        function inputFocus(evt) {
             var $input = $(this);
             var x = parseInt($input.data("x"));
             var y = parseInt($input.data("y"));
             var cell = window.puzzle[x][y];
             if (cell.across && cell.down) {
-                if (cell == window.previousCell) window.direction = (window.direction == "across" ? "down" : "across");
+                if (cell == window.previousCell) {
+                    window.direction = (window.direction == "across" ? "down" : "across");
+                }
             } else if (cell.across) {
                 window.direction = "across";
             } else {
@@ -86,24 +88,121 @@
             $("div.grid span").removeClass("highlight");
             console.log(window.direction);
             console.log(cell);
+            var clueNumber;
             switch (window.direction) {
                 case "across":
-                    for (var hx = cell.across.min; hx <= cell.across.max; hx++) window.puzzle[hx][y].element.addClass("highlight"); 
+                    for (var hx = cell.across.min; hx <= cell.across.max; hx++) window.puzzle[hx][y].element.addClass("highlight");
+                    clueNumber = window.puzzle[cell.across.min][y].content + " Across";
                     break;
                 case "down":
                     for (var hy = cell.down.min; hy <= cell.down.max; hy++) window.puzzle[x][hy].element.addClass("highlight");
+                    clueNumber = window.puzzle[x][cell.down.min].content + " Down";
                     break;
             }
+            console.log(clueNumber);
             window.previousCell = cell;
+            return (false);
+        }
+        function inputKeyPress(event) {
+            
+            var $input = $(this);
+            var x = parseInt($input.data("x"));
+            var y = parseInt($input.data("y"));
+            var cell = window.puzzle[x][y];
+            if (event.defaultPrevented) return;
+            // navigation keys - arrows, Home, End
+            var handled = false;
+            console.log(event);
+            var span;
+            switch (event.code) {
+                case "ArrowLeft":
+                    if (cell.across && x > cell.across.min) {
+                        window.direction = "across";
+                        span = window.puzzle[x - 1][y].element;
+                    }
+                    break;
+                case "ArrowRight":
+                    if (cell.across && x < cell.across.max) {
+                        window.direction = "across";
+                        span = window.puzzle[x + 1][y].element;
+                    }
+                    break;
+                case "ArrowUp":
+                    if (cell.down && y > cell.down.min) {
+                        window.direction = "down";
+                        span = window.puzzle[x][y - 1].element;
+                    }
+                    break;
+                case "ArrowDown":
+                    if (cell.down && y < cell.down.max) {
+                        window.direction = "down";
+                        span = window.puzzle[x][y + 1].element;
+                    }
+                    break;
+                case "Home":
+                    switch (window.direction) {
+                        case "across":
+                            if (cell.across) span = window.puzzle[cell.across.min][y].element;
+                            break;
+                        case "down":
+                            if (cell.down) span = window.puzzle[x][cell.down.min].element;
+                            break;
+                    }
+                    break;
+                case "End":
+                    switch (window.direction) {
+                        case "across":
+                            if (cell.across) span = window.puzzle[cell.across.max][y].element;
+                            break;
+                        case "down":
+                            if (cell.down) span = window.puzzle[x][cell.down.max].element;
+                            break;
+                    }
+                    break;
+                case "Delete":
+                    cell.element.children("input").val("");
+                    break;
+                case "Backspace":
+                    cell.element.children("input").val("");
+                    switch (window.direction) {
+                        case "across":
+                            if (cell.across && x > cell.across.min) span = window.puzzle[x - 1][y].element;
+                            break;
+
+                        case "down":
+                            if (cell.down && y > cell.down.min) span = window.puzzle[x][y - 1].element;
+                            break;
+                    }
+                    break;
+                default:
+                    if (/^[A-Za-z]$/.test(event.key)) {
+                        console.log('roooo');
+                        cell.element.children("input").val(event.key);
+                        switch (window.direction) {
+                            case "across":
+                                if (cell.across && x < cell.across.max) span = window.puzzle[x + 1][y].element;
+                                break;
+                            case "down":
+                                if (cell.down && y < cell.down.max) span = window.puzzle[x][y + 1].element;
+                                break;
+                        }
+                    }
+            }
+            if (span) {
+                span.children("input")[0].focus();
+                // event.preventDefault();
+                return (false);
+            }
         }
 
         $(function () {
-            $.get("examples/example02.ipuz.json", function (data) {
+            $.get("examples/us-election-2020.ipuz.json", function (data) {
                 window.puzzle = renderPuzzle(data);
                 window.direction = "across";
             });
-            // $("div.grid").on('focus', "input", inputFocus);
-            $("div.grid").on('click', "input", inputFocus);
+            $("div.grid").on('focus', "input", inputFocus);
+            $("div.grid").on('click', "input:focus", inputFocus);
+            $("div.grid").on("keydown", "input", inputKeyPress);
         });
     </script>
     <style>
@@ -138,6 +237,7 @@
         }
 
         span.cell input {
+            font-size: 16px;
             z-index: 0;
             width: 100%;
             height: 100%;
@@ -147,11 +247,13 @@
             text-align: center;
             font-weight: bold;
             text-transform: uppercase;
+            caret-color: transparent;
         }
 
-        span.cell.highlight input:focus {            
+        span.cell.highlight input:focus {
             background-color: #99f;
         }
+
         span.cell.highlight input {
             background-color: #ccf;
         }
