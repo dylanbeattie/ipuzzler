@@ -49,7 +49,7 @@ div.puzzle-grid span span.clue-number {
     padding: 0;
     top: 1px;
     left: 1px;
-    z-index: 1;
+    z-index: 0;
     background: transparent;
 }
 div.puzzle-grid span.block {
@@ -64,7 +64,7 @@ div.puzzle-grid > span input {
     bottom: 0;
     /* font-size: 20px; */
     background-color: transparent;
-    z-index: 0;
+    z-index: 1;
     width: 100%;
     height: 100%;
     border: 0;
@@ -80,6 +80,12 @@ div.puzzle-grid > span input {
 }
 div.puzzle-grid span input:focus {
     outline: 0px;
+    background-color: #9999ff;
+    mix-blend-mode: darken;
+}
+div.puzzle-grid span input.current-clue {
+    background-color: #ccccff;
+    mix-blend-mode: darken;
 }
 
 @media only screen and (max-width: 768px) {

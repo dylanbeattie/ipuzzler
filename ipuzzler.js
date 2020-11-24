@@ -1,3 +1,10 @@
+function Clue(direction, number, position, length) {
+    this.direction = direction;
+    this.number = number;
+    this.position = position;
+    this.length = length;
+}
+
 function iPuzzler(ipuz, $container) {
 
     const $grid = $container.find("div.puzzle-grid");
