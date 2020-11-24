@@ -79,13 +79,40 @@ div.puzzle-grid > span input {
     border-radius: 0;
 }
 div.puzzle-grid span input:focus {
-    outline: 0px;
+    outline: 2px;
     background-color: #9999ff;
     mix-blend-mode: darken;
 }
 div.puzzle-grid span input.current-clue {
     background-color: #ccccff;
     mix-blend-mode: darken;
+}
+
+ul.clue-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.clue-list li {
+    padding: 4px 0px 4px 1.6em;
+    border-radius: 4px;
+    margin: 0;
+    text-indent: -1.6em;
+}
+
+ul.clue-list li a {
+    text-decoration: none;
+    color: #000;
+}
+
+ul.clue-list li a label {
+    min-width: 1.5em;
+    font-weight: bold;
+    display: inline-block;
+    text-indent: 0;
+    margin: 0;
+    padding: 0 0.1em 0 0;
 }
 
 @media only screen and (max-width: 768px) {

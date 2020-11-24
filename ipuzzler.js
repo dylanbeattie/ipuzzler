@@ -7,8 +7,8 @@ function Clue(ipuzClue, direction) {
         this.label = ipuzClue.label || this.number;
     }
     this.toHtml = function() { 
-        var html = `<li><a href="#"><label>${this.label}</label> ${this.text}`;
-        if (this.enumeration) html += ` <span class="clue-enumeration">${this.enumeration}</span>`;
+        var html = `<li><a href="#"><label>${this.label}</label>${this.text}`;
+        if (this.enumeration) html += ` <span class="clue-enumeration">(${this.enumeration})</span>`;
         html += '</a></li>';
         return(html);
     }
