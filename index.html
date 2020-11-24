@@ -115,8 +115,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const path = urlParams.get('ipuz');
         $.get(path, function(data, status, jqXHR) {
-            let puzzle = new iPuzzler(data);
-            puzzle.render($div);
+            let puzzle = new iPuzzler(data, $div);
         }, "json");
     </script>
 </body>
