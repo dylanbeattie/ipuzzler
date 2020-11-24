@@ -1,21 +1,78 @@
-function Clue(direction, number, position, length) {
+function Clue(ipuzClue, direction) {
     this.direction = direction;
-    this.number = number;
-    this.position = position;
-    this.length = length;
+    if (ipuzClue) {
+        this.text = ipuzClue.clue || "";
+        this.number = ipuzClue.number || 0;
+        this.enumeration = (ipuzClue.enumeration || "").replace(/ /g, ',');
+        this.label = ipuzClue.label || this.number;
+    }
+    this.toHtml = function() { 
+        var html = `<li><a href="#"><label>${this.label}</label> ${this.text}`;
+        if (this.enumeration) html += ` <span class="clue-enumeration">${this.enumeration}</span>`;
+        html += '</a></li>';
+        return(html);
+    }
 }
 
 function iPuzzler(ipuz, $container) {
 
-    const $grid = $container.find("div.puzzle-grid");
+    const $grid = $('<div class="puzzle-grid"/>');
+    const $info = $('<div class="puzzle-info" />');
+    const $puzzle = $('<div class="puzzle-grid-wrapper"/>');
+    $puzzle.append($grid);
+    $puzzle.append($info);
+    const $acrossListWrapper = $('<div class="clue-list-wrapper across-clue-list-wrapper"><h4>Across</h4><ul class="clue-list across-clue-list"></ul></div>');
+    const $downListWrapper = $('<div class="clue-list-wrapper down-clue-list-wrapper"><h4>Down</h4><ul class="clue-list down-clue-list"></ul></div>');
 
-    this.ready = function () {    
+    const clues = {
+        across: [],
+        down: []
+    };
+
+    this.drawElements = function() {        
+        $container.html("");
+        $container.append($grid);
+        $container.append($acrossListWrapper);
+        $container.append($downListWrapper);
+    }
+
+    this.ready = function () {
+        puzzle.drawElements();
         puzzle.layoutPuzzleGrid();
         puzzle.drawPuzzle();
         puzzle.handleResize();
 
+        // Because of the way the ipuz format handles continuations, we might end up
+        // with down clues in the list of clues that came from ipuz.clues.Across
+        let cluesFromAcross = puzzle.parseClues(ipuz.clues.Across, "across");
+        let cluesFromDown = puzzle.parseClues(ipuz.clues.Down, "down");
+        for(const clue of cluesFromAcross.concat(cluesFromDown)) clues[clue.direction][clue.number] = clue;
+
+        puzzle.drawClueList();
+
         $(window).resize(puzzle.handleResize);
     }
+
+    this.drawClueList = function() {
+        $acrossListWrapper.find("ul").append(clues.across.map(clue => clue.toHtml()));
+        $downListWrapper.find("ul").append(clues.down.map(clue => clue.toHtml()));
+    }
+
+    this.parseClues = function (ipuzClueList, direction) {
+        return ipuzClueList.map(c => [...this.parseClue(c, direction)]).flat();
+    }
+    this.parseClue = function* (ipuzClue, direction) {
+        yield new Clue(ipuzClue, direction);
+        if (ipuzClue.continued && typeof ipuzClue.continued[Symbol.iterator] === "function") {
+            for (const continuation of ipuzClue.continued) {
+                let c = new Clue(continuation);
+                c.direction = continuation.direction.toLowerCase();
+                c.text = `See ${ipuzClue.number}`
+                yield c;
+            }
+        }
+    }
+
 
     this.drawGridCell = function (x, y, cell) {
         let $span = $("<span class='cell'></span>");
@@ -43,8 +100,8 @@ function iPuzzler(ipuz, $container) {
         }
         $grid.css(gridCss);
     }
-    
-    this.handleResize= function () {
+
+    this.handleResize = function () {
         let gridSize = $grid.width();
         $grid.find("input").css("font-size", `${(Math.ceil(gridSize / (1.6 * ipuz.dimensions.height)))}px`);
         $grid.find("span.clue-number").css("font-size", `${(Math.ceil(gridSize / (3.5 * ipuz.dimensions.height)))}px`);
