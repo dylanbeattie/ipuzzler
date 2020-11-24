@@ -6,9 +6,11 @@ function iPuzzler(ipuz, $container) {
         puzzle.layoutPuzzleGrid();
         puzzle.drawPuzzle();
         puzzle.handleResize();
+
+        $(window).resize(puzzle.handleResize);
     }
 
-    this.createGridCell = function (x, y, cell) {
+    this.drawGridCell = function (x, y, cell) {
         let $span = $("<span class='cell'></span>");
         if (cell.style && cell.style.barred) $span.addClass(`barred-${cell.style.barred.toLowerCase()}`);
         if (cell.cell) cell = cell.cell;
@@ -18,10 +20,11 @@ function iPuzzler(ipuz, $container) {
         } else {
             $span.append(`<input maxlength='1' data-x="${x}" data-y="${y}" value="" />`);
         }
-        return ($span);
+        $grid.append($span);
     }
+
     this.drawPuzzle = function () {
-        ipuz.puzzle.forEach((row, y) => row.forEach((cell, x) => $grid.append(this.createGridCell(x, y, cell))));
+        ipuz.puzzle.forEach((row, y) => row.forEach((cell, x) => this.drawGridCell(x, y, cell)));
     }
 
     this.layoutPuzzleGrid = function () {
@@ -37,12 +40,10 @@ function iPuzzler(ipuz, $container) {
     this.handleResize= function () {
         let gridSize = $grid.width();
         $grid.find("input").css("font-size", `${(Math.ceil(gridSize / (1.6 * ipuz.dimensions.height)))}px`);
-        $grid.find("span.clue-number").css("font-size", `${(Math.ceil(120 / ipuz.dimensions.height))}px`);
+        $grid.find("span.clue-number").css("font-size", `${(Math.ceil(gridSize / (3.5 * ipuz.dimensions.height)))}px`);
     }
 
     const puzzle = this;
-    // Attach handlers
-    $(window).resize(puzzle.handleResize);
     $(puzzle.ready);
 }
 
