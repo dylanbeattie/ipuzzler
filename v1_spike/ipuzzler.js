@@ -37,8 +37,8 @@ function renderPuzzle(ipuz) {
                 var $clue = $(`<li id="clue-list-item-${cont.number}-${cont.direction.toLowerCase()}" ><a href="#" class="clue-link" data-clue-number="${clue.number}" data-clue-direction="across">
                 <span class="clue-number">${label}</span> See {$clue.number}</a></li>`);
     
-            })
-        })
+            });
+        }
     });
     ipuz.clues.Down.forEach(clue => {
         var label = clue.label || clue.number;   
