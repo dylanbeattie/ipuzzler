@@ -17,9 +17,27 @@ function Clue(ipuzClue, direction) {
         this.html = $(html);
         $list.append(this.html);
     }
+    this.focusFirstInput = function () {
+        var cells = this.ranges?.[0];
+        var input = cells?.[0]?.input;
+        if (input) input.focus();
+    }
+    this.focusFinalInput = function () {
+        var cells = this.ranges?.[0];
+        var input = cells?.[cells.length - 1]?.input;
+        if (input) input.focus();
+    }
+
     this.toString = function () {
         return (this.number + " " + this.direction);
     }
+}
+
+function Cell(input, $span, value, style = {}) {
+    this.input = input; // HTMLInputElement
+    this.$span = $span; // jQuery $<span /> for this cell
+    this.value = value;
+    this.style = style;
 }
 
 function iPuzzler(ipuz, $container) {
@@ -36,17 +54,16 @@ function iPuzzler(ipuz, $container) {
     this.cells = [];
     this.cluePositions = [];
     this.direction = "across";
-    this.focusedInput = null;
+
+    this.input = null;
+    this.cell = null;
+    this.clue = null;
 
     this.drawElements = function () {
         $container.html("");
         $container.append($grid);
         $container.append($acrossListWrapper);
         $container.append($downListWrapper);
-    }
-
-    this.attachRangesToClues = function () {
-
     }
 
     this.ready = function () {
@@ -68,44 +85,103 @@ function iPuzzler(ipuz, $container) {
 
         $(window).resize(puzzle.handleResize);
         $grid.on("focus", "input", puzzle.inputFocus);
+        $grid.on("keydown", "input", puzzle.inputKeyDown);
         $("ul.clue-list li").on("click", puzzle.clueListClick);
     }
 
-    this.clueListClick = function(event) {
+    this.clueListClick = function (event) {
         $(".current-clue").removeClass("current-clue");
         var clue = puzzle.findClueForListItem(this);
         clue = (clue.root || clue);
         puzzle.highlightClue(clue);
-        clue.ranges[0].cells[0].input.focus();
+        clue.ranges[0][0].input.focus();
     }
-    
-    this.changeDirection = () =>  this.direction = (this.direction == "across" ? "down" : "across");
-    
+
+    this.changeDirection = (direction) => {
+        if (direction) {
+            this.direction = direction;
+        } else if (this.direction == "across") {
+            this.direction = "down";
+        } else {
+            this.direction = "across";
+        }
+        this.highlightClueForInput(this.input);
+    }
+
+    this.inputKeyDown = function (event) {
+        console.log(event.key);
+        let handler = puzzle.keyHandlers[event.key];
+        if (handler) handler(this);
+    }
+
+    this.keyHandlers = {
+        ArrowLeft: () => this.moveFocusToPreviousCell("across"),
+        ArrowRight: () => this.moveFocusToNextCell("across"),
+        ArrowUp: () => this.moveFocusToPreviousCell("down"),
+        ArrowDown: () => this.moveFocusToNextCell("down"),
+        Home: () => this.clue.focusFirstInput(),
+        End: () => this.clue.focusFinalInput(),
+        Backspace: () => { this.input.value = ""; this.moveFocusToPreviousCell() },
+        Delete: () => this.input.value = ""
+    }
+
+    this.moveFocusToNextCell = function (direction = puzzle.direction) {
+        var cell = puzzle.cell;
+        if (cell.next && cell.next[direction]) {
+            puzzle.changeDirection(direction);
+            cell.next[direction].input.focus();
+        } else {
+            var clues = this.findCluesForInput(puzzle.input);
+            var clue = clues.find(c => c.direction == direction);
+            if (clue && clue.next) this.focusClue(clue.next);
+        }
+    }
+
+    this.moveFocusToPreviousCell = function (direction = puzzle.direction) {
+        var cell = puzzle.cell;
+        if (cell.previous && cell.previous[direction]) {
+            puzzle.changeDirection(direction);
+            cell.previous[direction].input.focus();
+        }
+    }
+
+
+    this.findCellForInput = input => puzzle.cells.flat().find(cell => cell.input == input);
+
     this.inputFocus = function (event) {
         const input = this;
-        if (event.type != "click") {
-            $(puzzle.input).off("click");
-            window.setTimeout(() => $(input).on("click", puzzle.inputFocus), 200);
-        }
-        $(".current-clue").removeClass("current-clue");
-        $("div.puzzle-grid span").removeClass("current-clue");
         const clues = puzzle.findCluesForInput(input);
-        
-        if (clues.length > 1 && this == puzzle.input && event.type == "click") puzzle.changeDirection();
+        if (event.type != "click" && clues.length > 1) {
+            $(puzzle.input).off("click");
+            window.setTimeout(() => $(input).on("click", event => puzzle.changeDirection()), 200);
+        }
+        puzzle.highlightClueForInput(input);
+        puzzle.input = this;
+        puzzle.cell = puzzle.findCellForInput(this);
+        console.log(puzzle.cell);
+    }
 
+    this.highlightClueForInput = function (input) {
+        $(".current-clue").removeClass("current-clue");
+        const clues = puzzle.findCluesForInput(input);
         const clue = (clues.length > 1 ? clues.find(c => c.direction == puzzle.direction) : clues[0]);
         puzzle.direction = clue.direction;
+        puzzle.clue = clue;
         puzzle.highlightClue(clue.root || clue);
-        puzzle.input = this;
+    }
+
+    this.focusClue = function (clue) {
+        puzzle.changeDirection(clue.direction);
+        clue.focusFirstInput();
     }
 
     this.highlightClue = function (clue) {
         clue.continuations.forEach(puzzle.highlightClue);
-        clue.ranges.forEach(range => range.forEach(cell => cell.span.addClass("current-clue")));
+        clue.ranges.forEach(range => range.forEach(cell => cell.$span.addClass("current-clue")));
         clue.html.addClass("current-clue");
     }
 
-    this.findClueForListItem = function(li) {        
+    this.findClueForListItem = function (li) {
         let allClues = puzzle.clues.across.concat(puzzle.clues.down).filter(c => c);
         return allClues.find(clue => clue.html[0] == li);
     }
@@ -117,31 +193,32 @@ function iPuzzler(ipuz, $container) {
         return allClues.filter(clue => clue.ranges.some(rangeContainsInput));
     }
 
-    this.buildRange = function (x, y, direction, count) {
-        if (x < 0 || x >= puzzle.cells.length) return ([]);
-        if (y < 0 || y >= puzzle.cells[x].length) return ([]);
+    this.buildRange = function (x, y, direction, previous) {
+        console.log(x, y, direction, previous);
+        if (x < 0 || x >= puzzle.cells.length) return [];
+        if (y < 0 || y >= puzzle.cells[x].length) return [];
         let cell = puzzle.cells[x][y];
-        if (direction == "across") {
-            x++;
-        } else {
-            y++;
+        if (cell.value == "#") return [];
+        if (previous) {
+            if (direction == "across" && /L/i.test(cell.style.barred)) return [];
+            if (direction == "down" && /T/i.test(cell.style.barred)) return [];
+            cell.previous ||= {};
+            cell.previous[direction] = previous;
+            previous.next ||= {};
+            previous.next[direction] = cell;
         }
-        if (cell.content == "#") return ([]);
-        if (count > 0 && cell.cell && cell.cell.style && cell.cell.style.barred) {
-            if (direction == "across" && /L/i.test(cell.cell.style.barred)) return ([]);
-            if (direction == "down" && /T/i.test(cell.cell.style.barred)) return ([]);
-        }
-        return ([cell].concat(this.buildRange(x, y, direction, count+1)));
+        (direction == "across" ? x++ : y++);
+        return ([cell].concat(this.buildRange(x, y, direction, cell)));
     }
 
     this.attachRangesToClues = function () {
         for (const clue of puzzle.clues.across.filter(c => c)) {
             var position = puzzle.cluePositions[clue.number];
-            clue.ranges.push(this.buildRange(position.x, position.y, "across", 0));
+            clue.ranges.push(this.buildRange(position.x, position.y, "across"));
         }
         for (const clue of puzzle.clues.down.filter(c => c)) {
             var position = puzzle.cluePositions[clue.number];
-            clue.ranges.push(this.buildRange(position.x, position.y, "down", 0));
+            clue.ranges.push(this.buildRange(position.x, position.y, "down"));
         }
     }
 
@@ -181,17 +258,17 @@ function iPuzzler(ipuz, $container) {
     }
 
 
-    this.drawGridCell = function (x, y, cell) {
+    this.drawGridCell = function (x, y, ipuzData) {
         let $span = $("<span class='cell'></span>");
-        if (cell.style && cell.style.barred) $span.addClass(`barred-${cell.style.barred.toLowerCase()}`);
-        let content = (cell.cell || cell);
+        if (ipuzData.style && ipuzData.style.barred) $span.addClass(`barred-${ipuzData.style.barred.toLowerCase()}`);
+        let value = (ipuzData.cell || ipuzData);
         let input = null;
-        let clueNumber = parseInt(content);
+        let clueNumber = parseInt(value);
         if (clueNumber) {
             puzzle.cluePositions[clueNumber] = { x: x, y: y };
             $span.append(`<span class="clue-number">${clueNumber}</span>`);
         }
-        if (content == "#") {
+        if (value == "#") {
             $span.addClass("block");
         } else {
             let $input = $(`<input maxlength='1' data-x="${x}" data-y="${y}" value="" />`);
@@ -199,18 +276,13 @@ function iPuzzler(ipuz, $container) {
             input = $input[0];
         }
         $grid.append($span);
-        return {
-            input: input,
-            span: $span,
-            cell: cell,
-            content: content
-        };
+        return new Cell(input, $span, value, ipuzData.style);
     }
 
     this.drawPuzzle = function () {
-        ipuz.puzzle.forEach((row, y) => row.forEach((cell, x) => {
+        ipuz.puzzle.forEach((row, y) => row.forEach((ipuzCell, x) => {
             if (!Array.isArray(puzzle.cells[x])) puzzle.cells[x] = new Array();
-            puzzle.cells[x][y] = this.drawGridCell(x, y, cell);
+            puzzle.cells[x][y] = this.drawGridCell(x, y, ipuzCell);
         }));
     }
 
