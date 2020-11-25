@@ -38,6 +38,8 @@ function Cell(input, $span, value, style = {}) {
     this.$span = $span; // jQuery $<span /> for this cell
     this.value = value;
     this.style = style;
+    this.previous = {};
+    this.next = {};
 }
 
 function iPuzzler(ipuz, $container) {
@@ -93,9 +95,9 @@ function iPuzzler(ipuz, $container) {
     this.clueListClick = function (event) {
         $(".current-clue").removeClass("current-clue");
         var clue = puzzle.findClueForListItem(this);
-        clue = (clue.root || clue);
+        clue = (clue.root || clue);      
+        puzzle.focusClue(clue);
         puzzle.highlightClue(clue);
-        clue.ranges[0][0].input.focus();
     }
 
     this.changeDirection = (direction) => {
@@ -106,8 +108,8 @@ function iPuzzler(ipuz, $container) {
         } else {
             this.direction = "across";
         }
-        this.highlightClueForInput(this.input);
     }
+
     this.inputKeyPress = function(event) {
         if (/^[A-Z]$/i.test(event.key)) {
             this.value = event.key;
@@ -206,10 +208,8 @@ function iPuzzler(ipuz, $container) {
         if (cell.value == "#") return [];
         if (previous) {
             if (direction == "across" && /L/i.test(cell.style.barred)) return [];
-            if (direction == "down" && /T/i.test(cell.style.barred)) return [];
-            cell.previous ||= {};
+            if (direction == "down" && /T/i.test(cell.style.barred)) return [];            
             cell.previous[direction] = previous;
-            previous.next ||= {};
             previous.next[direction] = cell;
         }
         (direction == "across" ? x++ : y++);
@@ -276,7 +276,7 @@ function iPuzzler(ipuz, $container) {
         if (value == "#") {
             $span.addClass("block");
         } else {
-            let $input = $(`<input maxlength='1' data-x="${x}" data-y="${y}" value="M" />`);
+            let $input = $(`<input maxlength='1' data-x="${x}" data-y="${y}" value="" />`);
             $span.append($input);
             input = $input[0];
         }
