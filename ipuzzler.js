@@ -86,6 +86,7 @@ function iPuzzler(ipuz, $container) {
         $(window).resize(puzzle.handleResize);
         $grid.on("focus", "input", puzzle.inputFocus);
         $grid.on("keydown", "input", puzzle.inputKeyDown);
+        $grid.on("keypress", "input", puzzle.inputKeyPress);
         $("ul.clue-list li").on("click", puzzle.clueListClick);
     }
 
@@ -107,11 +108,16 @@ function iPuzzler(ipuz, $container) {
         }
         this.highlightClueForInput(this.input);
     }
+    this.inputKeyPress = function(event) {
+        if (/^[A-Z]$/i.test(event.key)) {
+            this.value = event.key;
+            puzzle.moveFocusToNextCell();
+        }
+    }
 
     this.inputKeyDown = function (event) {
-        console.log(event.key);
         let handler = puzzle.keyHandlers[event.key];
-        if (handler) handler(this);
+        if (handler) return handler(this);
     }
 
     this.keyHandlers = {
@@ -145,15 +151,14 @@ function iPuzzler(ipuz, $container) {
         }
     }
 
-
     this.findCellForInput = input => puzzle.cells.flat().find(cell => cell.input == input);
 
     this.inputFocus = function (event) {
         const input = this;
         const clues = puzzle.findCluesForInput(input);
-        if (event.type != "click" && clues.length > 1) {
+        if (event.type != "click") {
             $(puzzle.input).off("click");
-            window.setTimeout(() => $(input).on("click", event => puzzle.changeDirection()), 200);
+            if (clues.length > 1) window.setTimeout(() => $(input).on("click", event => puzzle.changeDirection()), 200);
         }
         puzzle.highlightClueForInput(input);
         puzzle.input = this;
@@ -271,7 +276,7 @@ function iPuzzler(ipuz, $container) {
         if (value == "#") {
             $span.addClass("block");
         } else {
-            let $input = $(`<input maxlength='1' data-x="${x}" data-y="${y}" value="" />`);
+            let $input = $(`<input maxlength='1' data-x="${x}" data-y="${y}" value="M" />`);
             $span.append($input);
             input = $input[0];
         }
