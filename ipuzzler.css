@@ -97,6 +97,9 @@ ul.clue-list li {
     margin: 0;
     text-indent: -1.6em;
 }
+ul.clue-list li.current-clue {
+    background-color: #ccccff;
+}
 
 ul.clue-list li a {
     text-decoration: none;
