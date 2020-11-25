@@ -99,6 +99,7 @@ ul.clue-list li {
 }
 ul.clue-list li.current-clue {
     background-color: #ccccff;
+    font-weight: bold;
 }
 
 ul.clue-list li a {
@@ -107,12 +108,12 @@ ul.clue-list li a {
 }
 
 ul.clue-list li a label {
-    min-width: 1.5em;
+    min-width: 1.4em;
     font-weight: bold;
     display: inline-block;
     text-indent: 0;
     margin: 0;
-    padding: 0 0.1em 0 0;
+    padding: 0 0.1em;
 }
 
 @media only screen and (max-width: 768px) {

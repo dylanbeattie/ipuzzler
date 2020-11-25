@@ -67,27 +67,47 @@ function iPuzzler(ipuz, $container) {
         puzzle.drawClueList();
 
         $(window).resize(puzzle.handleResize);
-        // $grid.on("click", "input:focus", puzzle.inputFocus);
         $grid.on("focus", "input", puzzle.inputFocus);
+        $("ul.clue-list li").on("click", puzzle.clueListClick);
     }
 
+    this.clueListClick = function(event) {
+        $(".current-clue").removeClass("current-clue");
+        var clue = puzzle.findClueForListItem(this);
+        clue = (clue.root || clue);
+        puzzle.highlightClue(clue);
+        clue.ranges[0].cells[0].input.focus();
+    }
+    
+    this.changeDirection = () =>  this.direction = (this.direction == "across" ? "down" : "across");
+    
     this.inputFocus = function (event) {
+        const input = this;
+        if (event.type != "click") {
+            $(puzzle.input).off("click");
+            window.setTimeout(() => $(input).on("click", puzzle.inputFocus), 200);
+        }
         $(".current-clue").removeClass("current-clue");
         $("div.puzzle-grid span").removeClass("current-clue");
-        const clues = puzzle.findCluesForInput(this);
-        if (clues.length > 1 && this == puzzle.focusedInput && event.type == "click") {
-            puzzle.direction = (puzzle.direction == "across" ? "down" : "across");
-        }
+        const clues = puzzle.findCluesForInput(input);
+        
+        if (clues.length > 1 && this == puzzle.input && event.type == "click") puzzle.changeDirection();
+
         const clue = (clues.length > 1 ? clues.find(c => c.direction == puzzle.direction) : clues[0]);
         puzzle.direction = clue.direction;
         puzzle.highlightClue(clue.root || clue);
-        puzzle.focusedInput = this;
+        puzzle.input = this;
     }
 
     this.highlightClue = function (clue) {
-        clue.continuations.forEach(cc => puzzle.highlightClue(cc));
+        clue.continuations.forEach(puzzle.highlightClue);
         clue.ranges.forEach(range => range.forEach(cell => cell.span.addClass("current-clue")));
         clue.html.addClass("current-clue");
+    }
+
+    this.findClueForListItem = function(li) {        
+        let allClues = puzzle.clues.across.concat(puzzle.clues.down).filter(c => c);
+        return allClues.find(clue => clue.html[0] == li);
     }
 
     this.findCluesForInput = function (inputElement) {
