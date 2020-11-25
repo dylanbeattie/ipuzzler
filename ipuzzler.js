@@ -7,6 +7,7 @@ function Clue(ipuzClue, direction) {
         this.label = ipuzClue.label || this.number;
     }
     this.root = null;
+    this.next = null;
     this.continuations = [];
     this.ranges = [];
     this.toHtml = function() { 
@@ -110,8 +111,18 @@ function iPuzzler(ipuz, $container) {
     }
 
     this.parseClues = function (ipuzClueList, direction) {
-        return ipuzClueList.map(c => [...this.parseClue(c, direction)]).flat();
+        const clues = ipuzClueList.map(c => [...this.parseClue(c, direction)]).flat();
+        for(const clue of clues) {
+            if (clue.continuations && clue.continuations.length) {
+                clue.next = clue.continuations[0];
+                for(let i = 0; i < clue.continuations.length-1; i++) {
+                    clue.continuations[i].next = clue.continuations[i+1];
+                }
+            }
+        }
+        return clues;
     }
+
     this.parseClue = function* (ipuzClue, direction) {
         var clue = new Clue(ipuzClue, direction);
         if (ipuzClue.continued && typeof ipuzClue.continued[Symbol.iterator] === "function") {
