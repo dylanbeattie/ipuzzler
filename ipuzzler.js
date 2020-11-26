@@ -43,11 +43,17 @@ function Cell(input, $span, value, style = {}) {
 }
 
 function iPuzzler(ipuz, $container) {
-
     const $grid = $('<div class="puzzle-grid"/>');
+    const $buttons = $(`<div class="buttons">
+        <a href="#" id="reveal-all-button">Reveal All</a>
+        <a href="#" id="clear-all-button">Clear All</a>
+        <a href="#" id="save-button">Save</a>
+        <a href="#" id="load-button">Load</a>
+    </div>`);
     const $info = $('<div class="puzzle-info" />');
     const $puzzle = $('<div class="puzzle-grid-wrapper"/>');
     $puzzle.append($grid);
+    $puzzle.append($buttons);
     $puzzle.append($info);
     const $acrossListWrapper = $('<div class="clue-list-wrapper across-clue-list-wrapper"><h4>Across</h4><ul class="clue-list across-clue-list"></ul></div>');
     const $downListWrapper = $('<div class="clue-list-wrapper down-clue-list-wrapper"><h4>Down</h4><ul class="clue-list down-clue-list"></ul></div>');
@@ -63,7 +69,7 @@ function iPuzzler(ipuz, $container) {
 
     this.drawElements = function () {
         $container.html("");
-        $container.append($grid);
+        $container.append($puzzle);
         $container.append($acrossListWrapper);
         $container.append($downListWrapper);
     }
@@ -89,13 +95,17 @@ function iPuzzler(ipuz, $container) {
         $grid.on("focus", "input", puzzle.inputFocus);
         $grid.on("keydown", "input", puzzle.inputKeyDown);
         $grid.on("keypress", "input", puzzle.inputKeyPress);
+        $("#reveal-all-button").on("click", puzzle.revealAll);
+        $("#clear-all-button").on("click", puzzle.clearAll);
+        $("#save-button").on("click", puzzle.saveProgressIntoCookie);
+        $("#load-button").on("click", puzzle.loadProgressFromCookie);
         $("ul.clue-list li").on("click", puzzle.clueListClick);
     }
 
     this.clueListClick = function (event) {
         $(".current-clue").removeClass("current-clue");
         var clue = puzzle.findClueForListItem(this);
-        clue = (clue.root || clue);      
+        clue = (clue.root || clue);
         puzzle.focusClue(clue);
         puzzle.highlightClue(clue);
     }
@@ -110,11 +120,12 @@ function iPuzzler(ipuz, $container) {
         }
     }
 
-    this.inputKeyPress = function(event) {
+    this.inputKeyPress = function (event) {
         if (/^[A-Z]$/i.test(event.key)) {
             this.value = event.key;
             puzzle.moveFocusToNextCell();
         }
+        return (false);
     }
 
     this.inputKeyDown = function (event) {
@@ -165,7 +176,6 @@ function iPuzzler(ipuz, $container) {
         puzzle.highlightClueForInput(input);
         puzzle.input = this;
         puzzle.cell = puzzle.findCellForInput(this);
-        console.log(puzzle.cell);
     }
 
     this.highlightClueForInput = function (input) {
@@ -201,14 +211,13 @@ function iPuzzler(ipuz, $container) {
     }
 
     this.buildRange = function (x, y, direction, previous) {
-        console.log(x, y, direction, previous);
         if (x < 0 || x >= puzzle.cells.length) return [];
         if (y < 0 || y >= puzzle.cells[x].length) return [];
         let cell = puzzle.cells[x][y];
         if (cell.value == "#") return [];
         if (previous) {
             if (direction == "across" && /L/i.test(cell.style.barred)) return [];
-            if (direction == "down" && /T/i.test(cell.style.barred)) return [];            
+            if (direction == "down" && /T/i.test(cell.style.barred)) return [];
             cell.previous[direction] = previous;
             previous.next[direction] = cell;
         }
@@ -235,7 +244,7 @@ function iPuzzler(ipuz, $container) {
     }
 
     this.parseClues = function (ipuzClueList, direction) {
-        const clues = ipuzClueList.map(c => [...this.parseClue(c, direction)]).flat();
+        const clues = (ipuzClueList && ipuzClueList.map ? ipuzClueList.map(c => [...this.parseClue(c, direction)]).flat() : []);
         for (const clue of clues) {
             if (clue.continuations && clue.continuations.length) {
                 clue.next = clue.continuations[0];
@@ -305,6 +314,36 @@ function iPuzzler(ipuz, $container) {
         let gridSize = $grid.width();
         $grid.find("input").css("font-size", `${(Math.ceil(gridSize / (1.6 * ipuz.dimensions.height)))}px`);
         $grid.find("span.clue-number").css("font-size", `${(Math.ceil(gridSize / (3.5 * ipuz.dimensions.height)))}px`);
+    }
+
+    this.clearAll = function () {
+        puzzle.progress();
+        // puzzle.cells.flat().forEach(cell => {
+        //     if (cell.input) cell.input.value = "";
+        // });
+    }
+
+    this.saveProgressIntoCookie = function () {
+        var cookieJson = JSON.stringify(puzzle.cells.map((row, y) => row.map(cell => (cell.input ? cell.input.value : null))));
+        var cookieName = window.location.href.replace(/#.*/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        var cookieDate = new Date(2100, 1, 1);
+        document.cookie = `${cookieName}=${cookieJson};expires=${cookieDate.toUTCString()};path=/`;
+    }
+
+    this.loadProgressFromCookie = function () {
+        console.log(document.cookie);
+        var cookieName = window.location.href.replace(/#.*/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var cookie = decodedCookie.split(/; */).map(token => token.split('=')).find(pair => pair[0] == cookieName);
+        var things = JSON.parse(cookie[1]);
+        console.table(things);
+    }
+
+    this.revealAll = function () {
+        ipuz.solution.forEach((row, y) => row.forEach((col, x) => {
+            if (puzzle.cells[x][y].input) puzzle.cells[x][y].input.value = (col.value ?? col);
+        }));
+        // console.table(ipuz.solution);
     }
 
     const puzzle = this;

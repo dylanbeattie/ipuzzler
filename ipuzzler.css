@@ -84,6 +84,17 @@ div.puzzle-grid span.current-clue {
     background-color: #ccccff;
 }
 
+div.buttons a {
+    background-color: #333399;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 4px;
+    display: inline-block;
+    padding: 4px 8px;
+    text-decoration: none;
+    margin: 8px 8px 8px 0;
+}
+
 ul.clue-list {
     list-style: none;
     margin: 0;
