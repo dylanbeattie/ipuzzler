@@ -90,6 +90,7 @@ function iPuzzler(ipuz, $container) {
         puzzle.attachRangesToClues();
 
         puzzle.drawClueList();
+        puzzle.loadProgressFromCookie();
 
         $(window).resize(puzzle.handleResize);
         $grid.on("focus", "input", puzzle.inputFocus);
@@ -123,6 +124,7 @@ function iPuzzler(ipuz, $container) {
     this.inputKeyPress = function (event) {
         if (/^[A-Z]$/i.test(event.key)) {
             this.value = event.key;
+            puzzle.saveProgressIntoCookie();
             puzzle.moveFocusToNextCell();
         }
         return (false);
@@ -140,8 +142,15 @@ function iPuzzler(ipuz, $container) {
         ArrowDown: () => this.moveFocusToNextCell("down"),
         Home: () => this.clue.focusFirstInput(),
         End: () => this.clue.focusFinalInput(),
-        Backspace: () => { this.input.value = ""; this.moveFocusToPreviousCell() },
-        Delete: () => this.input.value = ""
+        Backspace: () => {
+            this.input.value = "";
+            puzzle.saveProgressIntoCookie();
+            this.moveFocusToPreviousCell();
+        },
+        Delete: () => {
+            this.input.value = "";
+            puzzle.saveProgressIntoCookie();
+        }
     }
 
     this.moveFocusToNextCell = function (direction = puzzle.direction) {
@@ -213,7 +222,7 @@ function iPuzzler(ipuz, $container) {
     this.buildRange = function (x, y, direction, previous) {
         if (x < 0 || x >= puzzle.cells.length) return [];
         if (y < 0 || y >= puzzle.cells[x].length) return [];
-        let cell = puzzle.cells[x][y];
+        let cell = puzzle.cells[y][x];
         if (cell.value == "#") return [];
         if (previous) {
             if (direction == "across" && /L/i.test(cell.style.barred)) return [];
@@ -296,7 +305,7 @@ function iPuzzler(ipuz, $container) {
     this.drawPuzzle = function () {
         ipuz.puzzle.forEach((row, y) => row.forEach((ipuzCell, x) => {
             if (!Array.isArray(puzzle.cells[x])) puzzle.cells[x] = new Array();
-            puzzle.cells[x][y] = this.drawGridCell(x, y, ipuzCell);
+            puzzle.cells[y][x] = this.drawGridCell(x, y, ipuzCell);
         }));
     }
 
@@ -317,33 +326,35 @@ function iPuzzler(ipuz, $container) {
     }
 
     this.clearAll = function () {
-        puzzle.progress();
-        // puzzle.cells.flat().forEach(cell => {
-        //     if (cell.input) cell.input.value = "";
-        // });
+        puzzle.cells.flat().forEach(cell => {
+            if (cell.input) cell.input.value = "";
+        });
+        puzzle.saveProgressIntoCookie();
     }
+
+    this.cookieName = window.location.href.replace(/#.*/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
     this.saveProgressIntoCookie = function () {
         var cookieJson = JSON.stringify(puzzle.cells.map((row, y) => row.map(cell => (cell.input ? cell.input.value : null))));
-        var cookieName = window.location.href.replace(/#.*/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
         var cookieDate = new Date(2100, 1, 1);
-        document.cookie = `${cookieName}=${cookieJson};expires=${cookieDate.toUTCString()};path=/`;
+        document.cookie = `${puzzle.cookieName}=${cookieJson};expires=${cookieDate.toUTCString()};path=/`;
     }
 
     this.loadProgressFromCookie = function () {
-        console.log(document.cookie);
-        var cookieName = window.location.href.replace(/#.*/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
         var decodedCookie = decodeURIComponent(document.cookie);
-        var cookie = decodedCookie.split(/; */).map(token => token.split('=')).find(pair => pair[0] == cookieName);
-        var things = JSON.parse(cookie[1]);
-        console.table(things);
+        var cookie = decodedCookie.split(/; */).map(token => token.split('=')).find(pair => pair[0] == puzzle.cookieName);
+        if (cookie && cookie.length > 1) {
+            var things = JSON.parse(cookie[1]);
+            things.forEach((row, y) => row.forEach((value, x) => {
+                if (puzzle.cells[y][x].input) puzzle.cells[y][x].input.value = value;
+            }));
+        }
     }
 
     this.revealAll = function () {
         ipuz.solution.forEach((row, y) => row.forEach((col, x) => {
-            if (puzzle.cells[x][y].input) puzzle.cells[x][y].input.value = (col.value ?? col);
+            if (puzzle.cells[y][x].input) puzzle.cells[y][x].input.value = (col.value ?? col);
         }));
-        // console.table(ipuz.solution);
     }
 
     const puzzle = this;

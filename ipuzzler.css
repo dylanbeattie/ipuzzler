@@ -109,7 +109,6 @@ ul.clue-list li {
 }
 ul.clue-list li.current-clue {
     background-color: #ccccff;
-    font-weight: bold;
 }
 
 ul.clue-list li a {
