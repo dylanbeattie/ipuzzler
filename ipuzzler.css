@@ -8,6 +8,14 @@ html {
     font-size: 12px;
 }
 
+body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  html {
+    height: -webkit-fill-available;
+  }
+
 div.ipuzzler {
     padding: 4px;
     display: grid;
@@ -69,16 +77,23 @@ div.puzzle-grid > span input {
     height: 100%;
     border: 0;
     margin: 0;
-    padding: 10% 0 0 0;
+    padding: 0 0 0 0;
     box-sizing: border-box;
     text-align: center;
     text-transform: uppercase;
     border-radius: 0;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 div.puzzle-grid span input:focus {
     font-weight: bold;
     background-color: #9999ff;
     mix-blend-mode: darken;
+    outline: none;
 }
 
 div.puzzle-grid span.current-clue {
@@ -100,7 +115,50 @@ div.clue-list-wrapper {
 }
 div.clue-list-wrapper h4 {
     margin: 0 0 8px 0;
+}
+div.puzzle-info {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px;    
+    background-color: #ffff00;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px solid #000;
+}
+div.puzzle-info a {
+    text-decoration: none;
+    color: #000;
+}
+div.puzzle-info a label {
+    display: inline-block;
+    margin-right: 8px;
+}
 
+div.puzzle-info-ding {
+    z-index: 3;
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 10px;
+    height: 10px;
+    border-radius: 1px;
+    background-color: #00ff00;
+    transform: rotate(45deg);
+}
+
+div.puzzle-info-ding-border {
+    z-index: 1;
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background-color: #000;
+    transform: rotate(45deg);
 }
 
 ul.clue-list {
