@@ -77,11 +77,10 @@ div.puzzle-grid > span input {
     height: 100%;
     border: 0;
     margin: 0;    
-    padding: 2px 0 0 0;
+    padding: 0;
     font-weight: bold;
     box-sizing: border-box;
     text-align: center;
-    text-transform: uppercase;
     border-radius: 0;
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -152,6 +151,7 @@ div.puzzle-info a {
 div.puzzle-info a label {
     display: inline-block;
     margin-right: 8px;
+    font-weight: bold;
 }
 
 div.puzzle-info-ding {
@@ -208,6 +208,12 @@ ul.clue-list li a label {
     text-indent: 0;
     margin: 0;
     padding: 0 0.1em;
+}
+@media only screen and (min-width: 768px) {
+    div.puzzle-info, div.puzzle-info-ding, div.puzzle-info-ding-border {
+        display: none !important;
+        visibility: hidden !important;
+    }
 }
 
 @media only screen and (max-width: 768px) {

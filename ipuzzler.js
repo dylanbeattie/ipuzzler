@@ -18,17 +18,15 @@ function Clue(ipuzClue, direction) {
         if ($list && $list.append) $list.append(this.$html);
     }
     this.focusFirstInput = function () {
-        var input = this.cells?.[0]?.input;
-        if (input) input.focus();
+        if (this.cells && this.cells.length && this.cells[0].input) this.cells[0].input.focus();
     }
 
-    this.focusFinalInput = function (event) {
-        var input = this.cells?.[cells.length - 1]?.input;
-        if (input) input.focus();
+    this.focusFinalInput = function () {
+        if (this.cells && this.cells.length && this.cells[this.cells.length-1].input) this.cells[this.cells.length-1].input.focus();
     }
 
     this.getClueChain = function () {
-        let root = this.root || this;
+        var root = this.root || this;
         return [root].concat(this.continuations);
     }
 
@@ -37,16 +35,20 @@ function Clue(ipuzClue, direction) {
     }
 }
 
-function Cell(x, y, input, $span, value, style = {}) {
+function Cell(x, y, input, $span, value, style) {
     this.x = x;
     this.y = y;
     this.input = input; // HTMLInputElement
     this.$span = $span; // jQuery $<span /> for this cell
     this.value = value;
-    this.style = style;
+    this.style = style || {};
     this.previous = {};
     this.next = {};
     this.solution = "";
+
+    this.setValue = function(value) {
+        if (this.input) this.input = value.toUpperCase();
+    }
 
     this.cheat = function () {
         if (this.input) this.input.value = this.solution;
@@ -56,6 +58,9 @@ function Cell(x, y, input, $span, value, style = {}) {
     }
 
     this.check = function () {
+        console.log(this.input.value);
+        console.log(this.solution);
+        console.log('--------------------------');
         if (this.input && this.input.value != this.solution) this.clear();
     }
 
@@ -107,12 +112,16 @@ function iPuzzler(ipuz, $container) {
         puzzle.drawPuzzle();
         puzzle.handleResize();
 
+
         // Because of the way the ipuz format handles continuations, we might end up
         // with down clues in the list of clues that came from ipuz.clues.Across
-        let cluesFromAcross = puzzle.parseClues(ipuz.clues.Across, "across");
-        let cluesFromDown = puzzle.parseClues(ipuz.clues.Down, "down");
-        let allTheClues = cluesFromAcross.concat(cluesFromDown);
-        for (const clue of allTheClues) puzzle.clues[clue.direction][clue.number] = clue;
+        var cluesFromAcross = puzzle.parseClues(ipuz.clues.Across, "across");
+        var cluesFromDown = puzzle.parseClues(ipuz.clues.Down, "down");
+        var allTheClues = cluesFromAcross.concat(cluesFromDown);
+        for(var i = 0; i < allTheClues.length; i++) {
+            var clue = allTheClues[i];
+            puzzle.clues[clue.direction][clue.number] = clue;
+        }
 
         puzzle.attachCellsToClues();
 
@@ -140,13 +149,13 @@ function iPuzzler(ipuz, $container) {
     this.clueListClick = function (event) {
         // if ($(this).hasClass("current-clue")) return;
         $(".current-clue").removeClass("current-clue");
-        let clue = puzzle.findClueForListItem(this);
+        var clue = puzzle.findClueForListItem(this);
         clue = (clue.root || clue);
         puzzle.focusClue(clue);
         puzzle.highlightClue(clue);
     }
 
-    this.changeDirection = (direction) => {
+    this.changeDirection = function (direction) {
         if (direction) {
             this.direction = direction;
         } else if (this.direction == "across") {
@@ -158,7 +167,7 @@ function iPuzzler(ipuz, $container) {
 
     this.inputKeyPress = function (event) {
         if (/^[A-Z]$/i.test(event.key)) {
-            this.value = event.key;
+            this.value = event.key.toUpperCase();
             puzzle.saveProgressIntoCookie();
             puzzle.moveFocusToNextCell();
         }
@@ -166,27 +175,20 @@ function iPuzzler(ipuz, $container) {
     }
 
     this.inputKeyDown = function (event) {
-        let handler = puzzle.keyHandlers[event.key];
+        var handler = puzzle.keyHandlers[event.key];
         if (handler) return handler(this);
     }
 
     this.keyHandlers = {
-        ArrowLeft: () => this.moveFocusToPreviousCell("across"),
-        ArrowRight: () => this.moveFocusToNextCell("across"),
-        ArrowUp: () => this.moveFocusToPreviousCell("down"),
-        ArrowDown: () => this.moveFocusToNextCell("down"),
-        Home: () => this.clue.focusFirstInput(),
-        End: () => this.clue.focusFinalInput(),
-        Backspace: () => {
-            this.input.value = "";
-            puzzle.saveProgressIntoCookie();
-            this.moveFocusToPreviousCell();
-        },
-        Delete: () => {
-            this.input.value = "";
-            puzzle.saveProgressIntoCookie();
-        },
-        Escape: () => this.input.blur()
+        ArrowLeft: function() { this.moveFocusToPreviousCell("across"); },
+        ArrowRight: function() { this.moveFocusToNextCell("across"); },
+        ArrowUp: function() { this.moveFocusToPreviousCell("down"); },
+        ArrowDown: function() { this.moveFocusToNextCell("down"); },
+        Home: function() { this.clue.focusFirstInput(); },
+        End: function() { this.clue.focusFinalInput(); },
+        Backspace: function() { this.cell.clear(); this.moveFocusToPreviousCell(); },
+        Delete: function() { this.cell.clear(); },
+        Escape: function() { this.input.blur(); }
     }
 
     this.moveFocusToNextCell = function (direction = puzzle.direction) {
@@ -221,13 +223,13 @@ function iPuzzler(ipuz, $container) {
         const clues = puzzle.findCluesForInput(input);
         if (event.type == "focusin") {
             $(puzzle.input).off("click touchstart");
-            if (clues.length > 1) window.setTimeout(() => $(input).on("click touchstart", event => {
+            if (clues.length > 1) window.setTimeout(function() { $(input).on("click touchstart", function(event) {
                 if (window.debouncing) return;
                 window.debouncing = true;
                 puzzle.changeDirection();
                 puzzle.highlightClueForInput(input);
                 puzzle.drawFloatingClue(puzzle.cell);
-                window.setTimeout(() => window.debouncing = false, 500);
+                window.setTimeout(function() { window.debouncing = false }, 500);
             }), 100);
         }
         puzzle.highlightClueForInput(input);
@@ -242,18 +244,18 @@ function iPuzzler(ipuz, $container) {
     }
 
     this.drawFloatingClue = function (cell) {
-        let clues = this.findCluesForInput(cell.input);
-        let clue = clues.find(c => c.direction == puzzle.direction);
-        let root = (clue.root || clue);
+        var clues = this.findCluesForInput(cell.input);
+        var clue = clues.find(function(c) { c.direction == puzzle.direction });
+        var root = (clue.root || clue);
         $info.html(root.$html.html());
         $info.show();
         $infoDingBorder.show();
         $infoDing.show();
-        let infoPositionCell = cell.getFirstCell(puzzle.direction);
-        let infoPositionInput = infoPositionCell.input;
+        var infoPositionCell = cell.getFirstCell(puzzle.direction);
+        var infoPositionInput = infoPositionCell.input;
         // for down clues: we draw it alongside the first cell in the clue.
-        let infoTop = $(infoPositionInput).offset().top;
-        let dingleBorderOffset = { top: 0, left: 0 };
+        var infoTop = $(infoPositionInput).offset().top;
+        var dingleBorderOffset = { top: 0, left: 0 };
         switch (puzzle.direction) {
             case "across":
                 // always draw it BELOW the clue we're filling out.
@@ -267,8 +269,8 @@ function iPuzzler(ipuz, $container) {
             case "down":
                 infoTop -= 2;
                 dingleBorderOffset.top = infoTop + 4;
-                let windowWidth = $(window).width();
-                let infoLeft = $(infoPositionInput).offset().left;
+                var windowWidth = $(window).width();
+                var infoLeft = $(infoPositionInput).offset().left;
                 if (infoLeft < (windowWidth / 2)) {
                     // draw in RHS of window
                     $info.offset({ top: infoTop, left: infoLeft + $(infoPositionInput).width() + 2 });
@@ -291,7 +293,7 @@ function iPuzzler(ipuz, $container) {
     this.highlightClueForInput = function (input) {
         $(".current-clue").removeClass("current-clue");
         const clues = puzzle.findCluesForInput(input);
-        const clue = (clues.length > 1 ? clues.find(c => c.direction == puzzle.direction) : clues[0]);
+        const clue = (clues.length > 1 ? clues.find(function(c) { c.direction == puzzle.direction }) : clues[0]);
         puzzle.direction = clue.direction;
         puzzle.clue = clue;
         puzzle.highlightClue(clue.root || clue);
@@ -304,25 +306,25 @@ function iPuzzler(ipuz, $container) {
 
     this.highlightClue = function (clue) {
         clue.continuations.forEach(puzzle.highlightClue);
-        clue.cells.forEach(cell => cell.$span.addClass("current-clue"));
+        for(var i = 0; i < clue.cells.length; i++) clue.cells[i].$span.addClass("current-clue");
         clue.$html.addClass("current-clue");
     }
 
     this.findClueForListItem = function (li) {
-        let allClues = puzzle.clues.across.concat(puzzle.clues.down).filter(c => c);
+        var allClues = puzzle.clues.across.concat(puzzle.clues.down).filter(c => c);
         return allClues.find(clue => clue.$html[0] == li);
     }
 
     this.findCluesForInput = function (inputElement) {
-        let cellContainsInput = cell => cell.input == inputElement;
-        let allClues = puzzle.clues.across.concat(puzzle.clues.down).filter(c => c);
+        var cellContainsInput = cell => cell.input == inputElement;
+        var allClues = puzzle.clues.across.concat(puzzle.clues.down).filter(c => c);
         return allClues.filter(clue => clue.cells.some(cellContainsInput));
     }
 
     this.buildCells = function (x, y, direction, previous) {
         if (x < 0 || x >= puzzle.cells.length) return [];
         if (y < 0 || y >= puzzle.cells[x].length) return [];
-        let cell = puzzle.cells[y][x];
+        var cell = puzzle.cells[y][x];
         if (cell.value == "#") return [];
         if (previous) {
             if (direction == "across" && /L/i.test(cell.style.barred)) return [];
@@ -346,7 +348,7 @@ function iPuzzler(ipuz, $container) {
     }
 
     this.drawClueList = function () {
-        let $list = $acrossListWrapper.find("ul");
+        var $list = $acrossListWrapper.find("ul");
         puzzle.clues.across.forEach(clue => clue.drawHtml($list));
         $list = $downListWrapper.find("ul");
         puzzle.clues.down.forEach(clue => clue.drawHtml($list));
@@ -357,7 +359,7 @@ function iPuzzler(ipuz, $container) {
         for (const clue of clues) {
             if (clue.continuations && clue.continuations.length) {
                 clue.next = clue.continuations[0];
-                for (let i = 0; i < clue.continuations.length - 1; i++) {
+                for (var i = 0; i < clue.continuations.length - 1; i++) {
                     clue.continuations[i].next = clue.continuations[i + 1];
                 }
             }
@@ -369,7 +371,7 @@ function iPuzzler(ipuz, $container) {
         var clue = new Clue(ipuzClue, direction);
         if (ipuzClue.continued && typeof ipuzClue.continued[Symbol.iterator] === "function") {
             for (const continuation of ipuzClue.continued) {
-                let cc = new Clue(continuation);
+                var cc = new Clue(continuation);
                 cc.direction = continuation.direction.toLowerCase();
                 cc.text = 'See ' + ipuzClue.number;
                 cc.root = clue;
@@ -382,11 +384,11 @@ function iPuzzler(ipuz, $container) {
 
 
     this.drawGridCell = function (x, y, ipuzData) {
-        let $span = $("<span class='cell'></span>");
+        var $span = $("<span class='cell'></span>");
         if (ipuzData.style && ipuzData.style.barred) $span.addClass('barred-' + ipuzData.style.barred.toLowerCase());
-        let value = (ipuzData.cell || ipuzData);
-        let input = null;
-        let clueNumber = parseInt(value);
+        var value = (ipuzData.cell || ipuzData);
+        var input = null;
+        var clueNumber = parseInt(value);
         if (clueNumber) {
             puzzle.cluePositions[clueNumber] = { x: x, y: y };
             $span.append('<span class="clue-number">' + clueNumber + '</span>');
@@ -394,7 +396,7 @@ function iPuzzler(ipuz, $container) {
         if (value == "#") {
             $span.addClass("block");
         } else {
-            let $input = $('<input maxlength="1" data-x="' + x + '" data-y="' + y + '" value="" />');
+            var $input = $('<input maxlength="1" data-x="' + x + '" data-y="' + y + '" value="" />');
             $span.append($input);
             input = $input[0];
         }
@@ -414,7 +416,7 @@ function iPuzzler(ipuz, $container) {
 
     this.layoutPuzzleGrid = function () {
         $grid.html("");
-        let gridCss = { "grid-template": 'repeat(' + ipuz.dimensions.width + ', 1fr) / repeat(' + ipuz.dimensions.height + ', 1fr)' };
+        var gridCss = { "grid-template": 'repeat(' + ipuz.dimensions.width + ', 1fr) / repeat(' + ipuz.dimensions.height + ', 1fr)' };
         if ($(window).width() > 768) {
             gridCss.width = (ipuz.dimensions.width * 32) + "px";
             gridCss.height = (ipuz.dimensions.height * 32) + "px";
@@ -423,12 +425,12 @@ function iPuzzler(ipuz, $container) {
     }
 
     this.handleResize = function () {
-        let gridSize = $grid.width();
-        let fontSize = (Math.ceil(gridSize / (2 * ipuz.dimensions.height)));
+        var gridSize = $grid.width();
+        var fontSize = (Math.ceil(gridSize / (2 * ipuz.dimensions.height)));
         // for sizes just under 16, we bump the size to 16px to prevent zooming on iOS when input is focused.
         if (fontSize > 10 && fontSize < 16) fontSize = 16;
         $grid.find("input").css("font-size", fontSize + "px");
-        let clueFontSize = (Math.ceil(gridSize / (3.5 * ipuz.dimensions.height)));
+        var clueFontSize = (Math.ceil(gridSize / (3.5 * ipuz.dimensions.height)));
         $grid.find("span.clue-number").css("font-size", clueFontSize + "px");
     }
 
@@ -444,10 +446,8 @@ function iPuzzler(ipuz, $container) {
         var decodedCookie = decodeURIComponent(document.cookie);
         var cookie = decodedCookie.split(/; */).map(token => token.split('=')).find(pair => pair[0] == puzzle.cookieName);
         if (cookie && cookie.length > 1) {
-            var things = JSON.parse(cookie[1]);
-            things.forEach((row, y) => row.forEach((value, x) => {
-                if (puzzle.cells[y][x].input) puzzle.cells[y][x].input.value = value;
-            }));
+            var values = JSON.parse(cookie[1]);
+            values.forEach((row, y) => row.forEach((value, x) => puzzle.cells[y][x].setValue(value)));
         }
     }
 
@@ -456,9 +456,9 @@ function iPuzzler(ipuz, $container) {
     }
 
     this.modifyClueCells = function (action) {
-        let clue = puzzle.clue;
+        var clue = puzzle.clue;
         clue = (clue.root || clue);
-        let allCells = clue.cells.concat(clue.continuations.map(c => c.cells).flat());
+        var allCells = clue.cells.concat(clue.continuations.map(c => c.cells).flat());
         console.table(allCells);
         allCells.forEach(cell => action(cell));
         puzzle.saveProgressIntoCookie();
@@ -486,7 +486,7 @@ function iPuzzler(ipuz, $container) {
     }
 
     this.clearGrid = function () {
-        let $this = $(this);
+        var $this = $(this);
         if (/confirm/i.test($this.html())) {
             $this.html("Clear Grid");
             $this.removeClass("confirm");
@@ -502,16 +502,16 @@ function iPuzzler(ipuz, $container) {
     }
 
     this.cheatGrid = function (event) {
-        let $this = $(this);
+        var $this = $(this);
         if (/confirm/i.test($this.html())) {
-            $this.html("Cheat All");
+            $this.html("Cheat Grid");
             $this.removeClass("confirm");
             puzzle.modifyGridCells(cell => cell.cheat());
         } else {
             $this.html("Confirm?");
             $this.addClass("confirm");
             window.setTimeout(function () {
-                $this.html("Cheat All");
+                $this.html("Cheat Grid");
                 $this.removeClass("confirm");
             }, 2000);
         }
