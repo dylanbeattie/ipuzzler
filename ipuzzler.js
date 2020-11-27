@@ -9,7 +9,7 @@ function Clue(ipuzClue, direction) {
     this.root = null;
     this.next = null;
     this.continuations = [];
-    this.range = [];
+    this.cells = [];
     this.drawHtml = function ($list) {
         var html = '<li><a href="#"><label>' + this.label + '</label>' + this.text;
         if (this.enumeration) html += ' <span class="clue-enumeration">(' + this.enumeration + ')</span>';
@@ -18,18 +18,16 @@ function Clue(ipuzClue, direction) {
         if ($list && $list.append) $list.append(this.$html);
     }
     this.focusFirstInput = function () {
-        var cells = this.range;
-        var input = cells?.[0]?.input;
+        var input = this.cells?.[0]?.input;
         if (input) input.focus();
     }
 
     this.focusFinalInput = function (event) {
-        var cells = this.range;
-        var input = cells?.[cells.length - 1]?.input;
+        var input = this.cells?.[cells.length - 1]?.input;
         if (input) input.focus();
     }
 
-    this.getClueChain = function() {
+    this.getClueChain = function () {
         let root = this.root || this;
         return [root].concat(this.continuations);
     }
@@ -48,13 +46,25 @@ function Cell(x, y, input, $span, value, style = {}) {
     this.style = style;
     this.previous = {};
     this.next = {};
+    this.solution = "";
 
-    this.getFirstCellInRange = function (direction) {
-        return (this.previous[direction] ? this.previous[direction].getFirstCellInRange(direction) : this);
+    this.cheat = function () {
+        if (this.input) this.input.value = this.solution;
+    }
+    this.clear = function () {
+        if (this.input) this.input.value = "";
     }
 
-    this.getFinalCellInRange = function (direction) {
-        return (this.next[direction] ? this.next[direction].getFinalCellInRange(direction) : this);
+    this.check = function () {
+        if (this.input && this.input.value != this.solution) this.clear();
+    }
+
+    this.getFirstCell = function (direction) {
+        return (this.previous[direction] ? this.previous[direction].getFirstCell(direction) : this);
+    }
+
+    this.getFinalCell = function (direction) {
+        return (this.next[direction] ? this.next[direction].getFinalCell(direction) : this);
     }
 }
 
@@ -104,17 +114,17 @@ function iPuzzler(ipuz, $container) {
         let allTheClues = cluesFromAcross.concat(cluesFromDown);
         for (const clue of allTheClues) puzzle.clues[clue.direction][clue.number] = clue;
 
-        puzzle.attachRangesToClues();
+        puzzle.attachCellsToClues();
 
         puzzle.drawClueList();
         puzzle.loadProgressFromCookie();
 
         $(window).resize(puzzle.handleResize);
         $grid.on("focus", "input", puzzle.inputFocus);
-        // $grid.on("blur", "input", puzzle.inputBlur);
+        $grid.on("blur", "input", puzzle.inputBlur);
         $grid.on("keydown", "input", puzzle.inputKeyDown);
         $grid.on("keypress", "input", puzzle.inputKeyPress);
-        
+
         $puzzle.on("click", "a.cheat-grid-button", puzzle.cheatGrid);
         $puzzle.on("click", "a.clear-grid-button", puzzle.clearGrid);
         $puzzle.on("click", "a.check-grid-button", puzzle.checkGrid);
@@ -202,8 +212,8 @@ function iPuzzler(ipuz, $container) {
     this.findCellForInput = input => puzzle.cells.flat().find(cell => cell.input == input);
 
     this.inputBlur = function () {
-        $(".current-clue").removeClass("current-clue");
-        $info.hide();
+        // $(".current-clue").removeClass("current-clue");
+        puzzle.hideFloatingClue();
     }
 
     this.inputFocus = function (event) {
@@ -225,14 +235,21 @@ function iPuzzler(ipuz, $container) {
         puzzle.cell = puzzle.findCellForInput(this);
         puzzle.drawFloatingClue(puzzle.cell);
     }
+    this.hideFloatingClue = function() {
+        $info.hide();
+        $infoDingBorder.hide();
+        $infoDing.hide();
+    }
 
     this.drawFloatingClue = function (cell) {
         let clues = this.findCluesForInput(cell.input);
-        console.log(clues);
         let clue = clues.find(c => c.direction == puzzle.direction);
         let root = (clue.root || clue);
         $info.html(root.$html.html());
-        let infoPositionCell = cell.getFirstCellInRange(puzzle.direction);
+        $info.show();
+        $infoDingBorder.show();
+        $infoDing.show();
+        let infoPositionCell = cell.getFirstCell(puzzle.direction);
         let infoPositionInput = infoPositionCell.input;
         // for down clues: we draw it alongside the first cell in the clue.
         let infoTop = $(infoPositionInput).offset().top;
@@ -241,10 +258,10 @@ function iPuzzler(ipuz, $container) {
             case "across":
                 // always draw it BELOW the clue we're filling out.
                 infoTop += $(infoPositionInput).height();
-                $info.offset({ top: infoTop + 2, left: 6 });
+                $info.offset({ top: Math.ceil(infoTop) + 4, left: 6 });
                 $info.css("width", "auto");
                 $info.css("right", "6px");
-                dingleBorderOffset.top = infoTop - 4;
+                dingleBorderOffset.top = infoTop - 2;
                 dingleBorderOffset.left = 3 + $(infoPositionInput).offset().left;
                 break;
             case "down":
@@ -267,7 +284,6 @@ function iPuzzler(ipuz, $container) {
         }
         dingleBorderOffset.top = Math.floor(dingleBorderOffset.top);
         dingleBorderOffset.left = Math.floor(dingleBorderOffset.left);
-        console.log(dingleBorderOffset);
         $infoDingBorder.offset(dingleBorderOffset);
         $infoDing.offset({ top: dingleBorderOffset.top + 1, left: dingleBorderOffset.left + 1 });
     }
@@ -288,7 +304,7 @@ function iPuzzler(ipuz, $container) {
 
     this.highlightClue = function (clue) {
         clue.continuations.forEach(puzzle.highlightClue);
-        clue.range.forEach(cell => cell.$span.addClass("current-clue"));
+        clue.cells.forEach(cell => cell.$span.addClass("current-clue"));
         clue.$html.addClass("current-clue");
     }
 
@@ -300,10 +316,10 @@ function iPuzzler(ipuz, $container) {
     this.findCluesForInput = function (inputElement) {
         let cellContainsInput = cell => cell.input == inputElement;
         let allClues = puzzle.clues.across.concat(puzzle.clues.down).filter(c => c);
-        return allClues.filter(clue => clue.range.some(cellContainsInput));
+        return allClues.filter(clue => clue.cells.some(cellContainsInput));
     }
 
-    this.buildRange = function (x, y, direction, previous) {
+    this.buildCells = function (x, y, direction, previous) {
         if (x < 0 || x >= puzzle.cells.length) return [];
         if (y < 0 || y >= puzzle.cells[x].length) return [];
         let cell = puzzle.cells[y][x];
@@ -315,17 +331,17 @@ function iPuzzler(ipuz, $container) {
             previous.next[direction] = cell;
         }
         (direction == "across" ? x++ : y++);
-        return ([cell].concat(this.buildRange(x, y, direction, cell)));
+        return ([cell].concat(this.buildCells(x, y, direction, cell)));
     }
 
-    this.attachRangesToClues = function () {
+    this.attachCellsToClues = function () {
         for (const clue of puzzle.clues.across.filter(c => c)) {
             var position = puzzle.cluePositions[clue.number];
-            clue.range = this.buildRange(position.x, position.y, "across");
+            clue.cells = this.buildCells(position.x, position.y, "across");
         }
         for (const clue of puzzle.clues.down.filter(c => c)) {
             var position = puzzle.cluePositions[clue.number];
-            clue.range = this.buildRange(position.x, position.y, "down");
+            clue.cells = this.buildCells(position.x, position.y, "down");
         }
     }
 
@@ -391,6 +407,9 @@ function iPuzzler(ipuz, $container) {
             if (!Array.isArray(puzzle.cells[x])) puzzle.cells[x] = new Array();
             puzzle.cells[y][x] = this.drawGridCell(x, y, ipuzCell);
         }));
+        if (Array.isArray(ipuz.solution)) {
+            ipuz.solution.forEach((row, y) => row.forEach((col, x) => puzzle.cells[y][x].solution = (col.value ?? col)));
+        }
     }
 
     this.layoutPuzzleGrid = function () {
@@ -432,30 +451,46 @@ function iPuzzler(ipuz, $container) {
         }
     }
 
-    this.checkClue = function(event) { }
+    this.getSolution = function (x, y) {
 
-    this.cheatClue = function(event) {
-        let $this = $(this);
-        let clue = puzzle.clue;
-        console.log(clue);
-        clue = (clue.root || clue);
-        let ranges = [clue.range].concat(clue.continuations.map(c => c.range));
-        console.log(ranges);        
     }
 
-    this.clearClue = function(event) { }
+    this.modifyClueCells = function (action) {
+        let clue = puzzle.clue;
+        clue = (clue.root || clue);
+        let allCells = clue.cells.concat(clue.continuations.map(c => c.cells).flat());
+        console.table(allCells);
+        allCells.forEach(cell => action(cell));
+        puzzle.saveProgressIntoCookie();
+    }
 
-    this.checkGrid = function() { }
+    this.checkClue = function (event) {
+        puzzle.modifyClueCells(cell => cell.check());
+    }
+
+    this.cheatClue = function (event) {
+        puzzle.modifyClueCells(cell => cell.cheat());
+    }
+
+    this.clearClue = function (event) {
+        puzzle.modifyClueCells(cell => cell.clear());
+    }
+
+    this.modifyGridCells = function (action) {
+        puzzle.cells.flat().forEach(action);
+        puzzle.saveProgressIntoCookie();
+    }
+
+    this.checkGrid = function () {
+        puzzle.modifyGridCells(cell => cell.check());
+    }
 
     this.clearGrid = function () {
         let $this = $(this);
         if (/confirm/i.test($this.html())) {
             $this.html("Clear Grid");
             $this.removeClass("confirm");
-            puzzle.cells.flat().forEach(cell => {
-                if (cell.input) cell.input.value = "";
-            });
-            puzzle.saveProgressIntoCookie();
+            puzzle.modifyGridCells(cell => cell.clear());
         } else {
             $this.html("Confirm?");
             $this.addClass("confirm");
@@ -471,9 +506,7 @@ function iPuzzler(ipuz, $container) {
         if (/confirm/i.test($this.html())) {
             $this.html("Cheat All");
             $this.removeClass("confirm");
-            ipuz.solution.forEach((row, y) => row.forEach((col, x) => {
-                if (puzzle.cells[y][x].input) puzzle.cells[y][x].input.value = (col.value ?? col);
-            }));
+            puzzle.modifyGridCells(cell => cell.cheat());
         } else {
             $this.html("Confirm?");
             $this.addClass("confirm");
