@@ -9,7 +9,7 @@ function Clue(ipuzClue, direction) {
     this.root = null;
     this.next = null;
     this.continuations = [];
-    this.ranges = [];
+    this.range = [];
     this.drawHtml = function ($list) {
         var html = '<li><a href="#"><label>' + this.label + '</label>' + this.text;
         if (this.enumeration) html += ' <span class="clue-enumeration">(' + this.enumeration + ')</span>';
@@ -18,13 +18,13 @@ function Clue(ipuzClue, direction) {
         if ($list && $list.append) $list.append(this.$html);
     }
     this.focusFirstInput = function () {
-        var cells = this.ranges?.[0];
+        var cells = this.range;
         var input = cells?.[0]?.input;
         if (input) input.focus();
     }
 
     this.focusFinalInput = function (event) {
-        var cells = this.ranges?.[0];
+        var cells = this.range;
         var input = cells?.[cells.length - 1]?.input;
         if (input) input.focus();
     }
@@ -288,7 +288,7 @@ function iPuzzler(ipuz, $container) {
 
     this.highlightClue = function (clue) {
         clue.continuations.forEach(puzzle.highlightClue);
-        clue.ranges.forEach(range => range.forEach(cell => cell.$span.addClass("current-clue")));
+        clue.range.forEach(cell => cell.$span.addClass("current-clue"));
         clue.$html.addClass("current-clue");
     }
 
@@ -299,9 +299,8 @@ function iPuzzler(ipuz, $container) {
 
     this.findCluesForInput = function (inputElement) {
         let cellContainsInput = cell => cell.input == inputElement;
-        let rangeContainsInput = cells => cells.some(cellContainsInput);
         let allClues = puzzle.clues.across.concat(puzzle.clues.down).filter(c => c);
-        return allClues.filter(clue => clue.ranges.some(rangeContainsInput));
+        return allClues.filter(clue => clue.range.some(cellContainsInput));
     }
 
     this.buildRange = function (x, y, direction, previous) {
@@ -322,11 +321,11 @@ function iPuzzler(ipuz, $container) {
     this.attachRangesToClues = function () {
         for (const clue of puzzle.clues.across.filter(c => c)) {
             var position = puzzle.cluePositions[clue.number];
-            clue.ranges.push(this.buildRange(position.x, position.y, "across"));
+            clue.range = this.buildRange(position.x, position.y, "across");
         }
         for (const clue of puzzle.clues.down.filter(c => c)) {
             var position = puzzle.cluePositions[clue.number];
-            clue.ranges.push(this.buildRange(position.x, position.y, "down"));
+            clue.range = this.buildRange(position.x, position.y, "down");
         }
     }
 
@@ -440,8 +439,8 @@ function iPuzzler(ipuz, $container) {
         let clue = puzzle.clue;
         console.log(clue);
         clue = (clue.root || clue);
-        let ranges = [clue.ranges].concat(clue.continuations.)
-        clue.ranges.forEach(range => range.forEach(cell => console.log(cell)));
+        let ranges = [clue.range].concat(clue.continuations.map(c => c.range));
+        console.log(ranges);        
     }
 
     this.clearClue = function(event) { }
