@@ -100,15 +100,30 @@ div.puzzle-grid span.current-clue {
     background-color: #ccccff;
 }
 
+div.buttons {
+    margin: 0;
+    padding: 0;
+}
 div.buttons a {
-    background-color: #333399;
     color: #fff;
     font-size: 12px;
     border-radius: 4px;
     display: inline-block;
+    width: 6em;
+    text-align: center;
     padding: 4px 8px;
     text-decoration: none;
-    margin: 8px 8px 8px 0;
+    margin: 8px 8px 0px 0;
+}
+div.buttons.clue-buttons a {
+    background-color: #333399;
+}
+
+div.buttons.grid-buttons a {
+    background-color: #666;
+}
+div.buttons a.confirm {
+    background-color: #993333;
 }
 div.clue-list-wrapper {
     padding: 0 8px;
@@ -122,8 +137,8 @@ div.puzzle-info {
     top: 0;
     left: 0;
     right: 0;
-    padding: 12px;    
-    background-color: #ffff00;
+    padding: 4px 8px;    
+    background-color: #ffcc33;
     box-sizing: border-box;
     border-radius: 4px;
     border: 1px solid #000;
@@ -145,7 +160,7 @@ div.puzzle-info-ding {
     width: 10px;
     height: 10px;
     border-radius: 1px;
-    background-color: #00ff00;
+    background-color: #ffcc33;
     transform: rotate(45deg);
 }
 
