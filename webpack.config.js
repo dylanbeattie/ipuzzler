@@ -6,6 +6,7 @@ module.exports = {
     watchOptions: {
         ignored: /node_modules/
     },
+    devtool: 'source-map',
     module: {
         rules: [
             // Compile SCSS files to standalone CSS

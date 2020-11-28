@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>iPuzzler</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        body {
+            background-color: #00f;
+        }
+        @supports (display: grid) {
+            body {
+                background-color: #f00;
+            }
+        }
+        div#grid {
+            display: grid;
+            grid-template: auto auto auto auto auto / auto auto auto auto auto;
+            grid-gap: 5px;
+            width: 200px;
+            height: 200px;
+        }
+        div#grid span {
+            background-color: #fff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="grid">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
+</body>
+
+</html>
