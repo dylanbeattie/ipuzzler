@@ -24,12 +24,39 @@ div.not-supported {
     background-color: #000;
 }
 
+div.ipuzzler {
+    div.puzzle-layout {
+        padding: 4px;
+        display: grid;
+        grid-template: 1fr / auto 1fr 1fr;
+
+        @media only screen and (max-width: 768px) {
+            display: block;
+
+            div.puzzle-grid {
+                width: calc(100vw - 10px);
+                height: calc(100vw - 10px);
+            }
+        }
+
+        @media only screen and (max-width: 320px) {
+            div.puzzle-grid {
+                width: 310px;
+                height: 310px;
+            }
+
+            div.puzzle-grid span span.clue-number {
+                font-size: 6px;
+            }
+        }
+    }
+}
+
 div.puzzle-grid {
-    color: #9999ff;
     display: grid;
     background-color: #000;
-    grid-gap: 1px;
-    border: 1px solid #000;
+    grid-gap: 2px;
+    border: 2px solid #000;
     width: 480px;
     height: 480px;
     grid-template: repeat(15, 1fr) / repeat(15, 1fr);
@@ -38,6 +65,7 @@ div.puzzle-grid {
         background-color: #fff;
         text-align: center;
         position: relative;
+        
         span.clue-number {
             font-size: 8px;
             position: absolute;
@@ -48,9 +76,30 @@ div.puzzle-grid {
             z-index: 0;
             background: transparent;
         }
+        &.null {
+            background-color: #000;
+        }
         &.block {
             background-color: #000;
         }
+        
+        &.barred-t {
+            border-top: 2px solid #000;
+        }
+        
+        &.barred-l {
+            border-left: 2px solid #000;
+        }
+
+        &.barred-tl {
+            border-style: solid;
+            border-color: #000;
+            border-width: 2px 0 0 3px;
+        }
+        &.current-clue {
+            background-color: #ccccff;
+        }
+        
         & > input {
             position: absolute;
             left: 0;
@@ -71,10 +120,10 @@ div.puzzle-grid {
             -webkit-touch-callout: none; /* iOS Safari */
             -webkit-user-select: none; /* Safari */
             user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+            mix-blend-mode: darken;
             &:focus {
                 font-weight: bold;
                 background-color: #9999ff;
-                mix-blend-mode: darken;
                 outline: none;
             }
         }
