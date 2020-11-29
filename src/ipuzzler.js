@@ -31,12 +31,21 @@
                 this.continuations.forEach(clue => clue.highlight(depth + 1));
             }
         }
+
+        this.focusFirstInput = function () {
+            this.cells[0].focus();
+        }
+
+        this.focusFinalInput = function () {
+            this.cells[this.cells.length - 1].focus();
+        }
     }
 
     Clue.parse = function (ipuzClue, direction) {
         var clue = new Clue(ipuzClue, direction);
         if (ipuzClue.continued && ipuzClue.continued.map) {
             clue.continuations = ipuzClue.continued.map(c => ({ ...Clue.parse(c), text: `See ${ipuzClue.number}`, root: clue }));
+            clue.next = clue.continuations[0];
             for (var i = 0; i < clue.continuations.length - 1; i++) clue.continuations[i].next = clue.continuations[i + 1];
         }
         return clue;
@@ -48,7 +57,7 @@
         this.span.className = 'cell';
         this.previous = {};
         this.next = {};
-        this.clues = {};
+        this.clues = [];
         if (ipuzCellData === null) {
             this.span.className += " null";
         } else {
@@ -75,15 +84,20 @@
 
         this.highlight = () => this.span.classList.add('current-clue');
         this.clearHighlight = () => this.span.classList.remove('current-clue');
-
+        this.focus = () => this.input.focus();
     }
 
     function Puzzle(container) {
 
         this.direction = "across";
 
-        this.changeDirection = function () {
-            this.direction = (this.direction == "across" ? "down" : "across");
+        this.changeDirection = function (direction) {
+            console.log("changin direction!");
+            if (direction) {
+                this.direction = direction;
+            } else {
+                this.direction = (this.direction == "across" ? "down" : "across");
+            }
         }
 
         const parseCells = (ipuz) => ipuz.puzzle.map((row, y) => row.map((ipuzCell, x) => new Cell(x, y, ipuzCell)));
@@ -99,7 +113,7 @@
             cluesFromAcross.concat(cluesFromDown).forEach(clue => {
                 clue.position = findCluePosition(clue);
                 clue.cells = listCells(clue.position.x, clue.position.y, clue.direction);
-                clue.cells.forEach(cell => cell.clues[clue.direction] = clue);
+                clue.cells.forEach(cell => cell.clues.push(clue));
                 clues[clue.direction][clue.number] = clue;
             });
             return clues;
@@ -157,7 +171,7 @@
 
         let puzzle = this;
 
-        this.findCluesForInput = function (input) {
+        this.findCluesForInput = function (input, direction) {
             let cell = puzzle.cells.flat().find(cell => cell.input === input);
             return cell.clues;
         }
@@ -166,19 +180,79 @@
             puzzle.cells.flat().forEach(cell => cell.clearHighlight());
         }
 
+        this.moveFocusToNextCell = function (direction = puzzle.direction) {
+            return (function(event) {
+                var cell = event.target.cell;
+                if (cell.next && cell.next[direction]) {
+                    puzzle.changeDirection(direction);
+                    cell.next[direction].focus();
+                } else {                    
+                    var clues = puzzle.findCluesForInput(event.target);
+                    var clue = clues.find(c => c.direction == direction);                    
+                    if (clue && clue.next) {
+                        puzzle.changeDirection(clue.next.direction);
+                        clue.next.focusFirstInput();
+                    }
+                }
+            });
+        }
+
+        this.moveFocusToPreviousCell = function (direction = puzzle.direction) {
+            return (function(event) {
+                var cell = event.target.cell;
+                if (cell.previous && cell.previous[direction]) {
+                    puzzle.changeDirection(direction);
+                    cell.previous[direction].focus();
+                }
+            });
+        }
+
+        this.focusFirstInput = function(event) {
+            let clues = puzzle.findCluesForInput(event.target);
+            let clue = clues.find(clue => clue.direction == puzzle.direction);
+            clue.focusFirstInput();
+        }
+
+        this.focusFinalInput = function(event) {
+            let clues = puzzle.findCluesForInput(event.target);
+            console.log(clues);
+            let clue = clues.find(clue => clue.direction == puzzle.direction);
+            clue.focusFinalInput();
+        }
+
+        this.keyHandlers = {
+            ArrowLeft: this.moveFocusToPreviousCell("across"),
+            ArrowRight: this.moveFocusToNextCell("across"),
+            ArrowUp: this.moveFocusToPreviousCell("down"),
+            ArrowDown: this.moveFocusToNextCell("down"),
+            Home: this.focusFirstInput,
+            End: this.focusFinalInput
+            // Backspace: function () { puzzle.cell.clear(); this.moveFocusToPreviousCell(); },
+            // Delete: function () { puzzle.cell.clear(); },
+            // Escape: function () { puzzle.input.blur(); }
+        }
+
+        this.handleKeyDown = function (event) {
+            var handler = puzzle.keyHandlers[event.key];
+            if (handler) return handler(event);
+        }
+
         this.handleFocus = function (event) {
             window.focusing = true;
             puzzle.clearHighlights();
             let clues = puzzle.findCluesForInput(event.target);
-            if (! clues[puzzle.direction]) puzzle.changeDirection();
-            clues[puzzle.direction].highlight();
+            console.log("handleFocus");
+            console.log(puzzle.direction);
+            let clue = clues.find(clue => clue.direction == puzzle.direction);
+            if (! clue) {
+                puzzle.changeDirection();
+                clue = clues.find(clue => clue.direction == puzzle.direction);
+            }            
+            clue.highlight();
             window.setTimeout(() => window.focusing = false, 200);
         }
 
-        this.handleKeyDown = function (event) {
-            console.log(event);
-            console.log(this);
-        }
+
         this.handleKeyPress = function (event) {
             console.log(event);
             console.log(this);
@@ -186,9 +260,9 @@
         this.handleClick = function (event) {
             if (window.focusing || event.target.tagName != "INPUT") return;
             let clues = puzzle.findCluesForInput(event.target);
-            if (clues.across && clues.down) puzzle.changeDirection();
+            if (clues.length > 1) puzzle.changeDirection();
             puzzle.clearHighlights();
-            clues[puzzle.direction].highlight();
+            clues.find(clue => clue.direction == puzzle.direction).highlight();
         }
 
         this.handleWindowResize = function (event) {
