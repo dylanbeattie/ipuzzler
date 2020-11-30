@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "webpack",
     "watch": "webpack --watch",
     "start": "webpack serve  --config ./webpack.config.js --mode development"
