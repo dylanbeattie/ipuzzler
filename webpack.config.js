@@ -38,5 +38,6 @@ module.exports = {
     // The /dist folder will be used to serve our application to the browser.
     devServer: {
         contentBase: './dist'
-    }
+    },
+    devtool: 'source-map'
 };
