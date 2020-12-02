@@ -6,15 +6,14 @@ export class Clue {
     }
 }
 
-export class Cell {
-    constructor() {
-        
-    }
-}
+export class Cell { }
 
 export class Puzzle {
     constructor() {
         this.clues = {};
         this.cells = [];
+    }
+    setValue(x,y,value) {
+        this.cells[y][x].value = value;
     }
 }

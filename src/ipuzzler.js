@@ -1,75 +1,6 @@
 import { Puzzle, Clue } from './puzzle.js';
 import { Parser } from './parser.js';
-
-// class Cell {
-//     constructor(x, y, value) {
-//         this.x = x;
-//         this.y = y;
-//         this.value = value;
-//         this.style = "";
-//     }
-//     toHtmlElement() {
-//         let span = document.createElement('span');
-//         let input = document.createElement('input');
-//         if (this.hasFocus) input.setAttribute("autofocus", "true");
-//         input.setAttribute("data-x", this.x);
-//         input.setAttribute("data-y", this.y);
-//         span.appendChild(input);
-//         return(span);
-//     }
-//     setValue(value) {
-//         this.value = value;
-//     }
-// }
-
-class Renderer {
-    constructor() {
-        this.cells = [];
-        this.clues = {};
-    }
-
-    update(model) {
-        this.spans.forEach((row, y) => row.forEach((span, x) => {
-            span.input.value = model.cells[y][x].value;
-        }));
-    }
-
-    render(container, model) {
-        let grid = document.createElement('div');
-        this.spans = model.cells.map((row, y) => row.map((cell, x) => {
-            let span = document.createElement('span');
-            let input = document.createElement('input');
-            input.setAttribute("data-x", x);
-            input.setAttribute("data-y", y);
-            span.input = input;
-            span.appendChild(input);
-            grid.appendChild(span);
-            return(span);
-        }));
-        let acrossList = document.createElement('ul');
-        
-        this.clues.across = model.clues.across.map(clue => {
-            let li = document.createElement('li');
-            li.innerHTML = clue.text;
-            acrossList.appendChild(li);
-            return(li);
-        });
-
-        let downList = document.createElement('ul');
-        this.clues.down = model.clues.down.map(clue => {
-            let li = document.createElement('li');
-            li.innerHTML = clue.text;
-            downList.appendChild(li);
-            return(li);
-        });
-
-        container.appendChild(grid);
-        container.appendChild(acrossList);
-        container.appendChild(downList);
-        this.update(model);
-    }
-
-}
+import { Renderer } from './renderer.js';
 
 // class PuzzleModel {
 //     parseCells(data) {
@@ -109,39 +40,45 @@ class Renderer {
 // }
 
 export class IPuzzler extends HTMLElement {
+
     constructor() {
         super();
-        let shadow = this.attachShadow({ mode: 'open' });
-        this.span = document.createElement('span');
-        this.span.innerHTML = "ipuzzler is YAY working.";
-        let link = document.createElement('link');
-        link.setAttribute('rel', 'stylesheet');
-        link.setAttribute('href', 'css/ipuzzler.css');
-        shadow.appendChild(link);
-        shadow.appendChild(this.span);
+        this.shadow = this.attachShadow({ mode: 'open' });
         this.addEventListener("click", this.handleClick);
-        // this.model = Parser.parse("foo");
-        // this.renderer = new Renderer();
-        // this.renderer.render(shadow, this.model);
     }
-    render(target) {
-        this.model.render(this.span, target);
+
+    getJson(url, success, failure) {
+        var request = new XMLHttpRequest();
+        request.open('GET', url, true);
+        request.onload = function () {
+            if (this.status >= 200 && this.status < 400) {
+                if (success) success(this.response);
+            } else {
+                if (failure) failure(this);
+            }
+        };
+        request.onerror = () => console.log(`Error occurring during getJson('${url}')`);
+        request.send();
+    }
+
+    init(json) {
+        const ipuz = JSON.parse(json);
+        this.puzzle = Parser.parse(ipuz);
+        this.renderer = new Renderer(this.shadow);
+        this.renderer.render(this.puzzle);
+    }
+
+    connectedCallback() {
+        let url = this.getAttribute("src");
+        this.getJson(url, json => this.init(json));
     }
 
     handleClick(event) {
-        console.log(event);
-        console.log(this);
-        let path = event.composedPath();
-        let input = path[0];
+        let input = event.composedPath()[0];
         let x = input.getAttribute("data-x");
         let y = input.getAttribute("data-y");
-        console.log(x,y);
-        this.model.setValue(x,y,"COCK");
-        this.renderer.update(this.model);
-    }
- 
-    hello(message) {
-        return `Hello ${message}`;
+        this.puzzle.setValue(x, y, "X");
+        this.renderer.update(this.puzzle);
     }
 }
 
