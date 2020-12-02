@@ -27,7 +27,7 @@ module.exports = {
     },
     resolve: {
         extensions: ['*', '.js'],
-        fallback: { "path": false, "fs": false }
+        // fallback: { "path": false, "fs": false }
     },
     // The bundled source code files shall result in a bundle.js file in the /dist/js folder.
     output: {

@@ -1,23 +1,26 @@
-class Cell {
-    constructor(x, y, value) {
-        this.x = x;
-        this.y = y;
-        this.value = value;
-        this.style = "";
-    }
-    toHtmlElement() {
-        let span = document.createElement('span');
-        let input = document.createElement('input');
-        if (this.hasFocus) input.setAttribute("autofocus", "true");
-        input.setAttribute("data-x", this.x);
-        input.setAttribute("data-y", this.y);
-        span.appendChild(input);
-        return(span);
-    }
-    setValue(value) {
-        this.value = value;
-    }
-}
+import { Puzzle, Clue } from './puzzle.js';
+import { Parser } from './parser.js';
+
+// class Cell {
+//     constructor(x, y, value) {
+//         this.x = x;
+//         this.y = y;
+//         this.value = value;
+//         this.style = "";
+//     }
+//     toHtmlElement() {
+//         let span = document.createElement('span');
+//         let input = document.createElement('input');
+//         if (this.hasFocus) input.setAttribute("autofocus", "true");
+//         input.setAttribute("data-x", this.x);
+//         input.setAttribute("data-y", this.y);
+//         span.appendChild(input);
+//         return(span);
+//     }
+//     setValue(value) {
+//         this.value = value;
+//     }
+// }
 
 class Renderer {
     constructor() {
@@ -47,7 +50,7 @@ class Renderer {
         
         this.clues.across = model.clues.across.map(clue => {
             let li = document.createElement('li');
-            li.innerHTML = clue;
+            li.innerHTML = clue.text;
             acrossList.appendChild(li);
             return(li);
         });
@@ -55,7 +58,7 @@ class Renderer {
         let downList = document.createElement('ul');
         this.clues.down = model.clues.down.map(clue => {
             let li = document.createElement('li');
-            li.innerHTML = clue;
+            li.innerHTML = clue.text;
             downList.appendChild(li);
             return(li);
         });
@@ -68,42 +71,42 @@ class Renderer {
 
 }
 
-class PuzzleModel {
-    parseCells(data) {
-        return data.map((row, y) => row.map((cell, x) => new Cell(x, y, cell)));
-    }
-    constructor() {
-        console.log("constructoring!");
-        this.cells = this.parseCells(
-            [
-                ["A", "B", "C", "D", "E"],
-                ["F", "G", "H", "I", "J"],
-                ["K", "L", "M", "N", "O"],
-                ["P", "Q", "R", "S", "T"],
-                ["U", "V", "W", "X", "Y"]
-            ]
-        );
-        this.clues = {
-            across: [ "Fnord", "Beagle", "Bigger dog", "Horse with legs", "Water in a can" ],
-            down: [ "Apes", "Pigs", "Spacement", "Hugh", "Pugh", "Barney McGrew" ]
-        }
-    }
-    setValue(x,y,value) {
-        console.table(this.cells);
-        this.cells[y][x].setValue(value);
-    }
+// class PuzzleModel {
+//     parseCells(data) {
+//         return data.map((row, y) => row.map((cell, x) => new Cell(x, y, cell)));
+//     }
+//     constructor() {
+//         console.log("constructoring!");
+//         this.cells = this.parseCells(
+//             [
+//                 ["A", "B", "C", "D", "E"],
+//                 ["F", "G", "H", "I", "J"],
+//                 ["K", "L", "M", "N", "O"],
+//                 ["P", "Q", "R", "S", "T"],
+//                 ["U", "V", "W", "X", "Y"]
+//             ]
+//         );
+//         this.clues = {
+//             across: [ "Fnord", "Beagle", "Bigger dog", "Horse with legs", "Water in a can" ],
+//             down: [ "Apes", "Pigs", "Spacement", "Hugh", "Pugh", "Barney McGrew" ]
+//         }
+//     }
+//     setValue(x,y,value) {
+//         console.table(this.cells);
+//         this.cells[y][x].setValue(value);
+//     }
 
-    setFocus(x,y) {
-        console.log(x, y);
-        console.table(this.cells);
-        this.cells.flat().forEach(cell => cell.hasFocus = false);
-        this.cells[y][x].hasFocus = true;
-    }
-    render(element) {
-        element.innerHTML = "";
-        this.cells.forEach(row => row.forEach(cell =>  element.appendChild(cell.toHtmlElement())));
-    }
-}
+//     setFocus(x,y) {
+//         console.log(x, y);
+//         console.table(this.cells);
+//         this.cells.flat().forEach(cell => cell.hasFocus = false);
+//         this.cells[y][x].hasFocus = true;
+//     }
+//     render(element) {
+//         element.innerHTML = "";
+//         this.cells.forEach(row => row.forEach(cell =>  element.appendChild(cell.toHtmlElement())));
+//     }
+// }
 
 export class IPuzzler extends HTMLElement {
     constructor() {
@@ -117,10 +120,9 @@ export class IPuzzler extends HTMLElement {
         shadow.appendChild(link);
         shadow.appendChild(this.span);
         this.addEventListener("click", this.handleClick);
-        this.model = new PuzzleModel();
-        this.renderer = new Renderer();
-        this.renderer.render(shadow, this.model);
-        puzzle = this;
+        // this.model = Parser.parse("foo");
+        // this.renderer = new Renderer();
+        // this.renderer.render(shadow, this.model);
     }
     render(target) {
         this.model.render(this.span, target);
