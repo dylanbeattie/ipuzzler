@@ -17,23 +17,24 @@ import { IPuzzler } from './ipuzzler.js';
 //          }
 //     });
 // });
+function html(tagName, attributes) {
+    const element = document.createElement(tagName);
+    for(const [key,value] of Object.entries(attributes)) element.setAttribute(key,value);
+    return(element);
+}
 
 test('test event handlers', () => {
     let json = fs.readFileSync(`${__dirname}/fixtures/3x3.ipuz`);
     let ipuzzler = new IPuzzler();
     ipuzzler.init(json);
-    let updates = 0;
     let updated = null;
-    ipuzzler.renderer.update = puzzle => {
-        updated = puzzle;
-    }
+    // Override the DOM-based renderer with a really simple mock
+    ipuzzler.renderer.update = puzzle =>  updated = puzzle;
 
-    let input = document.createElement('input');
-    input.setAttribute('data-x', 1);
-    input.setAttribute('data-y', 2);
+    let input = html('input', { 'data-x': 1, 'data-y': 2, 'value' : 'V' });
     let event = { composedPath: () => [ input ] };
 
     ipuzzler.handleClick(event);
     expect(updated).not.toBeNull();
-    expect(updated.cells[2][1].value).toBe("Y");
+    expect(updated.cells[2][1].value).toBe("V");
 });

@@ -77,7 +77,7 @@ export class IPuzzler extends HTMLElement {
         let input = event.composedPath()[0];
         let x = input.getAttribute("data-x");
         let y = input.getAttribute("data-y");
-        this.puzzle.setValue(x, y, "X");
+        this.puzzle.setValue(x, y, input.value);
         this.renderer.update(this.puzzle);
     }
 }
