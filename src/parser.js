@@ -4,10 +4,12 @@ export class Parser {
     static parse(ipuzData) {
         let puzzle = new Puzzle();
         puzzle.clues = {
-            across: ipuzData.clues.Across.map(c => new Clue(c.number, c.clue, c.enumerations)),
-            down: ipuzData.clues.Down.map(c => new Clue(c.number, c.clue, c.enumerations))
+            across: [], 
+            down: []
         };
-        puzzle.cells = ipuzData.puzzle.map((row, y) => row.map((cell, x) => new Cell()));
+        ipuzData.clues.Across.forEach(c => puzzle.clues.across[c.number] = new Clue(c));
+        ipuzData.clues.Down.forEach(c => puzzle.clues.down[c.number] = new Clue(c));
+        puzzle.cells = ipuzData.puzzle.map((row, y) => row.map((cell, x) => new Cell(cell)));
         return(puzzle);
     }
 }
