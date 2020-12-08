@@ -63,7 +63,7 @@ export class Cell {
                 switch(ipuzCellData.style.barred) {
                     case "T": this.style = "barred-top"; break;
                     case "L": this.style = "barred-left"; break;
-                    case "TL": this.style = "barred-top-left"; break;
+                    case "TL": this.style = "barred-top barred-left"; break;
                 }
             } else if (ipuzCellData == "#") {
                 this.style = "block";

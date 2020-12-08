@@ -24,6 +24,10 @@ export class IPuzzler extends HTMLElement {
         request.send();
     }
 
+    load(url) {
+        this.getJson(url, json => this.init(json));
+    }
+
     init(json) {
         const ipuz = JSON.parse(json);
         this.puzzle = Parser.parse(ipuz);
@@ -33,7 +37,13 @@ export class IPuzzler extends HTMLElement {
 
     connectedCallback() {
         let url = this.getAttribute("src");
-        this.getJson(url, json => this.init(json));
+        if (url) this.load(url);
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        switch (name) {
+            case 'url': this.load(newValue); break;
+        }
     }
 
     handleClick(event) {
@@ -43,6 +53,11 @@ export class IPuzzler extends HTMLElement {
         this.puzzle.setValue(x, y, input.value);
         this.renderer.update(this.puzzle);
     }
+
+    static get observedAttributes() {
+        return ['url'];
+    }
+
 }
 
 customElements.define("ipuzzler-puzzle", IPuzzler);

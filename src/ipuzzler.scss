@@ -27,13 +27,6 @@ div.puzzle-grid {
         
         &.barred-left {
             border-left: 3px solid #000;
-            width: 100%;
-        }
-
-        &.barred-top-left {
-            border-style: solid;
-            border-color: #000;
-            border-width: 3px 0 0 3px;
         }
     }
 } 

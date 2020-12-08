@@ -6,11 +6,16 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script type="module" src="js/ipuzzler.js"></script>
 </head>
-<ipuzzler-puzzle src="puzzles/15x15-acid-test.ipuz">
+<ipuzzler-puzzle>
     Sorry - iPuzzle does not work on your browser.
 </ipuzzler-puzzle>
 <hr />
 <a href="/">list puzzles</a>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const path = urlParams.get('ipuz');
+    document.querySelector("ipuzzler-puzzle").setAttribute("url", path);
+</script>
 </body>
 
 </html>

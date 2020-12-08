@@ -15,7 +15,7 @@ describe('parsing 3x3 barred puzzle', () => {
     test('parses barred cells correctly', () => {
         let expected = [
             ["", "", ""],
-            ["", "barred-left", "barred-top-left"],
+            ["", "barred-left", "barred-top barred-left"],
             ["barred-top", "", ""]
         ];
         puzzle.cells.forEach((row, y) => {
