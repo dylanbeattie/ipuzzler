@@ -2,43 +2,6 @@ import { Puzzle, Clue } from './puzzle.js';
 import { Parser } from './parser.js';
 import { Renderer } from './renderer.js';
 
-// class PuzzleModel {
-//     parseCells(data) {
-//         return data.map((row, y) => row.map((cell, x) => new Cell(x, y, cell)));
-//     }
-//     constructor() {
-//         console.log("constructoring!");
-//         this.cells = this.parseCells(
-//             [
-//                 ["A", "B", "C", "D", "E"],
-//                 ["F", "G", "H", "I", "J"],
-//                 ["K", "L", "M", "N", "O"],
-//                 ["P", "Q", "R", "S", "T"],
-//                 ["U", "V", "W", "X", "Y"]
-//             ]
-//         );
-//         this.clues = {
-//             across: [ "Fnord", "Beagle", "Bigger dog", "Horse with legs", "Water in a can" ],
-//             down: [ "Apes", "Pigs", "Spacement", "Hugh", "Pugh", "Barney McGrew" ]
-//         }
-//     }
-//     setValue(x,y,value) {
-//         console.table(this.cells);
-//         this.cells[y][x].setValue(value);
-//     }
-
-//     setFocus(x,y) {
-//         console.log(x, y);
-//         console.table(this.cells);
-//         this.cells.flat().forEach(cell => cell.hasFocus = false);
-//         this.cells[y][x].hasFocus = true;
-//     }
-//     render(element) {
-//         element.innerHTML = "";
-//         this.cells.forEach(row => row.forEach(cell =>  element.appendChild(cell.toHtmlElement())));
-//     }
-// }
-
 export class IPuzzler extends HTMLElement {
 
     constructor() {

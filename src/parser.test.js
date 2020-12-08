@@ -164,6 +164,22 @@ describe('parsing clue continuations', () => {
     });
 });
 
+describe('populating puzzle dimensions', () => {
+    const cases = [
+        ['5x3-cryptic.ipuz', 5, 3],
+        ['3x5-cryptic.ipuz', 3, 5],
+        ['3x3-shape.ipuz', 3, 3],
+        ['5x5-barred.ipuz', 5, 5]
+    ];
+    test.each(cases)("puzzle %p sets width %p and height %p", (ipuzFile, width, height) => {
+        let puzzle = readPuzzle(ipuzFile);
+        expect(puzzle.width).toBe(width);
+        expect(puzzle.height).toBe(height);
+        expect(puzzle.cells.length).toBe(height);
+        puzzle.cells.forEach((strip, row) => expect(strip.length).toBe(width));
+    });
+});
+
 describe('parsing clue/cell relationships', () => {
     let puzzle = readPuzzle('5x5-cell-ranges.ipuz');
 
@@ -191,9 +207,9 @@ describe('parsing clue/cell relationships', () => {
 });
 
 describe('parsing clues with continuations', () => {
-    let ipuz = {"continued":[ {"direction":"Down","number":"3"}, {"direction":"Across","number":"1"} ],"label":"5/3/1A","answer":"token clean attic","enumeration":"5 5 5","number":5,"clue":"Test clue for &quot;token clean attic&quot;"};
+    let ipuz = { "continued": [{ "direction": "Down", "number": "3" }, { "direction": "Across", "number": "1" }], "label": "5/3/1A", "answer": "token clean attic", "enumeration": "5 5 5", "number": 5, "clue": "Test clue for &quot;token clean attic&quot;" };
     let clue = new Clue(ipuz, "across");
-    
+
     test('clue includes continuations', () => {
         expect(clue.continuations.length).toBe(2);
     });

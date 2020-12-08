@@ -49,23 +49,28 @@ export class Cell {
         this.previous = {};
         this.next = {};
         this.clues = [];
-        if (typeof(ipuzCellData.cell) === "number") {
-            this.number = ipuzCellData.cell;
-        } else if (typeof(ipuzCellData) === "number") {
-            this.number = ipuzCellData;
+        if (ipuzCellData === null) {
+            this.style = "blank";
         } else {
-            this.number = NaN;
-        }
-        if (ipuzCellData.style) {
-            switch(ipuzCellData.style.barred) {
-                case "T": this.style = "barred-top"; break;
-                case "L": this.style = "barred-left"; break;
-                case "TL": this.style = "barred-top-left"; break;
+            if (typeof(ipuzCellData.cell) === "number") {
+                this.number = ipuzCellData.cell;
+            } else if (typeof(ipuzCellData) === "number") {
+                this.number = ipuzCellData;
+            } else {
+                this.number = NaN;
             }
-        } else if (ipuzCellData == "#") {
-            this.style = "block";
+            if (ipuzCellData.style) { 
+                switch(ipuzCellData.style.barred) {
+                    case "T": this.style = "barred-top"; break;
+                    case "L": this.style = "barred-left"; break;
+                    case "TL": this.style = "barred-top-left"; break;
+                }
+            } else if (ipuzCellData == "#") {
+                this.style = "block";
+            }
         }
     }
+
     isEndOfRange(direction) {
         if (this.style == "block") return(true);
         if (direction == "across" && this.previous.across && /left/.test(this.style)) return(true);
@@ -79,6 +84,10 @@ export class Puzzle {
         this.cells = cells;
         this.clues = clues;
     }
+
+    get width() { return this.cells[0].length; }
+    get height() { return this.cells.length }
+
     setValue(x,y,value) {
         this.cells[y][x].value = value;
     }
