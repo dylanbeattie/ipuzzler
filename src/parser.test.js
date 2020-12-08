@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { test, expect } = require('@jest/globals');
 import { Parser } from './parser.js';
-import { Cell } from './puzzle.js';
+import { Cell, Clue } from './puzzle.js';
 
 function readPuzzle(filename) {
     let json = fs.readFileSync(`${__dirname}/fixtures/${filename}`);
@@ -147,6 +147,23 @@ describe('cell indicates end of a range', () => {
         });
 });
 
+describe('parsing clue continuations', () => {
+    let puzzle = readPuzzle('5x5-linked-clues.ipuz');
+    test('reads Across clues', () => {
+        expect(puzzle.clues.across.filter(c => c).length).toBe(3);
+        expect(puzzle.clues.across[1].text).toBe("See 5");
+        expect(puzzle.clues.across[4].text).toBe("See 2 down");
+        expect(puzzle.clues.across[5].text).toBe('Test clue for &quot;token clean attic&quot;');
+    });
+
+    test('reads Down clues', () => {
+        expect(puzzle.clues.down.filter(c => c).length).toBe(3);
+        expect(puzzle.clues.down[1].text).toBe("See 2");
+        expect(puzzle.clues.down[2].text).toBe('Test clue for &quot;trick slice asset&quot;');
+        expect(puzzle.clues.down[3].text).toBe('See 5 across');
+    });
+});
+
 describe('parsing clue/cell relationships', () => {
     let puzzle = readPuzzle('5x5-cell-ranges.ipuz');
 
@@ -169,7 +186,20 @@ describe('parsing clue/cell relationships', () => {
     test('1 down', range(1, 'down', 0, 0, 3));
     test('2 down', range(2, 'down', 0, 2, 5));
     test('3 down', range(3, 'down', 0, 3, 4));
-    // test('4 down', range(4, 'down', 1, 1, 4));
-    // test('6 down', range(6, 'down', 4, 2, 3));
+    test('4 down', range(4, 'down', 1, 1, 4));
+    test('6 down', range(6, 'down', 2, 4, 3));
+});
 
+describe('parsing clues with continuations', () => {
+    let ipuz = {"continued":[ {"direction":"Down","number":"3"}, {"direction":"Across","number":"1"} ],"label":"5/3/1A","answer":"token clean attic","enumeration":"5 5 5","number":5,"clue":"Test clue for &quot;token clean attic&quot;"};
+    let clue = new Clue(ipuz, "across");
+    
+    test('clue includes continuations', () => {
+        expect(clue.continuations.length).toBe(2);
+    });
+
+    // test('exposes all clues via toClueList', () => {
+    //     let list = clue.toClueList();
+    //     expect(list.toClueList().length).toBe(3);
+    // });
 });

@@ -5,8 +5,8 @@ export class Parser {
 
         let cells = ipuzData.puzzle.map((ipuzCells, row) => ipuzCells.map((ipuzCell, col) => new Cell(ipuzCell, row, col)));
 
-        let cluesFromAcross = ipuzData.clues.Across.map(c => new Clue(c, "across"));
-        let cluesFromDown = ipuzData.clues.Down.map(c => new Clue(c, "down"));
+        let cluesFromAcross = ipuzData.clues.Across.map(c => new Clue(c, "across").toClueList()).flat();
+        let cluesFromDown = ipuzData.clues.Down.map(c => new Clue(c, "down").toClueList()).flat();
 
         const clues = { across: [], down: [] };
         cluesFromAcross.concat(cluesFromDown).forEach(clue => {
