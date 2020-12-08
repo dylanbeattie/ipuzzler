@@ -90,47 +90,85 @@ describe('cell indicates end of a range', () => {
         expect(cell.isEndOfRange('down')).toBe(true);
     });
 
-    test('when it is a top and left barred cell', () => {
-        let cell = new Cell({ "style" : { "barred" : "TL" }, "cell": 0 });
-        expect(cell.isEndOfRange('across')).toBe(true);
-        expect(cell.isEndOfRange('down')).toBe(true);
-    });
+    let ac = { across: new Cell(0) };
+    let dn = { down: new Cell(0) };
+    let ad = { across: new Cell(0), down: new Cell(0) };
+    const cases = [
+        // cells without a bar style will not be an end of range in a barred puzzle
+        [null, {}, "across", false],
+        [null, ac, "across", false],
+        [null, dn, "across", false],
+        [null, ad, "across", false],
 
-    test('when it is a top barred cell', () => {
-        let cell = new Cell({ "style" : { "barred" : "T" }, "cell": 0 });
-        expect(cell.isEndOfRange('across')).toBe(false);
-        expect(cell.isEndOfRange('down')).toBe(true);
-    });
-    
-    test('when it is a left barred cell', () => {
-        let cell = new Cell({ "style" : { "barred" : "L" }, "cell": 0 });
-        expect(cell.isEndOfRange('across')).toBe(true);
-        expect(cell.isEndOfRange('down')).toBe(false);
-    });
+        [null, {}, "down", false],
+        [null, ac, "down", false],
+        [null, dn, "down", false],
+        [null, ad, "down", false],
+
+        // cells with a top barred style will only be the end 
+        // if the cell has a previous down cell 
+        ["T", {}, "across", false],
+        ["T", ac, "across", false],
+        ["T", dn, "across", false],
+        ["T", ad, "across", false],
+
+        ["T", {}, "down", false],
+        ["T", ac, "down", false],
+        ["T", dn, "down", true],
+        ["T", ad, "down", true],
+
+        ["TL", {}, "across", false],
+        ["TL", ac, "across", true],
+        ["TL", dn, "across", false],
+        ["TL", ad, "across", true],
+
+        ["TL", {}, "down", false],
+        ["TL", ac, "down", false],
+        ["TL", dn, "down", true],
+        ["TL", ad, "down", true],
+
+        ["L", {}, "across", false],
+        ["L", ac, "across", true],
+        ["L", dn, "across", false],
+        ["L", ad, "across", true],
+
+        ["L", {}, "down", false],
+        ["L", ac, "down", false],
+        ["L", dn, "down", false],
+        ["L", ad, "down", false],
+    ];
+
+    test.each(cases)("style %p, previous %p, test direction %p, returns %p",
+        (style, previous, direction, expected) => {
+            let ipuz = previous[0] ? 0 : { "style": { "barred": style }, "cell": 0 };
+            let cell = new Cell(ipuz);
+            cell.previous = previous;
+            expect(cell.isEndOfRange(direction)).toBe(expected);
+        });
 });
 
 describe('parsing clue/cell relationships', () => {
     let puzzle = readPuzzle('5x5-cell-ranges.ipuz');
-    
+
     function range(clueNumber, direction, row, col, length) {
         return () => {
             let clue = puzzle.clues[direction][clueNumber];
             expect(clue.cells.length).toBe(length);
-            for(let i = 0; i < length; i++) {
+            for (let i = 0; i < length; i++) {
                 expect(clue.cells[i].position.row).toBe(row + (direction == 'across' ? 0 : i));
                 expect(clue.cells[i].position.col).toBe(col + (direction == 'down' ? 0 : i));
             }
         }
     }
 
-    // test('1 across', range(1, 'across', 0, 0, 5));
-    // test('5 across', range(5, 'across', 2, 0, 5));
-    // test('7 across', range(7, 'across', 3, 1, 3));
-    // test('8 across', range(8, 'across', 4, 0, 5));
+    test('1 across', range(1, 'across', 0, 0, 5));
+    test('5 across', range(5, 'across', 2, 0, 5));
+    test('7 across', range(7, 'across', 3, 1, 3));
+    test('8 across', range(8, 'across', 4, 0, 5));
 
-    // test('1 down', range(1, 'down', 0, 0, 3));
-    // test('2 down', range(2, 'down', 0, 2, 5));
-    // test('3 down', range(1, 'down', 0, 3, 4));
+    test('1 down', range(1, 'down', 0, 0, 3));
+    test('2 down', range(2, 'down', 0, 2, 5));
+    test('3 down', range(3, 'down', 0, 3, 4));
     // test('4 down', range(4, 'down', 1, 1, 4));
     // test('6 down', range(6, 'down', 4, 2, 3));
 

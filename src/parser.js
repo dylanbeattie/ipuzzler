@@ -26,7 +26,7 @@ export class Parser {
 
     static findCellList(cells, position, direction, previousCell) {
         if (! position.isInside(cells)) return [];
-        var cell = cells[position.row][position.col];
+        var cell = cells[position.row][position.col];        
         cell.previous[direction] = previousCell;
         if (cell.isEndOfRange(direction)) return [];
         if (previousCell) previousCell.next[direction] = cell;

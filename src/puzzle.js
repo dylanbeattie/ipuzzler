@@ -53,8 +53,8 @@ export class Cell {
     }
     isEndOfRange(direction) {
         if (this.style == "block") return(true);
-        if (direction == "across" && /left/.test(this.style)) return(true);
-        if (direction == "down" && /top/.test(this.style)) return(true);
+        if (direction == "across" && this.previous.across && /left/.test(this.style)) return(true);
+        if (direction == "down" && this.previous.down && /top/.test(this.style)) return(true);
         return(false);
     }
  }
