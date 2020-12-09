@@ -22,7 +22,7 @@ describe('rendering puzzle to shadow DOM', () => {
         expect(grids.length).toBe(1);
     });
 
-    test('sets grid style based on puzzle dimensions', () => {
+    test('sets grid template based on puzzle dimensions', () => {
         let gridTemplate = `repeat(${ipuz.dimensions.height}, 1fr) / repeat(${ipuz.dimensions.width}, 1fr)`;
         let grid = root.querySelector("div.puzzle-grid");
         expect(grid.style.gridTemplate).toBe(gridTemplate);
@@ -33,11 +33,22 @@ describe('rendering puzzle to shadow DOM', () => {
         expect(spans.length).toBe(puzzle.cells.flat().length);
     });
 
-    test('includes input for puzzle cells', () => {
+    test('includes styles for puzzle cells', () => {
         let cells = puzzle.cells.flat();
         let spans = root.querySelectorAll("div.puzzle-grid span");
-        cells.forEach((cell, index) => expect(spans[index].className).toContain(cell.style));
+        cells.forEach((cell, index) => {
+            let input = spans[index].querySelectorAll("input");
+            expect(input.length).toBe(cell.hasInput ? 1 : 0);
+        });
     });
+    test('includes clue numbers', () => {
+        let cells = puzzle.cells.flat();
+        let spans = root.querySelectorAll("div.puzzle-grid span");
+        cells.forEach((cell, index) => {
+            let clueNumber = spans[index].querySelectorAll("label");
+            expect(clueNumber.length).toBe(cell.number ? 1 : 0);
+        });
+    })
 })
 
 // test('hello world', () => {

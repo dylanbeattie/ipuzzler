@@ -70,6 +70,9 @@ export class Cell {
             }
         }
     }
+    get hasInput() {
+        return ! /bl(an|oc)k/.test(this.style);
+    }
 
     isEndOfRange(direction) {
         if (this.style == "block") return(true);

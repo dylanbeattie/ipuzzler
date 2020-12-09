@@ -18,6 +18,16 @@ export class Renderer {
     createCellSpan(cell, row, col) {
         let span = this.html('span');
         if (cell.style) span.className = cell.style;
+        if (cell.number) {
+            let label = this.html('label');
+            label.innerHTML = cell.number;
+            span.appendChild(label);
+        }
+        if (cell.hasInput) span.appendChild(this.html('input'));
+        if (cell.number) {
+
+
+        }
         return(span);
     }
 
