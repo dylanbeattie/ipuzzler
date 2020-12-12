@@ -14,6 +14,11 @@ export class Renderer {
         this.spans.forEach((line, row) => line.forEach((span, col) => {
             let cell = puzzle.cells[row][col];
             if (cell == puzzle.focusedCell) span.input.focus();
+            if (cell.isActive) {
+                span.classList.add("highlighted");
+            } else {
+                span.classList.remove("highlighted");
+            }
         }));
     }
 

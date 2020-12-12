@@ -90,6 +90,12 @@ describe('cell indicates end of a range', () => {
         expect(cell.isEndOfRange('down')).toBe(true);
     });
 
+    test('when it is a null cell', () => {
+        let cell = new Cell(null);
+        expect(cell.isEndOfRange('across')).toBe(true);
+        expect(cell.isEndOfRange('down')).toBe(true);
+    });
+
     let ac = { across: new Cell(0) };
     let dn = { down: new Cell(0) };
     let ad = { across: new Cell(0), down: new Cell(0) };

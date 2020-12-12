@@ -19,23 +19,43 @@ import { IPuzzler } from './ipuzzler.js';
 // });
 function html(tagName, attributes) {
     const element = document.createElement(tagName);
-    for(const [key,value] of Object.entries(attributes)) element.setAttribute(key,value);
-    return(element);
+    for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, value);
+    return (element);
 }
 
-test('test event handlers', () => {
+describe('test event handlers', () => {
     let json = fs.readFileSync(`${__dirname}/fixtures/3x3.ipuz`);
     let ipuzzler = new IPuzzler();
     ipuzzler.init(json);
     let updated = null;
     // Override the DOM-based renderer with a really simple mock
-    ipuzzler.renderer.update = puzzle =>  updated = puzzle;
+    ipuzzler.renderer.update = puzzle => updated = puzzle;
 
-    let input = html('input', { 'data-row': 1, 'data-col': 2 });
-    let event = { composedPath: () => [ input ], preventDefault: () => {} };
+    test('mousedown sets cell focus', () => {
 
-    expect(ipuzzler.puzzle.focusedCell).toBeNull();
-    ipuzzler.handleMouseDown(event);
-    expect(updated).not.toBeNull();
-    expect(updated.focusedCell).not.toBeNull();
+        let input = html('input', { 'data-row': 1, 'data-col': 2 });
+        let event = { composedPath: () => [input], preventDefault: () => { } };
+
+        expect(ipuzzler.puzzle.focusedCell).toBeNull();
+        ipuzzler.handleMouseDown(event);
+        expect(updated).not.toBeNull();
+        expect(updated.focusedCell).not.toBeNull();
+    });
+
+    test('mousedown highlights row', () => {
+
+        let input = html('input', { 'data-row': 0, 'data-col': 0 });
+        let event = { composedPath: () => [input], preventDefault: () => { } };
+
+        ipuzzler.handleMouseDown(event);
+        let cells = ipuzzler.puzzle.cells;
+        let expected = [
+            [true, true, true],
+            [false, undefined, false],
+            [false, false, false]
+        ]
+        expected.forEach((line, row) => line.forEach((bool, col) => {
+            expect(cells[row][col].isActive).toBe(bool);
+        }));
+    });
 });

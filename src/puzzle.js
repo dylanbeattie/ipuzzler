@@ -18,6 +18,10 @@ export class Clue {
         }
     }
 
+    addHighlight() {
+        this.cells.forEach(cell => cell.addHighlight());
+    }
+
     toClueList() {
         return [this].concat(this.continuations);
     }
@@ -48,7 +52,7 @@ export class Cell {
         this.position = new Position(row, col);
         this.previous = {};
         this.next = {};
-        this.clues = [];
+        this.clues = {};
         if (ipuzCellData === null) {
             this.style = "blank";
         } else {
@@ -74,8 +78,16 @@ export class Cell {
         return ! /bl(an|oc)k/.test(this.style);
     }
 
+    addHighlight() {
+        this.isActive = true;
+    }
+
+    clearHighlight() {
+        this.isActive = false;
+    }
+
     isEndOfRange(direction) {
-        if (this.style == "block") return(true);
+        if (! this.hasInput) return(true);
         if (direction == "across" && this.previous.across && /left/.test(this.style)) return(true);
         if (direction == "down" && this.previous.down && /top/.test(this.style)) return(true);
         return(false);
@@ -87,12 +99,21 @@ export class Puzzle {
         this.cells = cells;
         this.clues = clues;
         this.focusedCell = null;
+        this.direction = 'across';
+    }
+    switchDirection() {
+        if (this.direction == 'across') return(this.direction = 'down');
+        return(this.direction = 'across');
     }
 
     get width() { return this.cells[0].length; }
     get height() { return this.cells.length }
 
     setFocus(row,col) {
-        this.focusedCell = this.cells[row][col];
+        let cell = this.cells[row][col]
+        this.focusedCell = cell;
+        this.focusedClue = (cell.clues[this.direction] || cell.clues[this.switchDirection()]);
+        this.cells.flat().forEach(cell => cell.clearHighlight());
+        this.focusedClue.addHighlight();
     }
 }

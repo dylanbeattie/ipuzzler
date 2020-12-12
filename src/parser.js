@@ -13,7 +13,7 @@ export class Parser {
             let cell = Parser.findCellForClue(cells, clue);
             clue.position = cell.position;
             clue.cells = Parser.findCellList(cells, clue.position, clue.direction);
-            clue.cells.forEach(cell => cell.clues.push(clue));
+            clue.cells.forEach(cell => cell.clues[clue.direction] = clue);
             clues[clue.direction][clue.number] = clue;
         });
 

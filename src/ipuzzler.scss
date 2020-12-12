@@ -39,6 +39,9 @@ div.puzzle-grid {
         &.barred-left {
             border-left: 3px solid #000;
         }
+        &.highlighted {
+            background-color: #f0f;
+        }
 
         input {
             position: absolute;
