@@ -11,10 +11,12 @@ export class Renderer {
     }
 
     update(puzzle) {
-        this.spans.forEach((row, y) => row.forEach((span, x) => {
-            span.input.value = puzzle.cells[y][x].value;
+        this.spans.forEach((line, row) => line.forEach((span, col) => {
+            let cell = puzzle.cells[row][col];
+            if (cell == puzzle.focusedCell) span.input.focus();
         }));
     }
+
     createCellSpan(cell, row, col) {
         let span = this.html('span');
         if (cell.style) span.className = cell.style;
@@ -23,10 +25,10 @@ export class Renderer {
             label.innerHTML = cell.number;
             span.appendChild(label);
         }
-        if (cell.hasInput) span.appendChild(this.html('input'));
-        if (cell.number) {
-
-
+        if (cell.hasInput) {
+            let input = this.html('input', { "data-row": row, "data-col": col });
+            span.appendChild(input);
+            span.input = input;
         }
         return(span);
     }
@@ -38,7 +40,7 @@ export class Renderer {
         let grid = this.html('div', { 'class' : 'puzzle-grid' });
         grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;
         this.container.appendChild(grid);
-        let spans = puzzle.cells.map((cells, row) => cells.map((cell, col) => {
+        this.spans = puzzle.cells.map((cells, row) => cells.map((cell, col) => {
             let span = this.createCellSpan(cell, row, col);
             grid.appendChild(span);
             return span;

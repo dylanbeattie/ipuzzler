@@ -9,7 +9,9 @@ describe('rendering puzzle to shadow DOM', () => {
     var puzzle = Parser.parse(ipuz);
     var renderer = new Renderer(root);
     renderer.render(puzzle);
-    
+
+    test('initialises spans array', () => expect(renderer.spans.length).toBe(3));
+
     test('includes stylesheet link', () => {
         let style = root.querySelector("link");
         expect(style.getAttribute("type")).toBe("text/css");
@@ -33,7 +35,7 @@ describe('rendering puzzle to shadow DOM', () => {
         expect(spans.length).toBe(puzzle.cells.flat().length);
     });
 
-    test('includes styles for puzzle cells', () => {
+    test('includes inputs for puzzle cells', () => {
         let cells = puzzle.cells.flat();
         let spans = root.querySelectorAll("div.puzzle-grid span");
         cells.forEach((cell, index) => {
@@ -41,6 +43,18 @@ describe('rendering puzzle to shadow DOM', () => {
             expect(input.length).toBe(cell.hasInput ? 1 : 0);
         });
     });
+
+    test('includes data-row and data-col attributes on puzzle cell inputs', () => {
+        puzzle.cells.forEach((cells, row) => cells.forEach((cell, col) => {
+            let span = root.querySelectorAll("div.puzzle-grid span")[(row * puzzle.cells[0].length) + col];
+            let input = span.querySelector("input");
+            if (input) {
+                expect(parseInt(input.getAttribute("data-row"))).toBe(row);
+                expect(parseInt(input.getAttribute("data-col"))).toBe(col);
+            }
+        }));
+    });
+
     test('includes clue numbers', () => {
         let cells = puzzle.cells.flat();
         let spans = root.querySelectorAll("div.puzzle-grid span");
@@ -48,7 +62,8 @@ describe('rendering puzzle to shadow DOM', () => {
             let clueNumber = spans[index].querySelectorAll("label");
             expect(clueNumber.length).toBe(cell.number ? 1 : 0);
         });
-    })
+    });
+
 })
 
 // test('hello world', () => {

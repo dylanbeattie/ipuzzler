@@ -7,7 +7,7 @@ export class IPuzzler extends HTMLElement {
     constructor() {
         super();
         this.shadow = this.attachShadow({ mode: 'open' });
-        this.addEventListener("click", this.handleClick);
+        this.addEventListener("mousedown", this.handleMouseDown);
     }
 
     getJson(url, success, failure) {
@@ -46,12 +46,18 @@ export class IPuzzler extends HTMLElement {
         }
     }
 
-    handleClick(event) {
-        let input = event.composedPath()[0];
-        let x = input.getAttribute("data-x");
-        let y = input.getAttribute("data-y");
-        this.puzzle.setValue(x, y, input.value);
+    handleMouseDown(event) {
+        event.preventDefault();
+        let target = event.composedPath()[0];
+        switch (target.tagName) {
+            case 'INPUT':
+                let row = target.getAttribute("data-row");
+                let col = target.getAttribute("data-col");
+                this.puzzle.setFocus(row, col);
+                break;
+        }
         this.renderer.update(this.puzzle);
+        return (false);
     }
 
     static get observedAttributes() {

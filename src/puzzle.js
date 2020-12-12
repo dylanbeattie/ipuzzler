@@ -86,13 +86,13 @@ export class Puzzle {
     constructor(cells, clues) {
         this.cells = cells;
         this.clues = clues;
+        this.focusedCell = null;
     }
 
     get width() { return this.cells[0].length; }
     get height() { return this.cells.length }
 
-    setValue(x,y,value) {
-        this.cells[y][x].value = value;
+    setFocus(row,col) {
+        this.focusedCell = this.cells[row][col];
     }
-
 }

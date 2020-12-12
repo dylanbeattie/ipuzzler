@@ -31,10 +31,11 @@ test('test event handlers', () => {
     // Override the DOM-based renderer with a really simple mock
     ipuzzler.renderer.update = puzzle =>  updated = puzzle;
 
-    let input = html('input', { 'data-x': 1, 'data-y': 2, 'value' : 'V' });
-    let event = { composedPath: () => [ input ] };
+    let input = html('input', { 'data-row': 1, 'data-col': 2 });
+    let event = { composedPath: () => [ input ], preventDefault: () => {} };
 
-    ipuzzler.handleClick(event);
+    expect(ipuzzler.puzzle.focusedCell).toBeNull();
+    ipuzzler.handleMouseDown(event);
     expect(updated).not.toBeNull();
-    expect(updated.cells[2][1].value).toBe("V");
+    expect(updated.focusedCell).not.toBeNull();
 });
