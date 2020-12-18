@@ -7,7 +7,7 @@ export class IPuzzler extends HTMLElement {
     constructor() {
         super();
         this.shadow = this.attachShadow({ mode: 'open' });
-        this.addEventListener("mousedown", this.handleMouseDown);
+        this.addEventListener("mousedown", this.mousedown);
     }
 
     getJson(url, success, failure) {
@@ -46,7 +46,7 @@ export class IPuzzler extends HTMLElement {
         }
     }
 
-    handleMouseDown(event) {
+    mousedown(event) {
         console.log(event);
         event.preventDefault();
         let target = event.composedPath()[0];

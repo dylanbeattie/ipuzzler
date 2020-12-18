@@ -37,7 +37,7 @@ describe('test event handlers', () => {
         let event = { composedPath: () => [input], preventDefault: () => { } };
 
         expect(ipuzzler.puzzle.focusedCell).toBeNull();
-        ipuzzler.handleMouseDown(event);
+        ipuzzler.mousedown(event);
         expect(updated).not.toBeNull();
         expect(updated.focusedCell).not.toBeNull();
     });
@@ -48,7 +48,7 @@ describe('test event handlers', () => {
         let input = html('input', { 'data-row': 0, 'data-col': 1 });
         let event = { composedPath: () => [input], preventDefault: () => { } };
 
-        ipuzzler.handleMouseDown(event);
+        ipuzzler.mousedown(event);
         let cells = ipuzzler.puzzle.cells;
         let expected = [
             [true, true, true],
