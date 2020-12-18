@@ -44,18 +44,17 @@ describe('test event handlers', () => {
 
     test('mousedown highlights row', () => {
 
-        let input = html('input', { 'data-row': 0, 'data-col': 0 });
+        // We pick a cell that only associates with an Across clue
+        let input = html('input', { 'data-row': 0, 'data-col': 1 });
         let event = { composedPath: () => [input], preventDefault: () => { } };
 
         ipuzzler.handleMouseDown(event);
         let cells = ipuzzler.puzzle.cells;
         let expected = [
             [true, true, true],
-            [false, undefined, false],
+            [false, false, false],
             [false, false, false]
         ]
-        expected.forEach((line, row) => line.forEach((bool, col) => {
-            expect(cells[row][col].isActive).toBe(bool);
-        }));
+        expected.forEach((line, row) => line.forEach((bool, col) => expect(cells[row][col].isActive).toBe(bool)));
     });
 });

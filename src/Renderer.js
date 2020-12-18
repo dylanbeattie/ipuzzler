@@ -83,4 +83,4 @@ export class Renderer {
         // this.update(puzzle);
     }
 
-}
+} 
