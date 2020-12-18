@@ -47,6 +47,7 @@ export class IPuzzler extends HTMLElement {
     }
 
     handleMouseDown(event) {
+        console.log(event);
         event.preventDefault();
         let target = event.composedPath()[0];
         switch (target.tagName) {

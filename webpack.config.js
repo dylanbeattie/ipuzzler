@@ -1,3 +1,5 @@
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
 module.exports = {
     // Use the src/index.js file as entry point to bundle it. 
     // If the src/index.js file imports other JavaScript files, bundle them as well.
@@ -39,5 +41,12 @@ module.exports = {
     devServer: {
         contentBase: './dist'
     },
-    devtool: 'source-map'
+    devtool: 'source-map',
+    plugins: [
+        new CopyWebpackPlugin({
+            patterns: [
+                { from: 'src/fixtures/*.ipuz', to: 'puzzles' }
+            ]
+        })
+    ]
 };

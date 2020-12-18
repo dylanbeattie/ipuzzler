@@ -26,5 +26,8 @@
     "webpack-cli": "^4.2.0",
     "webpack-dev-server": "^3.11.0"
   },
-  "browserslist": "defaults"
+  "browserslist": "defaults",
+  "dependencies": {
+    "copy-webpack-plugin": "^7.0.0"
+  }
 }
