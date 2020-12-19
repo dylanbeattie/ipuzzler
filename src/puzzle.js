@@ -1,6 +1,7 @@
 export class Puzzle {
     constructor(cells, clues) {
         this.cells = cells;
+        this.cells.forEach(cell => cell.puzzle = this);
         this.clues = clues;
         this.focusedCell = null;
         this.direction = 'across';
@@ -23,5 +24,33 @@ export class Puzzle {
         this.focusedClue = cell.clues[this.direction];
         this.cells.flat().forEach(cell => cell.clearHighlight());
         this.focusedClue.addHighlight();
+    }
+
+    setFocusToCell(cell) {
+        if (cell && cell.hasInput) {
+            this.focusedCell = cell;
+            this.focusedClue = (cell.clues[this.direction] || cell.clues[this.switchDirection()]);
+            this.cells.flat().forEach(cell => cell.clearHighlight());
+            this.focusedClue.addHighlight();
+        }
+    }
+
+    getCell(row, col) {
+        if (row < 0 || row >= this.cells.length) return null;
+        if (col < 0 || col >= this.cells[row].length) return null;
+        return (this.cells[row][col]);
+    }
+
+    moveFocus(direction) {
+        let nextCell;
+        let pos = this.focusedCell?.position;
+        if (!pos) return;
+        switch (direction) {
+            case "up": nextCell = this.getCell(pos.row - 1, pos.col);break;
+            case "down": nextCell = this.getCell(pos.row + 1, pos.col);break;
+            case "left": nextCell = this.getCell(pos.row, pos.col - 1);break;
+            case "right": nextCell = this.getCell(pos.row, pos.col + 1);break;
+        }
+        this.setFocusToCell(nextCell);
     }
 }
