@@ -7,12 +7,13 @@ export class Clue {
         this.cells = [];
         this.continuations = [];
         if (ipuzClueData.continued && ipuzClueData.continued.map) {
-            this.continuations = ipuzClueData.continued.map(c => { 
+            this.continuations = ipuzClueData.continued.map(c => {
                 let continuation = new Clue(c, c.direction.toLowerCase());
-                continuation.text = `See ${ipuzClueData.number}`;                
+                continuation.text = `See ${ipuzClueData.number}`;
                 if (continuation.direction != this.direction) continuation.text += " " + this.direction;
-                continuation.root = this; 
-            return continuation });
+                continuation.root = this;
+                return continuation
+            });
             this.next = this.continuations[0];
             for (var i = 0; i < this.continuations.length - 1; i++) this.continuations[i].next = this.continuations[i + 1];
         }
@@ -34,12 +35,12 @@ export class Position {
     }
 
     isInside(grid) {
-        if (this.row < 0 || this.row >= grid.length) return(false);
-        if (this.col < 0 || this.col >= grid[this.row].length) return(false);
-        return(true);
+        if (this.row < 0 || this.row >= grid.length) return (false);
+        if (this.col < 0 || this.col >= grid[this.row].length) return (false);
+        return (true);
     }
     increment(direction) {
-        switch(direction) { 
+        switch (direction) {
             case 'down': return new Position(this.row + 1, this.col);
             case 'across': return new Position(this.row, this.col + 1);
         }
@@ -56,15 +57,15 @@ export class Cell {
         if (ipuzCellData === null) {
             this.style = "blank";
         } else {
-            if (typeof(ipuzCellData.cell) === "number") {
+            if (typeof (ipuzCellData.cell) === "number") {
                 this.number = ipuzCellData.cell;
-            } else if (typeof(ipuzCellData) === "number") {
+            } else if (typeof (ipuzCellData) === "number") {
                 this.number = ipuzCellData;
             } else {
                 this.number = NaN;
             }
-            if (ipuzCellData.style) { 
-                switch(ipuzCellData.style.barred) {
+            if (ipuzCellData.style) {
+                switch (ipuzCellData.style.barred) {
                     case "T": this.style = "barred-top"; break;
                     case "L": this.style = "barred-left"; break;
                     case "TL": this.style = "barred-top barred-left"; break;
@@ -87,33 +88,59 @@ export class Cell {
     }
 
     isEndOfRange(direction) {
-        if (! this.hasInput) return(true);
-        if (direction == "across" && this.previous.across && /left/.test(this.style)) return(true);
-        if (direction == "down" && this.previous.down && /top/.test(this.style)) return(true);
-        return(false);
+        if (!this.hasInput) return (true);
+        if (direction == "across" && this.previous.across && /left/.test(this.style)) return (true);
+        if (direction == "down" && this.previous.down && /top/.test(this.style)) return (true);
+        return (false);
     }
- }
+}
 
 export class Puzzle {
     constructor(cells, clues) {
         this.cells = cells;
+        this.cells.forEach(cell => cell.puzzle = this);
         this.clues = clues;
         this.focusedCell = null;
         this.direction = 'across';
     }
     switchDirection() {
-        if (this.direction == 'across') return(this.direction = 'down');
-        return(this.direction = 'across');
+        if (this.direction == 'across') return (this.direction = 'down');
+        return (this.direction = 'across');
     }
 
     get width() { return this.cells[0].length; }
     get height() { return this.cells.length }
 
-    setFocus(row,col) {
-        let cell = this.cells[row][col]
-        this.focusedCell = cell;
-        this.focusedClue = (cell.clues[this.direction] || cell.clues[this.switchDirection()]);
-        this.cells.flat().forEach(cell => cell.clearHighlight());
-        this.focusedClue.addHighlight();
+    setFocus(row, col) {
+        let cell = this.getCell(row, col);
+        this.setFocusToCell(cell);
+    }
+
+    setFocusToCell(cell) {
+        if (cell && cell.hasInput) {
+            this.focusedCell = cell;
+            this.focusedClue = (cell.clues[this.direction] || cell.clues[this.switchDirection()]);
+            this.cells.flat().forEach(cell => cell.clearHighlight());
+            this.focusedClue.addHighlight();
+        }
+    }
+
+    getCell(row, col) {
+        if (row < 0 || row >= this.cells.length) return null;
+        if (col < 0 || col >= this.cells[row].length) return null;
+        return (this.cells[row][col]);
+    }
+
+    moveFocus(direction) {
+        let nextCell;
+        let pos = this.focusedCell?.position;
+        if (!pos) return;
+        switch (direction) {
+            case "up": nextCell = this.getCell(pos.row - 1, pos.col);break;
+            case "down": nextCell = this.getCell(pos.row + 1, pos.col);break;
+            case "left": nextCell = this.getCell(pos.row, pos.col - 1);break;
+            case "right": nextCell = this.getCell(pos.row, pos.col + 1);break;
+        }
+        this.setFocusToCell(nextCell);
     }
 }

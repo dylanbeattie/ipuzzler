@@ -57,4 +57,32 @@ describe('test event handlers', () => {
         ]
         expected.forEach((line, row) => line.forEach((bool, col) => expect(cells[row][col].isActive).toBe(bool)));
     });
+    describe('arrow keys move focus', () => {
+        const cases = [
+            [0, 0, "ArrowUp", 0, 0], [0, 1, "ArrowUp", 0, 1], [0, 2, "ArrowUp", 0, 2],            
+            [1, 0, "ArrowUp", 0, 0], /****** ArrowUp ******/  [1, 2, "ArrowUp", 0, 2],            
+            [2, 0, "ArrowUp", 1, 0], [2, 1, "ArrowUp", 2, 1], [2, 2, "ArrowUp", 1, 2],
+
+            [0, 0, "ArrowLeft", 0, 0], [0, 1, "ArrowLeft", 0, 0], [0, 2, "ArrowLeft", 0, 1],
+            [1, 0, "ArrowLeft", 1, 0], /****** ArrowLeft ******/  [1, 2, "ArrowLeft", 1, 2],
+            [2, 0, "ArrowLeft", 2, 0], [2, 1, "ArrowLeft", 2, 0], [2, 2, "ArrowLeft", 2, 1], 
+
+            [0, 0, "ArrowDown", 1, 0], [0, 1, "ArrowDown", 0, 1], [0, 2, "ArrowDown", 1, 2],
+            [1, 0, "ArrowDown", 2, 0], /****** ArrowDown ******/  [1, 2, "ArrowDown", 2, 2],
+            [2, 0, "ArrowDown", 2, 0], [2, 1, "ArrowDown", 2, 1], [2, 2, "ArrowDown", 2, 2],
+
+            [0, 0, "ArrowRight", 0, 1], [0, 1, "ArrowRight", 0, 2], [0, 2, "ArrowRight", 0, 2],
+            [1, 0, "ArrowRight", 1, 0], /****** ArrowRight ******/  [1, 2, "ArrowRight", 1, 2],
+            [2, 0, "ArrowRight", 2, 1], [2, 1, "ArrowRight", 2, 2], [2, 2, "ArrowRight", 2, 2], 
+        ];
+    
+        test.each(cases)("%p in (%p,%p) focuses (%p,%p)", (oldRow, oldCol, code, newRow, newCol) => {
+            let input = html('input', { "data-row": oldRow, "data-col": oldCol });
+            let event = { composedPath: () => [input], preventDefault: () => { }, code: code };
+            ipuzzler.puzzle.setFocus(oldRow, oldCol);
+            ipuzzler.keydown(event);
+            expect(updated.focusedCell.position.row).toBe(newRow);
+            expect(updated.focusedCell.position.col).toBe(newCol);
+        });
+    });
 });
