@@ -10,27 +10,12 @@ export class IPuzzler extends HTMLElement {
         this.addEventListener("mousedown", this.mousedown);
     }
 
-    getJson(url, success, failure) {
-        var request = new XMLHttpRequest();
-        request.open('GET', url, true);
-        request.onload = function () {
-            if (this.status >= 200 && this.status < 400) {
-                if (success) success(this.response);
-            } else {
-                if (failure) failure(this);
-            }
-        };
-        request.onerror = () => console.log(`Error occurring during getJson('${url}')`);
-        request.send();
-    }
-
     load(url) {
-        this.getJson(url, json => this.init(json));
+        fetch(url).then(response => response.json()).then(json => this.init(json));
     }
 
     init(json) {
-        const ipuz = JSON.parse(json);
-        this.puzzle = Parser.parse(ipuz);
+        this.puzzle = Parser.parse(json);
         this.renderer = new Renderer(this.shadow);
         this.renderer.render(this.puzzle);
     }
