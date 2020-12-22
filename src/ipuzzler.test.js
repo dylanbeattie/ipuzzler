@@ -24,7 +24,7 @@ function html(tagName, attributes) {
 }
 
 describe('test event handlers', () => {
-    let json = fs.readFileSync(`${__dirname}/fixtures/3x3.ipuz`);
+    let json = JSON.parse(fs.readFileSync(`${__dirname}/fixtures/3x3.ipuz`));
     let ipuzzler = new IPuzzler();
     ipuzzler.init(json);
     let updated = null;

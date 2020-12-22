@@ -1,6 +1,8 @@
+import {Position} from "./position";
+
 const fs = require('fs');
 const { test, expect } = require('@jest/globals');
-import { Cell, Position } from './puzzle.js';
+import {Cell} from "./cell";
 
 describe('incrementing position', () => {
     let position = new Position(0, 0);

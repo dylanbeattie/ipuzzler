@@ -1,4 +1,6 @@
-import { Puzzle, Cell, Clue } from './puzzle.js';
+import { Puzzle} from './puzzle.js';
+import {Clue} from "./clue";
+import {Cell} from "./cell";
 
 export class Parser {
     static parse(ipuzData) {
