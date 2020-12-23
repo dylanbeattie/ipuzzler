@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { test, expect } = require('@jest/globals');
-import { IPuzzler } from './ipuzzler.js';
+import { IPuzzler } from '../ipuzzler.js';
 
 // test('hello world', () => {
 //     let instance = new IPuzzler();

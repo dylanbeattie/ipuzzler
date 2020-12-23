@@ -35,6 +35,10 @@ export class Cell {
         }
     }
 
+    get isBirectional() {
+        return this.clues["across"] && this.clues["down"];
+    }
+
     get hasInput() {
         return !/bl(an|oc)k/.test(this.style);
     }

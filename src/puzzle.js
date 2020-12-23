@@ -6,8 +6,7 @@ export class Puzzle {
         this.direction = 'across';
     }
     switchDirection() {
-        if (this.direction == 'across') return(this.direction = 'down');
-        return(this.direction = 'across');
+        return (this.direction == 'across' ? this.direction = 'down' : this.direction = 'across');
     }
 
     get width() { return this.cells[0].length; }
@@ -15,8 +14,13 @@ export class Puzzle {
 
     setFocus(row,col) {
         let cell = this.cells[row][col]
-        this.focusedCell = cell;
-        this.focusedClue = (cell.clues[this.direction] || cell.clues[this.switchDirection()]);
+        if (this.focusedCell == cell) {
+            if (cell.isBirectional) this.switchDirection();
+        } else {
+            this.focusedCell = cell;
+            if (! cell.clues[this.direction]) this.switchDirection();
+        }
+        this.focusedClue = cell.clues[this.direction];
         this.cells.flat().forEach(cell => cell.clearHighlight());
         this.focusedClue.addHighlight();
     }

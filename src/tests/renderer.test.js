@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { test, expect } = require('@jest/globals');
-import { Parser } from './parser.js';
-import { Renderer } from './renderer.js';
+import { Parser } from '../parser.js';
+import { Renderer } from '../renderer.js';
 
 describe('rendering puzzle to shadow DOM', () => {
     let ipuz = JSON.parse(fs.readFileSync(`${__dirname}/fixtures/3x3.ipuz`));

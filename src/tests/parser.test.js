@@ -1,12 +1,12 @@
-import {Clue} from "./clue";
+import {Clue} from "../clue";
 
 const fs = require('fs');
 const { test, expect } = require('@jest/globals');
-import { Parser } from './parser.js';
-import {Cell} from "./cell";
+import { Parser } from '../parser.js';
+import {Cell} from "../cell";
 
 function readPuzzle(filename) {
-    let json = fs.readFileSync(`${__dirname}/fixtures/${filename}`);
+    let json = fs.readFileSync(`${__dirname}/fixtures/${filename}`, "utf8");
     let ipuz = JSON.parse(json);
     let puzzle = Parser.parse(ipuz);
     return (puzzle);
