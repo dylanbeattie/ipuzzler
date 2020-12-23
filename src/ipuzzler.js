@@ -8,7 +8,7 @@ export class IPuzzler extends HTMLElement {
     constructor() {
         super();
         this.shadow = this.attachShadow({ mode: 'open' });
-        this.addEventListener("mousedown", this.mousedown);
+        ["mousedown", "keydown"].forEach(event => this.addEventListener(event, this[event]));
     }
 
     load(url) {
@@ -32,8 +32,20 @@ export class IPuzzler extends HTMLElement {
         }
     }
 
+    keydown(event) {
+        event.preventDefault();
+        let target = event.composedPath()[0];
+        let code = event.code;
+        switch(code) {
+            case "ArrowUp": this.puzzle.moveFocus("up"); break;
+            case "ArrowDown": this.puzzle.moveFocus("down"); break;
+            case "ArrowLeft": this.puzzle.moveFocus("left"); break;
+            case "ArrowRight": this.puzzle.moveFocus("right"); break;
+        }       
+        this.renderer.update(this.puzzle);
+    }
+
     mousedown(event) {
-        console.log(event);
         event.preventDefault();
         let target = event.composedPath()[0];
         switch (target.tagName) {
