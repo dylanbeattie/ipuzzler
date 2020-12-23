@@ -64,7 +64,11 @@ describe('rendering puzzle to shadow DOM', () => {
         });
     });
 
-})
+    test('renders clue lists', () => {
+        let lists = root.querySelectorAll("div.puzzle-clue-list");
+        expect(lists.length).toBe(2);
+    });
+});
 
 // test('hello world', () => {
 //     let instance = new IPuzzler();
