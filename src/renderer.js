@@ -6,7 +6,7 @@ export class Renderer {
     }
     html(tagName, attributes) {
         const element = document.createElement(tagName);
-        for(const [key, value] of Object.entries(attributes || {})) element.setAttribute(key, value);
+        for (const [key, value] of Object.entries(attributes || {})) element.setAttribute(key, value);
         return element;
     }
 
@@ -35,20 +35,39 @@ export class Renderer {
             span.appendChild(input);
             span.input = input;
         }
-        return(span);
+        return (span);
     }
-    createClueListDiv(clues, title) {
-        let div = this.html('div', { 'class' : 'puzzle-clue-list'});
-        return div;
+    createClueList(clues, id, title) {
+        let section = this.html('section', { 'class': 'puzzle-clue-list', 'id': id });
+        let heading = this.html('h2');
+        heading.innerHTML = title;
+        section.appendChild(heading);
+
+        let list = this.html('ol');
+        clues.forEach(clue => {
+            let item = this.html('li');
+            item.innerText = clue.text;
+            let label = this.html('label');
+            label.innerText = clue.number;
+            item.insertBefore(label, item.firstChild);
+            if (clue.enumeration) {
+                let span = this.html('span');
+                span.innerText = `(${clue.enumeration.trim().replace(/ /g, ",")})`;
+                item.appendChild(span);
+            }
+            list.appendChild(item);
+        });
+        section.appendChild(list);
+        return section;
     }
 
     render(puzzle) {
-        
-        const css = this.html('link', { 'type': 'text/css', 'href': 'css/ipuzzler.css', 'rel': 'stylesheet'});
+
+        const css = this.html('link', { 'type': 'text/css', 'href': 'css/ipuzzler.css', 'rel': 'stylesheet' });
         this.container.appendChild(css);
 
-        const grid = this.html('div', { 'class' : 'puzzle-grid' });
-        grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;        
+        const grid = this.html('div', { 'class': 'puzzle-grid' });
+        grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;
         this.spans = puzzle.cells.map((cells, row) => cells.map((cell, col) => {
             let span = this.createCellSpan(cell, row, col);
             grid.appendChild(span);
@@ -56,10 +75,10 @@ export class Renderer {
         }));
         this.container.appendChild(grid);
 
-        const acrossClueList = this.createClueListDiv(puzzle.clues.across);
+        const acrossClueList = this.createClueList(puzzle.clues.across, 'across-clue-list', "Across");
         this.container.appendChild(acrossClueList);
-        
-        const downClueList = this.createClueListDiv(puzzle.clues.down);
+
+        const downClueList = this.createClueList(puzzle.clues.down, 'down-clue-list', "Down");
         this.container.appendChild(downClueList);
 
         // this.spans = puzzle.cells.map((row, y) => row.map((cell, x) => {
