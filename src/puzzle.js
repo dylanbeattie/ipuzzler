@@ -6,6 +6,11 @@ export class Puzzle {
         this.focusedCell = null;
         this.direction = 'across';
     }
+    /** Returns all the clues for this puzzle in a single array. Across, then down. Array is zero-based and array indexes do not match clue numbers. */
+    get allClues() {
+        return this.clues.across.concat(this.clues.down).filter(clue => clue);
+    }
+
     switchDirection() {
         return (this.direction == 'across' ? this.direction = 'down' : this.direction = 'across');
     }

@@ -128,6 +128,21 @@ describe('rendering clue lists to shadow DOM', () => {
             clues.forEach((value, index) => expect(listItems[index].innerText).toContain(value));
         });
     });
+    describe('renders clue list item IDs correctly', () => {
+        const cases = [
+            ['3x3'],
+            ['5x5-linked-clues']
+        ];
+        test.each(cases)("for puzzle '%p'", (filename) => {
+            const puzzle = readPuzzle(filename);
+            const root = document.createElement('div');
+            const renderer = new Renderer(root);
+            renderer.render(puzzle);
+            let listItems = root.querySelectorAll("section.puzzle-clue-list ol li");
+            puzzle.allClues.forEach((clue, index) => expect(listItems[index].id).toBe(clue.elementId));        
+        });
+    });
+
     describe('renders clue enumerations correctly', () => {
         const cases = [
             ['3x3', ["3", "3", "3", "3"]],

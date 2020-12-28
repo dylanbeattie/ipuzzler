@@ -18,6 +18,9 @@ export class Clue {
             for (var i = 0; i < this.continuations.length - 1; i++) this.continuations[i].next = this.continuations[i + 1];
         }
     }
+    get elementId() {
+        return `clue-${this.number}-${this.direction}`;
+    }
 
     addHighlight() {
         this.cells.forEach(cell => cell.addHighlight());

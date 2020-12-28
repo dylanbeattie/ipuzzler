@@ -45,7 +45,7 @@ export class Renderer {
 
         let list = this.html('ol');
         clues.forEach(clue => {
-            let item = this.html('li');
+            let item = this.html('li', { id: clue.elementId});
             item.innerText = clue.text;
             let label = this.html('label');
             label.innerText = clue.number;
