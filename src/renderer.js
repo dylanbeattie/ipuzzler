@@ -1,6 +1,6 @@
 export class Renderer {
-    constructor(container) {
-        this.container = container;
+    constructor(shadowDom) {
+        this.dom = shadowDom;
         this.spans = [];
         this.clues = {};
     }
@@ -37,6 +37,12 @@ export class Renderer {
         }
         return (span);
     }
+    createClueEnumerationSpan(clue) {
+        let span = this.html('span');
+        span.innerText = `(${clue.enumeration.trim().replace(/ /g, ",")})`;
+        return(span);
+    }
+
     createClueList(clues, id, title) {
         let section = this.html('section', { 'class': 'puzzle-clue-list', 'id': id });
         let heading = this.html('h2');
@@ -46,15 +52,13 @@ export class Renderer {
         let list = this.html('ol');
         clues.forEach(clue => {
             let item = this.html('li', { id: clue.elementId});
-            item.innerText = clue.text;
+            let link = this.html('a');
+            link.innerText = clue.text;
             let label = this.html('label');
             label.innerText = clue.number;
-            item.insertBefore(label, item.firstChild);
-            if (clue.enumeration) {
-                let span = this.html('span');
-                span.innerText = `(${clue.enumeration.trim().replace(/ /g, ",")})`;
-                item.appendChild(span);
-            }
+            link.insertBefore(label, link.firstChild);
+            if (clue.enumeration) link.appendChild(this.createClueEnumerationSpan(clue));
+            item.appendChild(link);
             list.appendChild(item);
         });
         section.appendChild(list);
@@ -62,9 +66,10 @@ export class Renderer {
     }
 
     render(puzzle) {
+        const div = this.html('div', { 'class' : 'ipuzzler' });
 
         const css = this.html('link', { 'type': 'text/css', 'href': 'css/ipuzzler.css', 'rel': 'stylesheet' });
-        this.container.appendChild(css);
+        div.appendChild(css);
 
         const grid = this.html('div', { 'class': 'puzzle-grid' });
         grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;
@@ -73,45 +78,13 @@ export class Renderer {
             grid.appendChild(span);
             return span;
         }));
-        this.container.appendChild(grid);
+        div.appendChild(grid);
 
-        const acrossClueList = this.createClueList(puzzle.clues.across, 'across-clue-list', "Across");
-        this.container.appendChild(acrossClueList);
+        div.appendChild(this.createClueList(puzzle.clues.across, 'across-clue-list', "Across"));
 
-        const downClueList = this.createClueList(puzzle.clues.down, 'down-clue-list', "Down");
-        this.container.appendChild(downClueList);
+        div.appendChild(this.createClueList(puzzle.clues.down, 'down-clue-list', "Down"));
 
-        // this.spans = puzzle.cells.map((row, y) => row.map((cell, x) => {
-        //     let span = document.createElement('span');
-        //     let input = document.createElement('input');
-        //     input.setAttribute("data-x", x);
-        //     input.setAttribute("data-y", y);
-        //     span.input = input;
-        //     span.appendChild(input);
-        //     grid.appendChild(span);
-        //     return (span);
-        // }));
-        // let acrossList = document.createElement('ul');
-
-        // this.clues.across = puzzle.clues.across.map(clue => {
-        //     let li = document.createElement('li');
-        //     li.innerHTML = clue.text;
-        //     acrossList.appendChild(li);
-        //     return (li);
-        // });
-
-        // let downList = document.createElement('ul');
-        // this.clues.down = puzzle.clues.down.map(clue => {
-        //     let li = document.createElement('li');
-        //     li.innerHTML = clue.text;
-        //     downList.appendChild(li);
-        //     return (li);
-        // });
-
-        // this.container.appendChild(grid);
-        // this.container.appendChild(acrossList);
-        // this.container.appendChild(downList);
-        // this.update(puzzle);
+        this.dom.appendChild(div);
     }
 
 } 
