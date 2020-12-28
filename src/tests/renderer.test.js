@@ -5,12 +5,12 @@ import { Parser } from '../parser.js';
 import { Renderer } from '../renderer.js';
 
 function readPuzzle(filename) {
-    let ipuz = JSON.parse(fs.readFileSync(`${__dirname}/fixtures/${filename}.ipuz`));
+    let ipuz = JSON.parse(fs.readFileSync(`${__dirname}/fixtures/${filename}`));
     return Parser.parse(ipuz);
 }
 
 describe('rendering puzzle to shadow DOM', () => {
-    var puzzle = readPuzzle('3x3');
+    var puzzle = readPuzzle('3x3.ipuz');
     var root = document.createElement('div');
     var renderer = new Renderer(root);
     renderer.render(puzzle);
@@ -107,8 +107,8 @@ describe('rendering clue lists to shadow DOM', () => {
 
     describe('renders clue numbers correctly', () => {
         test.each([
-            ['3x3', [1, 3, 1, 2]],
-            ['5x5-linked-clues', [1, 4, 5, 1, 2, 3]]
+            ['3x3.ipuz', [1, 3, 1, 2]],
+            ['5x5-linked-clues.ipuz', [1, 4, 5, 1, 2, 3]]
         ])("for puzzle '%p', numbers %p", (filename, numbers) => {
             let listItems = renderClueListItems(filename);
             numbers.forEach((value, index) => expect(listItems[index].querySelector("label").innerText).toBe(value));
@@ -117,8 +117,8 @@ describe('rendering clue lists to shadow DOM', () => {
 
     describe('renders clue text correctly', () => {
         const cases = [
-            ['3x3', ["Leatherworking tool", "Church bench", "Unit of current", "Rules"]],
-            ['5x5-linked-clues', [
+            ['3x3.ipuz', ["Leatherworking tool", "Church bench", "Unit of current", "Rules"]],
+            ['5x5-linked-clues.ipuz', [
                 "See 5", "See 2 down", 'Test clue for &quot;token clean attic&quot;',
                 "See 2", 'Test clue for &quot;trick slice asset&quot;', "See 5 across"
             ]]
@@ -129,10 +129,10 @@ describe('rendering clue lists to shadow DOM', () => {
         });
     });
     describe('renders clue list item IDs correctly', () => {
-        const cases = [
-            ['3x3'],
-            ['5x5-linked-clues']
-        ];
+        const cases = fs.readdirSync(`${__dirname}/fixtures/`, { withFileTypes: true})
+        .filter((entry) => entry.isFile() && /\.ipuz$/i.test(entry.name))
+        .map(entry => entry.name);
+
         test.each(cases)("for puzzle '%p'", (filename) => {
             const puzzle = readPuzzle(filename);
             const root = document.createElement('div');
@@ -145,8 +145,8 @@ describe('rendering clue lists to shadow DOM', () => {
 
     describe('renders clue enumerations correctly', () => {
         const cases = [
-            ['3x3', ["3", "3", "3", "3"]],
-            ['5x5-linked-clues', [null, null, "5,5,5", null, "5,5,5", null]]
+            ['3x3.ipuz', ["3", "3", "3", "3"]],
+            ['5x5-linked-clues.ipuz', [null, null, "5,5,5", null, "5,5,5", null]]
         ];
 
         test.each(cases)("for puzzle '%p'", (filename, clues) => {
@@ -162,40 +162,3 @@ describe('rendering clue lists to shadow DOM', () => {
         });
     });
 });
-
-// test('hello world', () => {
-//     let instance = new IPuzzler();
-//     let result = instance.hello('World');
-//     expect(result).toBe("Hello World");
-// });
-// import { Renderer } from './renderer.js';
-// const mockedRender = jest.fn();
-// jest.mock('./renderer.js', () => {
-//     return jest.fn().mockImplementation(() => {
-//         return { 
-//             render: mockedRender,
-//             update: mockedRender
-//          }
-//     });
-// });
-// function html(tagName, attributes) {
-//     const element = document.createElement(tagName);
-//     for(const [key,value] of Object.entries(attributes)) element.setAttribute(key,value);
-//     return(element);
-// }
-
-// test('test event handlers', () => {
-//     let json = fs.readFileSync(`${__dirname}/fixtures/3x3.ipuz`);
-//     let ipuzzler = new IPuzzler();
-//     ipuzzler.init(json);
-//     let updated = null;
-//     // Override the DOM-based renderer with a really simple mock
-//     ipuzzler.renderer.update = puzzle =>  updated = puzzle;
-
-//     let input = html('input', { 'data-x': 1, 'data-y': 2, 'value' : 'V' });
-//     let event = { composedPath: () => [ input ] };
-
-//     ipuzzler.handleClick(event);
-//     expect(updated).not.toBeNull();
-//     expect(updated.cells[2][1].value).toBe("V");
-// });

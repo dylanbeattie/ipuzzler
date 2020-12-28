@@ -7,8 +7,11 @@ export class Parser {
 
         let cells = ipuzData.puzzle.map((ipuzCells, row) => ipuzCells.map((ipuzCell, col) => new Cell(ipuzCell, row, col)));
 
-        let cluesFromAcross = ipuzData.clues.Across.map(c => new Clue(c, "across").toClueList()).flat();
-        let cluesFromDown = ipuzData.clues.Down.map(c => new Clue(c, "down").toClueList()).flat();
+        let cluesFromAcross = (Array.isArray(ipuzData.clues.Across) ? ipuzData.clues.Across : []);
+        cluesFromAcross = cluesFromAcross.map(c => new Clue(c, "across").toClueList()).flat();
+        
+        let cluesFromDown = (Array.isArray(ipuzData.clues.Down) ? ipuzData.clues.Down : []);
+        cluesFromDown = cluesFromDown.map(c => new Clue(c, "down").toClueList()).flat();
 
         const clues = { across: [], down: [] };
         cluesFromAcross.concat(cluesFromDown).forEach(clue => {
