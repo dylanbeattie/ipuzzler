@@ -22,6 +22,12 @@ export class Puzzle {
         this.setFocusToCell(this.cells[row][col]);
     }
 
+    focusClue(clueNumber, clueDirection) {
+        let clue = this.clues[clueDirection][clueNumber];
+        this.direction = clueDirection;
+        this.setFocusToCell(clue.cells[0]);
+    }
+
     setFocusToCell(cell) {
         if (cell && cell.hasInput) {
             if (this.focusedCell == cell) {

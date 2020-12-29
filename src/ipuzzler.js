@@ -1,14 +1,14 @@
-import { Puzzle} from './puzzle.js';
+import { Puzzle } from './puzzle.js';
 import { Parser } from './parser.js';
 import { Renderer } from './renderer.js';
-import {Clue} from "./clue";
+import { Clue } from "./clue";
 
 export class IPuzzler extends HTMLElement {
 
     constructor() {
         super();
         this.shadow = this.attachShadow({ mode: 'open' });
-        ["mousedown", "keydown"].forEach(event => this.addEventListener(event, this[event]));
+        ["mousedown", "keydown", "click"].forEach(event => this.addEventListener(event, this[event]));
     }
 
     load(url) {
@@ -31,17 +31,28 @@ export class IPuzzler extends HTMLElement {
             case 'url': this.load(newValue); break;
         }
     }
+    click(event) {
+        event.preventDefault();
+        let target = event.composedPath()[0];
+        let listItem = target.closest("li");
+        if (listItem != null) {
+            let clueNumber = parseInt(listItem.getAttribute("data-clue-number"));
+            let clueDirection = listItem.getAttribute("data-clue-direction");
+            this.puzzle.focusClue(clueNumber, clueDirection);
+            this.renderer.update(this.puzzle);
+        }
+    }
 
     keydown(event) {
         event.preventDefault();
         let target = event.composedPath()[0];
         let code = event.code;
-        switch(code) {
+        switch (code) {
             case "ArrowUp": this.puzzle.moveFocus("up"); break;
             case "ArrowDown": this.puzzle.moveFocus("down"); break;
             case "ArrowLeft": this.puzzle.moveFocus("left"); break;
             case "ArrowRight": this.puzzle.moveFocus("right"); break;
-        }       
+        }
         this.renderer.update(this.puzzle);
     }
 

@@ -1,4 +1,4 @@
-import {Parser} from "../parser";
+import { Parser } from "../parser";
 const fs = require('fs');
 const { test, expect } = require('@jest/globals');
 
@@ -61,24 +61,25 @@ describe('when focusing a cell with linked clues', () => {
      */
 
     let puzzle = readPuzzle('5x5-linked-clues.ipuz');
-    test('when focusing cell linked with root clue', () => {        
+    test('when focusing cell linked with root clue', () => {
         let expected = [
-            1,1,1,1,1,
-            0,0,0,0,1,
-            0,0,0,0,1,
-            0,0,0,0,1,
-            1,1,1,1,1
+            1, 1, 1, 1, 1,
+            0, 0, 0, 0, 1,
+            0, 0, 0, 0, 1,
+            0, 0, 0, 0, 1,
+            1, 1, 1, 1, 1
         ];
         puzzle.setFocus(0, 1); // T in ATTIC
         puzzle.cells.flat().forEach((cell, index) => expect(cell.isActive).toBe(!!expected[index]));
     });
-    test('when focusing cell linked with root clue', () => {        
+
+    test('when focusing cell linked with root clue', () => {
         let expected = [
-            1,0,1,0,0,
-            1,0,1,0,0,
-            1,1,1,1,1,
-            1,0,1,0,0,
-            1,0,1,0,0
+            1, 0, 1, 0, 0,
+            1, 0, 1, 0, 0,
+            1, 1, 1, 1, 1,
+            1, 0, 1, 0, 0,
+            1, 0, 1, 0, 0
         ];
         puzzle.setFocus(1, 0); // S in ASSET
         puzzle.cells.flat().forEach((cell, index) => expect(cell.isActive).toBe(!!expected[index]));
@@ -89,29 +90,63 @@ describe('when focusing a cell with linked clues', () => {
 describe('when setting puzzle cell focus', () => {
     test('focused cell takes focus', () => {
         let puzzle = readPuzzle('3x3.ipuz');
-        puzzle.setFocus(0,0);
+        puzzle.setFocus(0, 0);
         expect(puzzle.focusedCell.position.row).toBe(0);
         expect(puzzle.focusedCell.position.col).toBe(0);
     });
     test('focused clue matches focused cell', () => {
         let puzzle = readPuzzle('3x3.ipuz');
-        puzzle.setFocus(0,0);
+        puzzle.setFocus(0, 0);
         expect(puzzle.focusedClue.number).toBe(1);
         expect(puzzle.focusedClue.direction).toBe("across");
     });
     test('focused clue matches focused cell', () => {
         let puzzle = readPuzzle('3x3.ipuz');
         puzzle.switchDirection();
-        puzzle.setFocus(0,0);
+        puzzle.setFocus(0, 0);
         expect(puzzle.focusedClue.number).toBe(1);
         expect(puzzle.focusedClue.direction).toBe("down");
     })
     test('switches direction when focused cell is bidirectional', () => {
         let puzzle = readPuzzle('3x3.ipuz');
-        puzzle.setFocus(0,0);
+        puzzle.setFocus(0, 0);
         expect(puzzle.focusedClue.direction).toBe("across");
-        puzzle.setFocus(0,0);
+        puzzle.setFocus(0, 0);
         expect(puzzle.focusedClue.direction).toBe("down");
+    });
+
+    describe('clue is highlighted for associated cell', () => {
+        let cases = [
+            ['3x3.ipuz', 1, 'across'],
+            ['3x3.ipuz', 3, 'across'],
+            ['3x3.ipuz', 1, 'down'],
+            ['3x3.ipuz', 2, 'down'],
+        ];
+        test.each(cases)("for %p, clue %p %p", (filename, clueNumber, clueDirection) => {
+            let puzzle = readPuzzle(filename);
+            puzzle.focusClue(clueNumber, clueDirection);
+            expect(puzzle.focusedClue.number).toBe(clueNumber);
+            expect(puzzle.focusedClue.direction).toBe(clueDirection);
+        });
+    });
+
+    describe('first cell of clue is highlighted even when clues are linked', () => {
+        let cases = [
+            ['5x5-linked-clues.ipuz', 1, 'across', { row: 0, col: 0 }],
+            ['5x5-linked-clues.ipuz', 4, 'across', { row: 2, col: 0 }],
+            ['5x5-linked-clues.ipuz', 5, 'across', { row: 4, col: 0 }],
+
+            ['5x5-linked-clues.ipuz', 2, 'down', { row: 0, col: 2 }],
+            ['5x5-linked-clues.ipuz', 3, 'down', { row: 0, col: 4 }],
+            ['5x5-linked-clues.ipuz', 1, 'down', { row: 0, col: 0 }],
+        ];
+
+        test.each(cases)("for %p, clue %p %p", (filename, clueNumber, clueDirection, cell) => {
+            let puzzle = readPuzzle(filename);
+            puzzle.focusClue(clueNumber, clueDirection);
+            expect(puzzle.focusedCell.position.row).toBe(cell.row);
+            expect(puzzle.focusedCell.position.col).toBe(cell.col);
+        });
     });
 })
 

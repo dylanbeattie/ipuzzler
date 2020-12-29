@@ -95,6 +95,9 @@ div.ipuzzler {
                 &.highlighted {
                     background-color: #f0f;
                 }
+                &.halflighted {
+                    background-color: #f9f;                    
+                }
                 padding: 4px 0px 4px 1.8em;
                 margin: 0 0 2px 0;
                 border-radius: 4px;

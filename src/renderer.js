@@ -19,14 +19,19 @@ export class Renderer {
             } else {
                 span.classList.remove("highlighted");
             }
-        }));       
+        }));
         this.clueListItems.forEach(item => {
             if (item.clue.isActive) {
-                item.classList.add("highlighted"); 
+                if (item.clue.root) {
+                    item.classList.add("halflighted");
+                } else {
+                    item.classList.add("highlighted");
+                }
             } else {
                 item.classList.remove("highlighted");
+                item.classList.remove("halflighted");
             }
-        }); 
+        });
     }
 
     createCellSpan(cell, row, col) {
@@ -48,7 +53,7 @@ export class Renderer {
     createClueEnumerationSpan(clue) {
         let span = this.html('span');
         span.innerText = `(${clue.enumeration.trim().replace(/ /g, ",")})`;
-        return(span);
+        return (span);
     }
 
     createClueList(clues, id, title) {
@@ -59,7 +64,7 @@ export class Renderer {
 
         let list = this.html('ol');
         clues.forEach(clue => {
-            let item = this.html('li', { id: clue.elementId});
+            let item = this.html('li', { id: clue.elementId, 'data-clue-number': clue.number, 'data-clue-direction': clue.direction });
             let link = this.html('a');
             link.innerText = clue.text;
             let label = this.html('label');
@@ -76,7 +81,7 @@ export class Renderer {
     }
 
     render(puzzle) {
-        const div = this.html('div', { 'class' : 'ipuzzler' });
+        const div = this.html('div', { 'class': 'ipuzzler' });
 
         const css = this.html('link', { 'type': 'text/css', 'href': 'css/ipuzzler.css', 'rel': 'stylesheet' });
         div.appendChild(css);

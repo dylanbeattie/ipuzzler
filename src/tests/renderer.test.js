@@ -130,9 +130,9 @@ describe('rendering clue lists to shadow DOM', () => {
     });
 
     describe('renders clue list item IDs correctly', () => {
-        const cases = fs.readdirSync(`${__dirname}/fixtures/`, { withFileTypes: true})
-        .filter((entry) => entry.isFile() && /\.ipuz$/i.test(entry.name))
-        .map(entry => entry.name);
+        const cases = fs.readdirSync(`${__dirname}/fixtures/`, { withFileTypes: true })
+            .filter((entry) => entry.isFile() && /\.ipuz$/i.test(entry.name))
+            .map(entry => entry.name);
 
         test.each(cases)("for puzzle '%p'", (filename) => {
             const puzzle = readPuzzle(filename);
@@ -140,7 +140,9 @@ describe('rendering clue lists to shadow DOM', () => {
             const renderer = new Renderer(root);
             renderer.render(puzzle);
             let listItems = root.querySelectorAll("section.puzzle-clue-list ol li");
-            puzzle.allClues.forEach((clue, index) => expect(listItems[index].id).toBe(clue.elementId));        
+            puzzle.allClues.forEach((clue, index) => expect(listItems[index].id).toBe(clue.elementId));
+            puzzle.allClues.forEach((clue, index) => expect(parseInt(listItems[index].getAttribute('data-clue-number'))).toBe(clue.number));
+            puzzle.allClues.forEach((clue, index) => expect(listItems[index].getAttribute('data-clue-direction')).toBe(clue.direction));
         });
     });
 
@@ -165,19 +167,50 @@ describe('rendering clue lists to shadow DOM', () => {
 
     describe('applies highlighting to clues', () => {
         const cases = [
-            [ '3x3.ipuz', 1, 'across', [0] ]
+            ['3x3.ipuz', 1, 'across', [0]]
         ];
-        test.each(cases)("for %p, clue %p %p, highlights clues %p", (filename, clueNumber, clueDirection, indexes)  => {
+        test.each(cases)("for %p, clue %p %p, highlights clues %p", (filename, clueNumber, clueDirection, indexes) => {
             const puzzle = readPuzzle(filename);
             const root = document.createElement('div');
             const renderer = new Renderer(root);
-            renderer.render(puzzle);    
+            renderer.render(puzzle);
             puzzle.clues[clueDirection][clueNumber].addHighlight();
             renderer.update(puzzle);
             let listItems = root.querySelectorAll("section.puzzle-clue-list ol li");
-            indexes.forEach(value =>  expect(listItems[value].className).toContain("highlighted"));
+            indexes.forEach(value => expect(listItems[value].className).toContain("highlighted"));
             listItems.forEach((item, index) => {
                 if (indexes.indexOf(index) < 0) expect(item.className).not.toContain("highlighted");
+            });
+        });
+    });
+
+    describe('applies half-highlighting to "see X" clues', () => {
+        const cases = [
+            ['5x5-linked-clues.ipuz', 1, 'across', [2], [0, 5]],
+            ['5x5-linked-clues.ipuz', 5, 'across', [2], [0, 5]],
+            ['5x5-linked-clues.ipuz', 3, 'down', [2], [0, 5]],
+
+            ['5x5-linked-clues.ipuz', 4, 'across', [4], [1, 3]],
+            ['5x5-linked-clues.ipuz', 1, 'down', [4], [1, 3]],
+            ['5x5-linked-clues.ipuz', 2, 'down', [4], [1, 3]],
+
+
+        ];
+        test.each(cases)("for %p, clue %p %p, highlights clues %p", (filename, clueNumber, clueDirection, highlights, halflights) => {
+            const puzzle = readPuzzle(filename);
+            const root = document.createElement('div');
+            const renderer = new Renderer(root);
+            renderer.render(puzzle);
+            puzzle.focusClue(clueNumber, clueDirection);
+            renderer.update(puzzle);
+            let clueList = root.querySelectorAll("section.puzzle-clue-list ol li");
+            highlights.forEach(index => expect(clueList[index].className).toContain("highlighted"));
+            halflights.forEach(index => expect(clueList[index].className).toContain("halflighted"));
+            clueList.forEach((item, index) => {
+                if (highlights.concat(halflights).indexOf(index) < 0) {
+                    expect(item.className).not.toContain("highlighted");
+                    expect(item.className).not.toContain("halflighted");
+                }
             });
         });
     });
