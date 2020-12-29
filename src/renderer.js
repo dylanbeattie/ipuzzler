@@ -1,12 +1,12 @@
 export class Renderer {
-    constructor(container) {
-        this.container = container;
+    constructor(shadowDom) {
+        this.dom = shadowDom;
         this.spans = [];
         this.clues = {};
     }
     html(tagName, attributes) {
         const element = document.createElement(tagName);
-        for(const [key, value] of Object.entries(attributes || {})) element.setAttribute(key, value);
+        for (const [key, value] of Object.entries(attributes || {})) element.setAttribute(key, value);
         return element;
     }
 
@@ -35,52 +35,56 @@ export class Renderer {
             span.appendChild(input);
             span.input = input;
         }
+        return (span);
+    }
+    createClueEnumerationSpan(clue) {
+        let span = this.html('span');
+        span.innerText = `(${clue.enumeration.trim().replace(/ /g, ",")})`;
         return(span);
     }
 
+    createClueList(clues, id, title) {
+        let section = this.html('section', { 'class': 'puzzle-clue-list', 'id': id });
+        let heading = this.html('h2');
+        heading.innerHTML = title;
+        section.appendChild(heading);
+
+        let list = this.html('ol');
+        clues.forEach(clue => {
+            let item = this.html('li', { id: clue.elementId});
+            let link = this.html('a');
+            link.innerText = clue.text;
+            let label = this.html('label');
+            label.innerText = clue.number;
+            link.insertBefore(label, link.firstChild);
+            if (clue.enumeration) link.appendChild(this.createClueEnumerationSpan(clue));
+            item.appendChild(link);
+            list.appendChild(item);
+        });
+        section.appendChild(list);
+        return section;
+    }
+
     render(puzzle) {
-        
-        let css = this.html('link', { 'type': 'text/css', 'href': 'css/ipuzzler.css', 'rel': 'stylesheet'});
-        this.container.appendChild(css);
-        let grid = this.html('div', { 'class' : 'puzzle-grid' });
+        const div = this.html('div', { 'class' : 'ipuzzler' });
+
+        const css = this.html('link', { 'type': 'text/css', 'href': 'css/ipuzzler.css', 'rel': 'stylesheet' });
+        div.appendChild(css);
+
+        const grid = this.html('div', { 'class': 'puzzle-grid' });
         grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;
-        this.container.appendChild(grid);
         this.spans = puzzle.cells.map((cells, row) => cells.map((cell, col) => {
             let span = this.createCellSpan(cell, row, col);
             grid.appendChild(span);
             return span;
         }));
-        // this.spans = puzzle.cells.map((row, y) => row.map((cell, x) => {
-        //     let span = document.createElement('span');
-        //     let input = document.createElement('input');
-        //     input.setAttribute("data-x", x);
-        //     input.setAttribute("data-y", y);
-        //     span.input = input;
-        //     span.appendChild(input);
-        //     grid.appendChild(span);
-        //     return (span);
-        // }));
-        // let acrossList = document.createElement('ul');
+        div.appendChild(grid);
 
-        // this.clues.across = puzzle.clues.across.map(clue => {
-        //     let li = document.createElement('li');
-        //     li.innerHTML = clue.text;
-        //     acrossList.appendChild(li);
-        //     return (li);
-        // });
+        div.appendChild(this.createClueList(puzzle.clues.across, 'across-clue-list', "Across"));
 
-        // let downList = document.createElement('ul');
-        // this.clues.down = puzzle.clues.down.map(clue => {
-        //     let li = document.createElement('li');
-        //     li.innerHTML = clue.text;
-        //     downList.appendChild(li);
-        //     return (li);
-        // });
+        div.appendChild(this.createClueList(puzzle.clues.down, 'down-clue-list', "Down"));
 
-        // this.container.appendChild(grid);
-        // this.container.appendChild(acrossList);
-        // this.container.appendChild(downList);
-        // this.update(puzzle);
+        this.dom.appendChild(div);
     }
 
 } 

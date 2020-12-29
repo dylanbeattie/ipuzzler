@@ -45,7 +45,7 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin({
             patterns: [
-                { from: 'src/tests/fixtures/*.ipuz', to: 'puzzles' }
+                { from: 'src/tests/fixtures/*.ipuz', to: 'puzzles/[name].[ext]', toType: 'template' }
             ]
         })
     ]
