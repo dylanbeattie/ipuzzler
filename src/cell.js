@@ -2,6 +2,7 @@ import {Position} from "./position";
 
 export class Cell {
     constructor(ipuzCellData, row, col) {
+        this.isActive = false;
         this.style = "";
         this.position = new Position(row, col);
         this.previous = {};

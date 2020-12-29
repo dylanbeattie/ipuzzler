@@ -2,7 +2,7 @@ export class Renderer {
     constructor(shadowDom) {
         this.dom = shadowDom;
         this.spans = [];
-        this.clues = {};
+        this.clueListItems = [];
     }
     html(tagName, attributes) {
         const element = document.createElement(tagName);
@@ -19,7 +19,14 @@ export class Renderer {
             } else {
                 span.classList.remove("highlighted");
             }
-        }));
+        }));       
+        this.clueListItems.forEach(item => {
+            if (item.clue.isActive) {
+                item.classList.add("highlighted"); 
+            } else {
+                item.classList.remove("highlighted");
+            }
+        }); 
     }
 
     createCellSpan(cell, row, col) {
@@ -37,6 +44,7 @@ export class Renderer {
         }
         return (span);
     }
+
     createClueEnumerationSpan(clue) {
         let span = this.html('span');
         span.innerText = `(${clue.enumeration.trim().replace(/ /g, ",")})`;
@@ -59,6 +67,8 @@ export class Renderer {
             link.insertBefore(label, link.firstChild);
             if (clue.enumeration) link.appendChild(this.createClueEnumerationSpan(clue));
             item.appendChild(link);
+            item.clue = clue;
+            this.clueListItems.push(item);
             list.appendChild(item);
         });
         section.appendChild(list);

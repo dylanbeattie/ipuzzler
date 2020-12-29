@@ -22,8 +22,22 @@ export class Clue {
         return `clue-${this.number}-${this.direction}`;
     }
 
+    get allCells() {
+        let root = (this.root ?? this);
+        return root.cells.concat(root.continuations.map(c => c.cells).flat());
+    }
+    get allClues() {
+        let root = (this.root ?? this);
+        return [root].concat(root.continuations);
+    }
+
     addHighlight() {
-        this.cells.forEach(cell => cell.addHighlight());
+        this.allClues.forEach(clue => clue.isActive = true);
+        this.allCells.forEach(cell => cell.addHighlight());
+    }
+    
+    clearHighlight() {
+        this.allClues.forEach(clue => clue.isActive = false);
     }
 
     toClueList() {

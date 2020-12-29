@@ -18,24 +18,22 @@ export class Puzzle {
     get width() { return this.cells[0].length; }
     get height() { return this.cells.length }
 
-    setFocus(row,col) {
-        let cell = this.cells[row][col]
-        if (this.focusedCell == cell) {
-            if (cell.isBirectional) this.switchDirection();
-        } else {
-            this.focusedCell = cell;
-            if (! cell.clues[this.direction]) this.switchDirection();
-        }
-        this.focusedClue = cell.clues[this.direction];
-        this.cells.flat().forEach(cell => cell.clearHighlight());
-        this.focusedClue.addHighlight();
+    setFocus(row, col) {
+        this.setFocusToCell(this.cells[row][col]);
     }
 
     setFocusToCell(cell) {
         if (cell && cell.hasInput) {
+            if (this.focusedCell == cell) {
+                if (cell.isBirectional) this.switchDirection();
+            } else {
+                this.focusedCell = cell;
+                if (!cell.clues[this.direction]) this.switchDirection();
+            }
             this.focusedCell = cell;
-            this.focusedClue = (cell.clues[this.direction] || cell.clues[this.switchDirection()]);
+            this.focusedClue = cell.clues[this.direction];
             this.cells.flat().forEach(cell => cell.clearHighlight());
+            this.allClues.forEach(clue => clue.clearHighlight());
             this.focusedClue.addHighlight();
         }
     }
@@ -51,10 +49,10 @@ export class Puzzle {
         let pos = this.focusedCell?.position;
         if (!pos) return;
         switch (direction) {
-            case "up": nextCell = this.getCell(pos.row - 1, pos.col);break;
-            case "down": nextCell = this.getCell(pos.row + 1, pos.col);break;
-            case "left": nextCell = this.getCell(pos.row, pos.col - 1);break;
-            case "right": nextCell = this.getCell(pos.row, pos.col + 1);break;
+            case "up": nextCell = this.getCell(pos.row - 1, pos.col); break;
+            case "down": nextCell = this.getCell(pos.row + 1, pos.col); break;
+            case "left": nextCell = this.getCell(pos.row, pos.col - 1); break;
+            case "right": nextCell = this.getCell(pos.row, pos.col + 1); break;
         }
         this.setFocusToCell(nextCell);
     }

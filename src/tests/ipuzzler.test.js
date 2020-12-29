@@ -2,21 +2,6 @@ const fs = require('fs');
 const { test, expect } = require('@jest/globals');
 import { IPuzzler } from '../ipuzzler.js';
 
-// test('hello world', () => {
-//     let instance = new IPuzzler();
-//     let result = instance.hello('World');
-//     expect(result).toBe("Hello World");
-// });
-// import { Renderer } from './renderer.js';
-// const mockedRender = jest.fn();
-// jest.mock('./renderer.js', () => {
-//     return jest.fn().mockImplementation(() => {
-//         return { 
-//             render: mockedRender,
-//             update: mockedRender
-//          }
-//     });
-// });
 function html(tagName, attributes) {
     const element = document.createElement(tagName);
     for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, value);
@@ -57,6 +42,38 @@ describe('test event handlers', () => {
         ]
         expected.forEach((line, row) => line.forEach((bool, col) => expect(cells[row][col].isActive).toBe(bool)));
     });
+
+    test('mousedown highlights column', () => {
+        // we pick a cell that only associates with a Down clue
+        let input = html('input', { 'data-row': 1, 'data-col': 0 });
+        let event = { composedPath: () => [input], preventDefault: () => { } };
+
+        ipuzzler.mousedown(event);
+        let cells = ipuzzler.puzzle.cells;
+        let expected = [
+            [true, false, false],
+            [true, false, false],
+            [true, false, false]
+        ];
+        expected.forEach((line, row) => line.forEach((bool, col) => expect(cells[row][col].isActive).toBe(bool)));
+    });
+
+    test('mousedown switches direction', () => {
+        // we pick a cell that associates with both an Across and a Down clue
+        let input = html('input', { 'data-row': 0, 'data-col': 0 });
+        let event = { composedPath: () => [input], preventDefault: () => { } };
+        ipuzzler.puzzle.direction = "across";
+        ipuzzler.mousedown(event);
+        let cells = ipuzzler.puzzle.cells;
+
+        let expected1 = [ [true, true, true], [false, false, false], [false, false, false] ];
+        expected1.forEach((line, row) => line.forEach((bool, col) => expect(cells[row][col].isActive).toBe(bool)));
+
+        ipuzzler.mousedown(event);
+        let expected2 = [ [true, false, false], [true, false, false], [true, false, false] ];
+        expected2.forEach((line, row) => line.forEach((bool, col) => expect(cells[row][col].isActive).toBe(bool)));
+    });
+    
     describe('arrow keys move focus', () => {
         const cases = [
             [0, 0, "ArrowUp", 0, 0], [0, 1, "ArrowUp", 0, 1], [0, 2, "ArrowUp", 0, 2],            

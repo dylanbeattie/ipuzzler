@@ -128,6 +128,7 @@ describe('rendering clue lists to shadow DOM', () => {
             clues.forEach((value, index) => expect(listItems[index].innerText).toContain(value));
         });
     });
+
     describe('renders clue list item IDs correctly', () => {
         const cases = fs.readdirSync(`${__dirname}/fixtures/`, { withFileTypes: true})
         .filter((entry) => entry.isFile() && /\.ipuz$/i.test(entry.name))
@@ -158,6 +159,25 @@ describe('rendering clue lists to shadow DOM', () => {
                 } else {
                     expect(span.innerText).toBe(`(${value})`);
                 }
+            });
+        });
+    });
+
+    describe('applies highlighting to clues', () => {
+        const cases = [
+            [ '3x3.ipuz', 1, 'across', [0] ]
+        ];
+        test.each(cases)("for %p, clue %p %p, highlights clues %p", (filename, clueNumber, clueDirection, indexes)  => {
+            const puzzle = readPuzzle(filename);
+            const root = document.createElement('div');
+            const renderer = new Renderer(root);
+            renderer.render(puzzle);    
+            puzzle.clues[clueDirection][clueNumber].addHighlight();
+            renderer.update(puzzle);
+            let listItems = root.querySelectorAll("section.puzzle-clue-list ol li");
+            indexes.forEach(value =>  expect(listItems[value].className).toContain("highlighted"));
+            listItems.forEach((item, index) => {
+                if (indexes.indexOf(index) < 0) expect(item.className).not.toContain("highlighted");
             });
         });
     });
