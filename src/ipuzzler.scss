@@ -1,7 +1,7 @@
 div.ipuzzler {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 12px;
-    
+
     padding: 4px;
     display: grid;
     grid-template: 1fr / auto 1fr 1fr;
@@ -91,26 +91,28 @@ div.ipuzzler {
             list-style: none;
             margin: 0;
             padding: 0;
-        }
-
-        ol li {
-            padding: 4px 0px 4px 1.6em;
-            border-radius: 4px;
-            margin: 0;
-            text-indent: -1.6em;
-        }
-
-        ol li a label {
-            min-width: 1.4em;
-            font-weight: bold;
-            display: inline-block;
-            text-indent: 0;
-            margin: 0;
-            padding: 0 0.1em;
-        }
-        
-        ol li a span:before {
-            content: " ";
+            li {
+                &.highlighted {
+                    background-color: #f0f;
+                }
+                padding: 4px 0px 4px 1.8em;
+                margin: 0 0 2px 0;
+                border-radius: 4px;
+                text-indent: -1.6em;
+                a {
+                    label {
+                        min-width: 1.4em;
+                        font-weight: bold;
+                        display: inline-block;
+                        text-indent: 0;
+                        margin: 0;
+                        padding: 0 0.1em;
+                    }
+                    span:before {
+                        content: " ";
+                    }
+                }
+            }
         }
     }
 }
