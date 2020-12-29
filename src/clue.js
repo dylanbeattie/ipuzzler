@@ -22,8 +22,13 @@ export class Clue {
         return `clue-${this.number}-${this.direction}`;
     }
 
+    get allCells() {
+        let root = (this.root ?? this);
+        return root.cells.concat(root.continuations.map(c => c.cells).flat());
+    }
+
     addHighlight() {
-        this.cells.forEach(cell => cell.addHighlight());
+        this.allCells.forEach(cell => cell.addHighlight());
     }
 
     toClueList() {

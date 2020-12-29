@@ -21,7 +21,7 @@ describe('switch puzzle direction works', () => {
     });
 });
 
-describe('puzzle exposes direction based on cells', () => {
+describe('puzzle renders with correct dimensions', () => {
     test('for 3x3 puzzle', () => {
         let puzzle = readPuzzle('3x3.ipuz');
         expect(puzzle.width).toBe(3);
@@ -38,7 +38,53 @@ describe('puzzle exposes direction based on cells', () => {
         expect(puzzle.width).toBe(5);
         expect(puzzle.height).toBe(3);
     });
-})
+});
+
+describe('when focusing a cell with linked clues', () => {
+    /*************
+     * A T T I C *
+     * S # R # L *
+     * S L I C E *
+     * E # C # A *
+     * T O K E N *
+     *************
+     * 
+     * Across:
+     * 1 See 5
+     * 4 See 2 Down
+     * 5/3/1a Test clue for "token clean attic"
+     * 
+     * Down:
+     * 1 See 2
+     * 2/4/1d Test clue for "trick slice asset"
+     * 3 See 5 across
+     */
+
+    let puzzle = readPuzzle('5x5-linked-clues.ipuz');
+    test('when focusing cell linked with root clue', () => {        
+        let expected = [
+            1,1,1,1,1,
+            0,0,0,0,1,
+            0,0,0,0,1,
+            0,0,0,0,1,
+            1,1,1,1,1
+        ];
+        puzzle.setFocus(0, 1); // T in ATTIC
+        puzzle.cells.flat().forEach((cell, index) => expect(cell.isActive).toBe(!!expected[index]));
+    });
+    test('when focusing cell linked with root clue', () => {        
+        let expected = [
+            1,0,1,0,0,
+            1,0,1,0,0,
+            1,1,1,1,1,
+            1,0,1,0,0,
+            1,0,1,0,0
+        ];
+        puzzle.setFocus(1, 0); // S in ASSET
+        puzzle.cells.flat().forEach((cell, index) => expect(cell.isActive).toBe(!!expected[index]));
+    });
+
+});
 
 describe('when setting puzzle cell focus', () => {
     test('focused cell takes focus', () => {
