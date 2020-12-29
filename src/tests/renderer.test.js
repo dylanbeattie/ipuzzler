@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { test, expect } = require('@jest/globals');
 import { executionAsyncId } from 'async_hooks';
+import { render } from 'sass';
 import { Parser } from '../parser.js';
 import { Renderer } from '../renderer.js';
 
@@ -145,6 +146,43 @@ describe('rendering clue lists to shadow DOM', () => {
             puzzle.allClues.forEach((clue, index) => expect(listItems[index].getAttribute('data-clue-direction')).toBe(clue.direction));
         });
     });
+
+    describe('sets CSS font size for input elements', () => {
+        const cases = [
+            ['3x3.ipuz', 320, "60px"],
+            ['15x15-acid-test.ipuz', 320, "16px"],
+            ['25x25-cryptic.ipuz', 320, "8px"]
+        ]
+        test.each(cases)("for puzzle %p, width %p, sets font size %p", (filename, width, fontSize) => {
+            const puzzle = readPuzzle(filename);
+            const root = document.createElement('div');
+            const renderer = new Renderer(root);
+            renderer.render(puzzle);
+            renderer.grid = { offsetWidth: width };
+            renderer.resize(puzzle);
+            let inputs = root.querySelectorAll("div.puzzle-grid span input");
+            inputs.forEach(input => expect(input.style.fontSize).toBe(fontSize));
+        });
+    });
+
+    describe('sets CSS font size for label elements', () => {
+        const cases = [
+            ['3x3.ipuz', 320, "27px"],
+            ['15x15-acid-test.ipuz', 320, "6px"],
+            ['25x25-cryptic.ipuz', 320, "4px"]
+        ]
+        test.each(cases)("for puzzle %p, width %p, sets font size %p", (filename, width, fontSize) => {
+            const puzzle = readPuzzle(filename);
+            const root = document.createElement('div');
+            const renderer = new Renderer(root);
+            renderer.render(puzzle);
+            renderer.grid = { offsetWidth: width };
+            renderer.resize(puzzle);
+            let labels = root.querySelectorAll("div.puzzle-grid span label");
+            labels.forEach(label => expect(label.style.fontSize).toBe(fontSize));
+        });
+    })
+
 
     describe('renders clue enumerations correctly', () => {
         const cases = [

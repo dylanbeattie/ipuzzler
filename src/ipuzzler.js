@@ -9,6 +9,7 @@ export class IPuzzler extends HTMLElement {
         super();
         this.shadow = this.attachShadow({ mode: 'open' });
         ["mousedown", "keydown", "click"].forEach(event => this.addEventListener(event, this[event]));
+        window.addEventListener("resize", this.resize.bind(this));
     }
 
     load(url) {
@@ -31,6 +32,11 @@ export class IPuzzler extends HTMLElement {
             case 'url': this.load(newValue); break;
         }
     }
+
+    resize(event) {
+        if (this.renderer && typeof (this.renderer.resize) == 'function') this.renderer.resize(this.puzzle);
+    }
+
     click(event) {
         event.preventDefault();
         let target = event.composedPath()[0];

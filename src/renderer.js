@@ -2,8 +2,12 @@ export class Renderer {
     constructor(shadowDom) {
         this.dom = shadowDom;
         this.spans = [];
+        this.inputs = [];
+        this.labels = [];
         this.clueListItems = [];
+        this.grid = null;
     }
+
     html(tagName, attributes) {
         const element = document.createElement(tagName);
         for (const [key, value] of Object.entries(attributes || {})) element.setAttribute(key, value);
@@ -41,13 +45,24 @@ export class Renderer {
             let label = this.html('label');
             label.innerHTML = cell.number;
             span.appendChild(label);
+            this.labels.push(label);
         }
         if (cell.hasInput) {
-            let input = this.html('input', { "data-row": row, "data-col": col });
+            let input = this.html('input', { "data-row": row, "data-col": col, "value": String.fromCharCode(65 + Math.floor(Math.random() * 26)) });
             span.appendChild(input);
             span.input = input;
+            this.inputs.push(input);
         }
         return (span);
+    }
+
+    recalculateFontSizes(gridWidth, puzzle) {        
+        var inputFontSize = (Math.ceil(gridWidth / (1.8 * puzzle.width)));
+        // for sizes just under 16, we bump the size to 16px to prevent zooming on iOS when input is focused.
+        if (inputFontSize > 10 && inputFontSize < 16) inputFontSize = 16;        
+        this.inputs.forEach(input => input.style.fontSize = inputFontSize + "px");
+        var labelFontSize = (Math.ceil(gridWidth / (4 * puzzle.width)));
+        this.labels.forEach(label => label.style.fontSize = labelFontSize + "px");
     }
 
     createClueEnumerationSpan(clue) {
@@ -82,24 +97,27 @@ export class Renderer {
 
     render(puzzle) {
         const div = this.html('div', { 'class': 'ipuzzler' });
+        this.dom.appendChild(div);
 
         const css = this.html('link', { 'type': 'text/css', 'href': 'css/ipuzzler.css', 'rel': 'stylesheet' });
         div.appendChild(css);
 
-        const grid = this.html('div', { 'class': 'puzzle-grid' });
-        grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;
+        this.grid = this.html('div', { 'class': 'puzzle-grid' });
+        this.grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;
+
+        div.appendChild(this.grid);
+
         this.spans = puzzle.cells.map((cells, row) => cells.map((cell, col) => {
             let span = this.createCellSpan(cell, row, col);
-            grid.appendChild(span);
+            this.grid.appendChild(span);
             return span;
         }));
-        div.appendChild(grid);
-
         div.appendChild(this.createClueList(puzzle.clues.across, 'across-clue-list', "Across"));
-
         div.appendChild(this.createClueList(puzzle.clues.down, 'down-clue-list', "Down"));
-
-        this.dom.appendChild(div);
+        window.setTimeout(() => this.recalculateFontSizes(this.grid.offsetWidth, puzzle), 50);
     }
 
+    resize(puzzle) {
+        this.recalculateFontSizes(this.grid.offsetWidth, puzzle);
+    }
 } 

@@ -4,9 +4,7 @@ import { IPuzzler } from '../ipuzzler.js';
 
 function html(tagName, attributes) {
     const element = document.createElement(tagName);
-    if (typeof(attributes) === 'object') {
-        for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, value);
-    }
+    for (const [key, value] of Object.entries(attributes || {})) element.setAttribute(key, value);
     return (element);
 }
 
