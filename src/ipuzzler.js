@@ -20,6 +20,7 @@ export class IPuzzler extends HTMLElement {
         this.puzzle = Parser.parse(json);
         this.renderer = new Renderer(this.shadow);
         this.renderer.render(this.puzzle);
+        this.resize();
     }
 
     connectedCallback() {
@@ -51,14 +52,15 @@ export class IPuzzler extends HTMLElement {
 
     keydown(event) {
         event.preventDefault();
-        let target = event.composedPath()[0];
+        // let target = event.composedPath()[0];
         let code = event.code;
         switch (code) {
-            case "ArrowUp": this.puzzle.moveFocus("up"); break;
-            case "ArrowDown": this.puzzle.moveFocus("down"); break;
-            case "ArrowLeft": this.puzzle.moveFocus("left"); break;
-            case "ArrowRight": this.puzzle.moveFocus("right"); break;
+            case "ArrowUp": this.puzzle.direction = "down"; this.puzzle.moveFocus("up"); break;
+            case "ArrowDown": this.puzzle.direction = "down"; this.puzzle.moveFocus("down"); break;
+            case "ArrowLeft": this.puzzle.direction = "across"; this.puzzle.moveFocus("left"); break;
+            case "ArrowRight": this.puzzle.direction = "across"; this.puzzle.moveFocus("right"); break;
         }
+        if (/^[a-z]$/i.test(event.key)) this.puzzle.setCellValue(event.key);
         this.renderer.update(this.puzzle);
     }
 

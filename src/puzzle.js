@@ -6,6 +6,11 @@ export class Puzzle {
         this.focusedCell = null;
         this.direction = 'across';
     }
+
+    isClueBirectional(number) {
+        return(this.clues.across[number] && this.clues.down[number]);
+    }
+
     /** Returns all the clues for this puzzle in a single array. Across, then down. Array is zero-based and array indexes do not match clue numbers. */
     get allClues() {
         return this.clues.across.concat(this.clues.down).filter(clue => clue);
@@ -24,7 +29,17 @@ export class Puzzle {
 
     focusClue(clueNumber, clueDirection) {
         let clue = this.clues[clueDirection][clueNumber];
-        this.direction = clueDirection;
+        this.setFocusToClue(clue);
+    }
+
+    setCellValue(value) {
+        if (this.focusedCell) {
+            this.focusedCell.setValue(value);
+            this.advanceFocus(this.direction);
+        }
+    }
+    setFocusToClue(clue) {
+        this.direction = clue.direction;
         this.setFocusToCell(clue.cells[0]);
     }
 
@@ -48,6 +63,16 @@ export class Puzzle {
         if (row < 0 || row >= this.cells.length) return null;
         if (col < 0 || col >= this.cells[row].length) return null;
         return (this.cells[row][col]);
+    }
+
+    advanceFocus(direction) {
+        let clue = this.focusedCell.clues[direction];
+        let index = clue.cells.indexOf(this.focusedCell) + 1;
+        if (index < clue.cells.length) {
+            this.setFocusToCell(clue.cells[index])
+        } else if (clue.next) {
+            this.setFocusToClue(clue.next);
+        }
     }
 
     moveFocus(direction) {

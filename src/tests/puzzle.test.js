@@ -40,6 +40,45 @@ describe('puzzle renders with correct dimensions', () => {
     });
 });
 
+describe("pressing a key sets the cell value", () => {
+    test('a', () => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.setFocus(0,0);
+        expect(puzzle.cells[0][0].value).toBe("");
+        puzzle.setCellValue("a");
+        expect(puzzle.cells[0][0].value).toBe("A");
+    });
+});
+describe('pressing a letter key moves focus to next cell', () => {
+    test('across', () => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        expect(puzzle.cells[0][0].value).toBe("");
+        puzzle.setFocus(0,0);
+        puzzle.setCellValue("a");
+        expect(puzzle.focusedCell.position.row).toBe(0);
+        expect(puzzle.focusedCell.position.col).toBe(1);
+    });
+
+    test('down', () => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.direction = 'down';
+        expect(puzzle.cells[0][0].value).toBe("");
+        puzzle.setFocus(0,0);
+        puzzle.setCellValue("a");
+        expect(puzzle.focusedCell.position.row).toBe(1);
+        expect(puzzle.focusedCell.position.col).toBe(0);
+    });
+
+    test('when it is the last element of a linked clue', () => {
+        let puzzle = readPuzzle('5x5-linked-clues.ipuz');
+        puzzle.setFocus(0,2);
+        puzzle.direction = "down";
+        "abcde".split("").forEach(value => puzzle.setCellValue(value));
+        expect(puzzle.focusedCell.position.row).toBe(2);
+        expect(puzzle.focusedCell.position.col).toBe(0);
+    });
+});
+
 describe('when focusing a cell with linked clues', () => {
     /*************
      * A T T I C *

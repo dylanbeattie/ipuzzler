@@ -18,6 +18,15 @@ export class Clue {
             for (var i = 0; i < this.continuations.length - 1; i++) this.continuations[i].next = this.continuations[i + 1];
         }
     }
+
+    getContinuationLabel(puzzle) {
+        return (this.number + (puzzle.isClueBirectional(this.number) ? this.direction[0] : ""));
+    }
+
+    getLabel(puzzle) {
+        return [String(this.number)].concat(this.continuations.map(c => c.getContinuationLabel(puzzle))).join(",");
+    }
+
     get elementId() {
         return `clue-${this.number}-${this.direction}`;
     }
@@ -35,7 +44,7 @@ export class Clue {
         this.allClues.forEach(clue => clue.isActive = true);
         this.allCells.forEach(cell => cell.addHighlight());
     }
-    
+
     clearHighlight() {
         this.allClues.forEach(clue => clue.isActive = false);
     }

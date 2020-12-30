@@ -10,6 +10,31 @@ function readPuzzle(filename) {
     return Parser.parse(ipuz);
 }
 
+describe('renders cell values', () => {
+    var puzzle = readPuzzle('3x3.ipuz');
+    var root = document.createElement('div');
+    var renderer = new Renderer(root);
+    renderer.render(puzzle);
+    
+    test('on first keypress', () => {
+        puzzle.setFocus(0,0);
+        puzzle.setCellValue("a");
+        renderer.update(puzzle);
+        let inputs = root.querySelectorAll("div.puzzle-grid span input");
+        expect(inputs[0].value).toBe("A");
+    });
+
+    test('on first keypress', () => {
+        puzzle.setFocus(0,0);
+        puzzle.setCellValue("b");
+        puzzle.setCellValue("c");
+        renderer.update(puzzle);
+        let inputs = root.querySelectorAll("div.puzzle-grid span input");
+        expect(inputs[0].value).toBe("B");
+        expect(inputs[1].value).toBe("C");
+    });
+});
+
 describe('rendering puzzle to shadow DOM', () => {
     var puzzle = readPuzzle('3x3.ipuz');
     var root = document.createElement('div');
@@ -106,16 +131,6 @@ describe('rendering clue lists to shadow DOM', () => {
         return (listItems);
     }
 
-    describe('renders clue numbers correctly', () => {
-        test.each([
-            ['3x3.ipuz', [1, 3, 1, 2]],
-            ['5x5-linked-clues.ipuz', [1, 4, 5, 1, 2, 3]]
-        ])("for puzzle '%p', numbers %p", (filename, numbers) => {
-            let listItems = renderClueListItems(filename);
-            numbers.forEach((value, index) => expect(listItems[index].querySelector("label").innerText).toBe(value));
-        });
-    });
-
     describe('renders clue text correctly', () => {
         const cases = [
             ['3x3.ipuz', ["Leatherworking tool", "Church bench", "Unit of current", "Rules"]],
@@ -153,12 +168,12 @@ describe('rendering clue lists to shadow DOM', () => {
             ['15x15-acid-test.ipuz', 320, "16px"],
             ['25x25-cryptic.ipuz', 320, "8px"]
         ]
-        test.each(cases)("for puzzle %p, width %p, sets font size %p", (filename, width, fontSize) => {
+        test.each(cases)("for puzzle %p, width %p, sets font size %p", (filename, gridSize, fontSize) => {
             const puzzle = readPuzzle(filename);
             const root = document.createElement('div');
             const renderer = new Renderer(root);
             renderer.render(puzzle);
-            renderer.grid = { offsetWidth: width };
+            renderer.grid = { offsetWidth: gridSize, offsetHeight: gridSize, style: {} };
             renderer.resize(puzzle);
             let inputs = root.querySelectorAll("div.puzzle-grid span input");
             inputs.forEach(input => expect(input.style.fontSize).toBe(fontSize));
@@ -171,12 +186,12 @@ describe('rendering clue lists to shadow DOM', () => {
             ['15x15-acid-test.ipuz', 320, "6px"],
             ['25x25-cryptic.ipuz', 320, "4px"]
         ]
-        test.each(cases)("for puzzle %p, width %p, sets font size %p", (filename, width, fontSize) => {
+        test.each(cases)("for puzzle %p, width %p, sets font size %p", (filename, gridSize, fontSize) => {
             const puzzle = readPuzzle(filename);
             const root = document.createElement('div');
             const renderer = new Renderer(root);
             renderer.render(puzzle);
-            renderer.grid = { offsetWidth: width };
+            renderer.grid = { offsetWidth: gridSize, offsetHeight: gridSize, style: {} };
             renderer.resize(puzzle);
             let labels = root.querySelectorAll("div.puzzle-grid span label");
             labels.forEach(label => expect(label.style.fontSize).toBe(fontSize));
@@ -200,6 +215,18 @@ describe('rendering clue lists to shadow DOM', () => {
                     expect(span.innerText).toBe(`(${value})`);
                 }
             });
+        });
+    });
+
+    describe('renders clue labels correctly', () => {
+        const cases = [
+            ['3x3.ipuz', ["1", "3", "1", "2"]],
+            ['5x5-linked-clues.ipuz', ["1", "4","5,3,1a", "1", "2,4,1d", "3"]]
+        ];
+        test.each(cases)("for puzzle %p", (filename, expectedLabels) => {
+            let listItems = renderClueListItems(filename);
+            let renderedLabels = Array.from(listItems).map(item => item.querySelector("label").innerText);
+            renderedLabels.forEach((label, index) => expect(label).toBe(expectedLabels[index]));
         });
     });
 
