@@ -4,9 +4,7 @@ import { IPuzzler } from '../ipuzzler.js';
 
 function html(tagName, attributes) {
     const element = document.createElement(tagName);
-    if (typeof(attributes) === 'object') {
-        for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, value);
-    }
+    for (const [key, value] of Object.entries(attributes || {})) element.setAttribute(key, value);
     return (element);
 }
 
@@ -97,6 +95,53 @@ describe('test event handlers', () => {
         expected2.forEach((line, row) => line.forEach((bool, col) => expect(cells[row][col].isActive).toBe(bool)));
     });
 
+    describe('alphanumeric keys set input values', () => {
+        const cases = "abcdefghijklmnopqrstuvwxyz".split("");
+        test.each(cases)("key down %p", (key) => {
+            let cell = ipuzzler.puzzle.cells[0][0];
+            ipuzzler.puzzle.setFocus(0, 0);
+            let input = html('input', { "data-row": cell.position.row, "data-col": cell.position.col });
+            let event = { composedPath: () => [input], preventDefault: () => { }, key: key };
+            ipuzzler.keydown(event);
+            expect(cell.value).toBe(key.toUpperCase());
+        });
+    });
+
+    describe('alphanumeric keys move focus to next cell', () => {
+        test('when direction is across', () => {
+            let input = html('input', { "data-row": 0, "data-col": 0 });
+            let event = { composedPath: () => [input], preventDefault: () => { }, key: "a" };
+            ipuzzler.puzzle.setFocus(0, 0);
+            ipuzzler.keydown(event);
+            expect(updated.focusedCell.position.row).toBe(0);
+            expect(updated.focusedCell.position.col).toBe(1);
+
+            input = html('input', { "data-row": 0, "data-col": 1 });
+            event = { composedPath: () => [input], preventDefault: () => { }, key: "b" };
+            ipuzzler.puzzle.setFocus(0, 1);
+            ipuzzler.keydown(event);
+            expect(updated.focusedCell.position.row).toBe(0);
+            expect(updated.focusedCell.position.col).toBe(2);
+        });
+
+        test('when direction is down', () => {
+            let input = html('input', { "data-row": 0, "data-col": 0 });
+            let event = { composedPath: () => [input], preventDefault: () => { }, key: "a" };
+            ipuzzler.puzzle.direction = "down";
+            ipuzzler.puzzle.setFocus(0, 0);
+            ipuzzler.keydown(event);
+            expect(updated.focusedCell.position.row).toBe(1);
+            expect(updated.focusedCell.position.col).toBe(0);
+
+            input = html('input', { "data-row": 0, "data-col": 1 });
+            event = { composedPath: () => [input], preventDefault: () => { }, key: "b" };
+            ipuzzler.puzzle.setFocus(1, 0);
+            ipuzzler.keydown(event);
+            expect(updated.focusedCell.position.row).toBe(2);
+            expect(updated.focusedCell.position.col).toBe(0);
+        });
+    });
+
     describe('arrow keys move focus', () => {
         const cases = [
             [0, 0, "ArrowUp", 0, 0], [0, 1, "ArrowUp", 0, 1], [0, 2, "ArrowUp", 0, 2],
@@ -124,5 +169,33 @@ describe('test event handlers', () => {
             expect(updated.focusedCell.position.row).toBe(newRow);
             expect(updated.focusedCell.position.col).toBe(newCol);
         });
+    });
+});
+
+describe('arrow keys change puzzle direction', () => {
+    let ipuzzler;
+    let updated;
+    beforeEach(() => {
+        let json = JSON.parse(fs.readFileSync(`${__dirname}/fixtures/11x11-barred.ipuz`));
+        ipuzzler = new IPuzzler();
+        ipuzzler.init(json);
+        updated = null;
+        // Override the DOM-based renderer with a really simple mock
+        ipuzzler.renderer.update = puzzle => updated = puzzle;
+    });
+    const cases = [
+        ["ArrowDown", "across", "down"],
+        ["ArrowRight", "down", "across"],
+        ["ArrowUp", "across", "down"],
+        ["ArrowLeft", "down", "across"],
+    ];
+    test.each(cases)("%p key changes puzzle direction from %p to %p", (code, oldDirection, newDirection) => {
+        let input = html('input', { "data-row": 1, "data-col": 1 });
+        let event = { composedPath: () => [input], preventDefault: () => { }, code: code };
+        ipuzzler.puzzle.setFocus(1, 1);
+        ipuzzler.puzzle.direction = oldDirection;
+        expect(ipuzzler.puzzle.direction).toBe(oldDirection);
+        ipuzzler.keydown(event);
+        expect(ipuzzler.puzzle.direction).toBe(newDirection);
     });
 });

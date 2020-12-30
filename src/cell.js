@@ -8,6 +8,7 @@ export class Cell {
         this.previous = {};
         this.next = {};
         this.clues = {};
+        this.value = "";
         if (ipuzCellData === null) {
             this.style = "blank";
         } else {
@@ -34,6 +35,10 @@ export class Cell {
                 this.style = "block";
             }
         }
+    }
+
+    setValue(value) {
+        this.value = (value && value.toUpperCase ? value.toUpperCase() : "");
     }
 
     get isBirectional() {
