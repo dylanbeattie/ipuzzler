@@ -59,6 +59,9 @@ export class IPuzzler extends HTMLElement {
             case "ArrowDown": this.puzzle.direction = "down"; this.puzzle.moveFocus("down"); break;
             case "ArrowLeft": this.puzzle.direction = "across"; this.puzzle.moveFocus("left"); break;
             case "ArrowRight": this.puzzle.direction = "across"; this.puzzle.moveFocus("right"); break;
+            case "Backspace": this.puzzle.backspace(); break;
+            case "Delete": this.puzzle.setCellValue(""); break;
+            case "Escape": this.puzzle.clearFocus(); break;
         }
         if (/^[a-z]$/i.test(event.key)) this.puzzle.setCellValue(event.key);
         this.renderer.update(this.puzzle);

@@ -95,6 +95,42 @@ describe('test event handlers', () => {
         expected2.forEach((line, row) => line.forEach((bool, col) => expect(cells[row][col].isActive).toBe(bool)));
     });
 
+    test('puzzle handles backspace', () => {
+        let mock = jest.fn(event => event);
+        ipuzzler.puzzle.backspace = mock;
+        let event = { composedPath: () => [html('input')], preventDefault: () => { }, code: "Backspace" };
+        ipuzzler.keydown(event);
+        expect(mock).toHaveBeenCalledTimes(1);
+    });
+    
+    test('puzzle handles delete', () => {
+        let mock = jest.fn(event => event);
+        ipuzzler.puzzle.setCellValue = mock;
+        let event = { composedPath: () => [html('input')], preventDefault: () => { }, code: "Delete" };
+        ipuzzler.keydown(event);
+        expect(mock).toHaveBeenCalledTimes(1);
+        expect(mock).toHaveBeenCalledWith("");
+    });
+
+    test('puzzle handles Escape key', () => {
+        let mock = jest.fn(event => event);
+        ipuzzler.puzzle.clearFocus = mock;
+        let event = { composedPath: () => [html('input')], preventDefault: () => { }, code: "Escape" };
+        ipuzzler.keydown(event);
+        expect(mock).toHaveBeenCalledTimes(1);
+    });
+
+    describe('alphanumeric keys set input values via mocks', () => {
+        const cases = "abcdefghijklmnopqrstuvwxyz".split("");
+        test.each(cases)("key down %p", (key) => {
+            let input = html('input', { });
+            let event = { composedPath: () => [input], preventDefault: () => { }, key: key };
+            ipuzzler.puzzle.setCellValue = jest.fn(v => v);
+            ipuzzler.keydown(event);
+            expect(ipuzzler.puzzle.setCellValue).toHaveBeenCalledWith(key);        
+        });
+    });
+
     describe('alphanumeric keys set input values', () => {
         const cases = "abcdefghijklmnopqrstuvwxyz".split("");
         test.each(cases)("key down %p", (key) => {

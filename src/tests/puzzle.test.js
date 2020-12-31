@@ -43,17 +43,93 @@ describe('puzzle renders with correct dimensions', () => {
 describe("pressing a key sets the cell value", () => {
     test('a', () => {
         let puzzle = readPuzzle('3x3.ipuz');
-        puzzle.setFocus(0,0);
+        puzzle.setFocus(0, 0);
         expect(puzzle.cells[0][0].value).toBe("");
         puzzle.setCellValue("a");
         expect(puzzle.cells[0][0].value).toBe("A");
     });
 });
+describe('pressing backspace', () => {
+    describe('on across clue', () => {
+        let puzzle;
+        beforeEach(() => {
+            puzzle = readPuzzle('3x3.ipuz');
+            puzzle.setFocus(0, 0);
+            puzzle.setCellValue("a");
+            puzzle.setCellValue("b");
+            puzzle.setCellValue("c");
+        });
+        test('moves focus to previous cell', () => {
+            expect(puzzle.focusedCell.position.row).toBe(0);
+            expect(puzzle.focusedCell.position.col).toBe(2);
+            puzzle.backspace();
+            expect(puzzle.focusedCell.position.row).toBe(0);
+            expect(puzzle.focusedCell.position.col).toBe(1);
+            puzzle.backspace();
+            expect(puzzle.focusedCell.position.row).toBe(0);
+            expect(puzzle.focusedCell.position.col).toBe(0);
+            puzzle.backspace();
+            expect(puzzle.focusedCell.position.row).toBe(0);
+            expect(puzzle.focusedCell.position.col).toBe(0);
+        });
+        test('clears cell value', () => {
+            expect(puzzle.cells[0][2].value).toBe("C");
+            puzzle.backspace();
+            expect(puzzle.cells[0][2].value).toBe("");
+            puzzle.backspace();
+            expect(puzzle.cells[0][1].value).toBe("");
+            puzzle.backspace();
+            expect(puzzle.cells[0][0].value).toBe("");
+        });
+    });
+    describe('on down clue', () => {
+        let puzzle;
+        beforeEach(() => {
+            puzzle = readPuzzle('3x3.ipuz');
+            puzzle.setFocus(0, 0);
+            puzzle.direction = "down";
+            puzzle.setCellValue("a");
+            puzzle.setCellValue("b");
+            puzzle.setCellValue("c");
+        });
+        test('moves focus to previous cell', () => {
+            expect(puzzle.focusedCell.position.row).toBe(2);
+            expect(puzzle.focusedCell.position.col).toBe(0);
+            puzzle.backspace();
+            expect(puzzle.focusedCell.position.row).toBe(1);
+            expect(puzzle.focusedCell.position.col).toBe(0);
+            puzzle.backspace();
+            expect(puzzle.focusedCell.position.row).toBe(0);
+            expect(puzzle.focusedCell.position.col).toBe(0);
+            puzzle.backspace();
+            expect(puzzle.focusedCell.position.row).toBe(0);
+            expect(puzzle.focusedCell.position.col).toBe(0);
+        });
+        test('clears cell value', () => {
+            expect(puzzle.cells[2][0].value).toBe("C");
+            puzzle.backspace();
+            expect(puzzle.cells[2][0].value).toBe("");
+            puzzle.backspace();
+            expect(puzzle.cells[1][0].value).toBe("");
+            puzzle.backspace();
+            expect(puzzle.cells[0][0].value).toBe("");
+        });
+    });
+})
+test('clearing focus works', () => {
+    let puzzle = readPuzzle('3x3.ipuz');
+    expect(puzzle.cells[0][0].value).toBe("");
+    puzzle.setFocus(0, 0);
+    expect(puzzle.focusedCell).not.toBeNull();
+    puzzle.clearFocus();
+    expect(puzzle.focusedCell).toBeNull();
+});
+
 describe('pressing a letter key moves focus to next cell', () => {
     test('across', () => {
         let puzzle = readPuzzle('3x3.ipuz');
         expect(puzzle.cells[0][0].value).toBe("");
-        puzzle.setFocus(0,0);
+        puzzle.setFocus(0, 0);
         puzzle.setCellValue("a");
         expect(puzzle.focusedCell.position.row).toBe(0);
         expect(puzzle.focusedCell.position.col).toBe(1);
@@ -63,7 +139,7 @@ describe('pressing a letter key moves focus to next cell', () => {
         let puzzle = readPuzzle('3x3.ipuz');
         puzzle.direction = 'down';
         expect(puzzle.cells[0][0].value).toBe("");
-        puzzle.setFocus(0,0);
+        puzzle.setFocus(0, 0);
         puzzle.setCellValue("a");
         expect(puzzle.focusedCell.position.row).toBe(1);
         expect(puzzle.focusedCell.position.col).toBe(0);
@@ -71,7 +147,7 @@ describe('pressing a letter key moves focus to next cell', () => {
 
     test('when it is the last element of a linked clue', () => {
         let puzzle = readPuzzle('5x5-linked-clues.ipuz');
-        puzzle.setFocus(0,2);
+        puzzle.setFocus(0, 2);
         puzzle.direction = "down";
         "abcde".split("").forEach(value => puzzle.setCellValue(value));
         expect(puzzle.focusedCell.position.row).toBe(2);
