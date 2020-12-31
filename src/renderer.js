@@ -98,13 +98,11 @@ export class Renderer {
         let list = this.html('ol');
         puzzle.clues[title.toLowerCase()].forEach(clue => {
             let item = this.html('li', { id: clue.elementId, 'data-clue-number': clue.number, 'data-clue-direction': clue.direction });
-            let link = this.html('a');
-            link.innerText = clue.text;
+            item.innerText = clue.text;
             let label = this.html('label');
             label.innerText = clue.getLabel(puzzle);
-            link.insertBefore(label, link.firstChild);
-            if (clue.enumeration) link.appendChild(this.createClueEnumerationSpan(clue));
-            item.appendChild(link);
+            item.insertBefore(label, item.firstChild);
+            if (clue.enumeration) item.appendChild(this.createClueEnumerationSpan(clue));
             item.clue = clue;
             this.clueListItems.push(item);
             list.appendChild(item);

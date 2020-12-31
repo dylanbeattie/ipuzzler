@@ -23,8 +23,8 @@ export class Puzzle {
     get width() { return this.cells[0].length; }
     get height() { return this.cells.length }
 
-    setFocus(row, col) {
-        this.setFocusToCell(this.cells[row][col]);
+    setFocus(row, col, toggleDirection) {
+        this.setFocusToCell(this.cells[row][col], toggleDirection);
     }
 
     focusClue(clueNumber, clueDirection) {
@@ -43,10 +43,10 @@ export class Puzzle {
         this.setFocusToCell(clue.cells[0]);
     }
 
-    setFocusToCell(cell) {
+    setFocusToCell(cell, toggleDirection) {
         if (cell && cell.hasInput) {
             if (this.focusedCell == cell) {
-                if (cell.isBirectional) this.switchDirection();
+                if (cell.isBirectional && toggleDirection) this.switchDirection();
             } else {
                 this.focusedCell = cell;
                 if (!cell.clues[this.direction]) this.switchDirection();
@@ -81,6 +81,14 @@ export class Puzzle {
             let index = clue.cells.indexOf(this.focusedCell) - 1;
             if (index >= 0) this.setFocusToCell(clue.cells[index]);
         }
+    }
+    
+    home() {
+        this.setFocusToCell(this.focusedClue.cells[0]);
+    }
+
+    end() {
+        this.setFocusToCell(this.focusedClue.cells[this.focusedClue.cells.length-1]);
     }
 
     backspace() {

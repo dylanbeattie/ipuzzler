@@ -49,6 +49,52 @@ describe("pressing a key sets the cell value", () => {
         expect(puzzle.cells[0][0].value).toBe("A");
     });
 });
+
+describe('pressing Home key', () => {
+    describe('on across clue', () => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        const cases = [0,1,2];
+        test.each(cases)("when focus is (0,%p)", col => {
+            puzzle.setFocus(0, col);
+            puzzle.home();
+            expect(puzzle.focusedCell.position.col).toBe(0);
+        });        
+    });
+    describe('on down clue', () => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.direction = "down";
+        const cases = [0,1,2];
+        test.each(cases)("when focus is (%p,0)", row => {
+            puzzle.setFocus(row, 0);
+            puzzle.home();
+            expect(puzzle.focusedCell.position.row).toBe(0);
+        });        
+    });
+});
+
+describe('pressing End key', () => {
+    describe('on across clue', () => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        const cases = [0,1,2];
+        test.each(cases)("when focus is (0,%p)", col => {
+            puzzle.setFocus(0, col);
+            puzzle.end();
+            expect(puzzle.focusedCell.position.col).toBe(2);
+        });        
+    });
+    describe('on down clue', () => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.direction = "down";
+        const cases = [0,1,2];
+        test.each(cases)("when focus is (%p,0)", row => {
+            puzzle.setFocus(row, 0);
+            puzzle.end();
+            expect(puzzle.focusedCell.position.row).toBe(2);
+        });        
+    });
+});
+
+
 describe('pressing backspace', () => {
     describe('on across clue', () => {
         let puzzle;
@@ -209,24 +255,29 @@ describe('when setting puzzle cell focus', () => {
         expect(puzzle.focusedCell.position.row).toBe(0);
         expect(puzzle.focusedCell.position.col).toBe(0);
     });
+    
     test('focused clue matches focused cell', () => {
         let puzzle = readPuzzle('3x3.ipuz');
         puzzle.setFocus(0, 0);
         expect(puzzle.focusedClue.number).toBe(1);
         expect(puzzle.focusedClue.direction).toBe("across");
     });
+    
     test('focused clue matches focused cell', () => {
         let puzzle = readPuzzle('3x3.ipuz');
         puzzle.switchDirection();
         puzzle.setFocus(0, 0);
         expect(puzzle.focusedClue.number).toBe(1);
         expect(puzzle.focusedClue.direction).toBe("down");
-    })
-    test('switches direction when focused cell is bidirectional', () => {
+    });
+
+    test('switches direction when focused cell is bidirectional and toggleDirection is true', () => {
         let puzzle = readPuzzle('3x3.ipuz');
         puzzle.setFocus(0, 0);
         expect(puzzle.focusedClue.direction).toBe("across");
         puzzle.setFocus(0, 0);
+        expect(puzzle.focusedClue.direction).toBe("across");
+        puzzle.setFocus(0, 0, true);
         expect(puzzle.focusedClue.direction).toBe("down");
     });
 

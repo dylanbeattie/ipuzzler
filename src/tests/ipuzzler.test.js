@@ -29,32 +29,30 @@ describe('test event handlers', () => {
         ];
         test.each(cases)("clicking %p %p", (clueNumber, clueDirection) => {
             let item = html('li', { 'data-clue-number': clueNumber, 'data-clue-direction': clueDirection });
-            let a = html('a');
-            item.appendChild(a);
-            let event = { composedPath: () => [a], preventDefault: () => { } };
-            ipuzzler.click(event);
+            let event = { target: item, preventDefault: () => { } };
+            ipuzzler.clueListItemClick(event);
             let clue = updated.clues[clueDirection][clueNumber];
             expect(updated.focusedCell).toBe(clue.cells[0]);
         });
     });
 
-    test('mousedown sets cell focus', () => {
+    test('inputMouseDown sets cell focus', () => {
 
         let input = html('input', { 'data-row': 1, 'data-col': 2 });
         let event = { composedPath: () => [input], preventDefault: () => { } };
 
         expect(ipuzzler.puzzle.focusedCell).toBeNull();
-        ipuzzler.mousedown(event);
+        ipuzzler.inputMouseDown(event);
         expect(updated).not.toBeNull();
         expect(updated.focusedCell).not.toBeNull();
     });
 
-    test('mousedown highlights row', () => {
+    test('inputMouseDown highlights row', () => {
         // We pick a cell that only associates with an Across clue
         let input = html('input', { 'data-row': 0, 'data-col': 1 });
         let event = { composedPath: () => [input], preventDefault: () => { } };
 
-        ipuzzler.mousedown(event);
+        ipuzzler.inputMouseDown(event);
         let cells = ipuzzler.puzzle.cells;
         let expected = [
             [true, true, true],
@@ -69,7 +67,7 @@ describe('test event handlers', () => {
         let input = html('input', { 'data-row': 1, 'data-col': 0 });
         let event = { composedPath: () => [input], preventDefault: () => { } };
 
-        ipuzzler.mousedown(event);
+        ipuzzler.inputMouseDown(event);
         let cells = ipuzzler.puzzle.cells;
         let expected = [
             [true, false, false],
@@ -84,13 +82,13 @@ describe('test event handlers', () => {
         let input = html('input', { 'data-row': 0, 'data-col': 0 });
         let event = { composedPath: () => [input], preventDefault: () => { } };
         ipuzzler.puzzle.direction = "across";
-        ipuzzler.mousedown(event);
+        ipuzzler.inputMouseDown(event);
         let cells = ipuzzler.puzzle.cells;
 
         let expected1 = [[true, true, true], [false, false, false], [false, false, false]];
         expected1.forEach((line, row) => line.forEach((bool, col) => expect(cells[row][col].isActive).toBe(bool)));
 
-        ipuzzler.mousedown(event);
+        ipuzzler.inputMouseDown(event);
         let expected2 = [[true, false, false], [true, false, false], [true, false, false]];
         expected2.forEach((line, row) => line.forEach((bool, col) => expect(cells[row][col].isActive).toBe(bool)));
     });
@@ -99,6 +97,22 @@ describe('test event handlers', () => {
         let mock = jest.fn(event => event);
         ipuzzler.puzzle.backspace = mock;
         let event = { composedPath: () => [html('input')], preventDefault: () => { }, code: "Backspace" };
+        ipuzzler.keydown(event);
+        expect(mock).toHaveBeenCalledTimes(1);
+    });
+
+    test('puzzle handles Home key', () => {
+        let mock = jest.fn(event => event);
+        ipuzzler.puzzle.home = mock;
+        let event = { composedPath: () => [html('input')], preventDefault: () => { }, code: "Home" };
+        ipuzzler.keydown(event);
+        expect(mock).toHaveBeenCalledTimes(1);
+    });
+    
+    test('puzzle handles End key', () => {
+        let mock = jest.fn(event => event);
+        ipuzzler.puzzle.end = mock;
+        let event = { composedPath: () => [html('input')], preventDefault: () => { }, code: "End" };
         ipuzzler.keydown(event);
         expect(mock).toHaveBeenCalledTimes(1);
     });
