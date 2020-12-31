@@ -127,7 +127,7 @@ describe('rendering clue lists to shadow DOM', () => {
         const root = document.createElement('div');
         const renderer = new Renderer(root);
         renderer.render(puzzle);
-        let listItems = root.querySelectorAll("section.puzzle-clue-list ol li a");
+        let listItems = root.querySelectorAll("section.puzzle-clue-list ol li");
         return (listItems);
     }
 

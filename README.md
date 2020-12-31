@@ -56,6 +56,31 @@ A clue has an **enumeration**, indicating the length of the word(s) that form th
 >
 > tic-tac-toe **(3-3-3)**
 
+### Event handlers
+
+ipuzzler handles these JavaScript user events
+
+**`focus`**
+
+* occurs when a cell input receives focus (via a click, Tab key or touchscreen event)
+* The actual UI focus is handled natively by the browser; the `puzzle.focusedCell` property is updated to reflect it.
+
+**`click`**
+
+* When a user clicks a clue, highlight the associated cells in the grid
+* When a user clicks a grid cell, ONLY IF THE CELL IS ALREADY FOCUSED and the CELL IS BIDIRECTIONAL, we toggle the puzzle direction. (The browser won't raise a `focus` event for an element that already has focus)
+
+**`keydown`**
+
+* Arrow keys: move the focus around the puzzle grid
+* Backspace: clear the current cell and retreat the focus
+* Delete: clear the current cell
+* Escape: remove focus, un-highlight all clues
+
+
+
+
+
 
 
 
