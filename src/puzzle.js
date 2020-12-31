@@ -8,7 +8,7 @@ export class Puzzle {
     }
 
     isClueBirectional(number) {
-        return(this.clues.across[number] && this.clues.down[number]);
+        return (this.clues.across[number] && this.clues.down[number]);
     }
 
     /** Returns all the clues for this puzzle in a single array. Across, then down. Array is zero-based and array indexes do not match clue numbers. */
@@ -35,7 +35,7 @@ export class Puzzle {
     setCellValue(value) {
         if (this.focusedCell) {
             this.focusedCell.setValue(value);
-            this.advanceFocus(this.direction);
+            if (value) this.advanceFocus(this.direction);
         }
     }
     setFocusToClue(clue) {
@@ -73,6 +73,26 @@ export class Puzzle {
         } else if (clue.next) {
             this.setFocusToClue(clue.next);
         }
+    }
+
+    retreatFocus(direction) {
+        let clue = this.focusedCell.clues[direction];
+        if (clue) {
+            let index = clue.cells.indexOf(this.focusedCell) - 1;
+            if (index >= 0) this.setFocusToCell(clue.cells[index]);
+        }
+    }
+
+    backspace() {
+        this.setCellValue("");
+        this.retreatFocus(this.direction);
+    }
+
+    clearFocus() {
+        this.focusedCell = null;
+        this.focusedClue = null;
+        this.cells.flat().forEach(cell => cell.clearHighlight());
+        this.allClues.forEach(clue => clue.clearHighlight());
     }
 
     moveFocus(direction) {

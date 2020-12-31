@@ -17,7 +17,11 @@ export class Renderer {
     update(puzzle) {
         this.spans.forEach((line, row) => line.forEach((span, col) => {
             let cell = puzzle.cells[row][col];
-            if (cell == puzzle.focusedCell) span.input.focus();
+            if (cell == puzzle.focusedCell) {
+                span.input.focus();
+            } else if (span && span.input) {
+                span.input.blur();
+            }
             if (span.input) span.input.value = cell.value;
             if (cell.isActive) {
                 span.classList.add("highlighted");
