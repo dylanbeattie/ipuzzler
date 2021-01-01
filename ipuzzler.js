@@ -206,9 +206,6 @@ function iPuzzler(ipuz, $container) {
         clue.continuations.forEach(puzzle.highlightClue);
         clue.ranges.forEach(range => range.forEach(cell => cell.$span.addClass("current-clue")));
         clue.html.addClass("current-clue");
-        console.log('--------------');
-        console.log([clue].concat(clue.continuations).map(c => c.drawHtml()));
-
     }
 
     this.findClueForListItem = function (li) {

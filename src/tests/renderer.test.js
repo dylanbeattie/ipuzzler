@@ -7,17 +7,50 @@ import { Renderer } from '../renderer.js';
 
 function readPuzzle(filename) {
     let ipuz = JSON.parse(fs.readFileSync(`${__dirname}/fixtures/${filename}`));
-    return Parser.parse(ipuz);
+    return Parser.parse(ipuz, filename);
 }
+function clearCookies() {
+    document.cookie.split(";").forEach(value => document.cookie = value.split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT");
+}
+
+describe('read/write puzzle state from cookie', () => {
+    beforeEach(clearCookies);
+
+    test('renderer.render() reads puzzle state from cookie', () => {
+        var puzzle = readPuzzle('3x3.ipuz');
+        var root = document.createElement('div');
+        var renderer = new Renderer(root);
+        puzzle.setState = jest.fn(cookie => null);
+        document.cookie = "foo=bar";
+        document.cookie = "this=that";
+        document.cookie = "cat=dog";
+        document.cookie = "3x3-ipuz=TEST_COOKIE_VALUE";
+        document.cookie = "frank=zappa";
+        renderer.render(puzzle);
+        expect(puzzle.setState).toHaveBeenCalledWith("TEST_COOKIE_VALUE");
+    });
+
+    test('renderer.update() persists puzzle state to cookie', () => {
+        var puzzle = readPuzzle('3x3.ipuz');
+        var root = document.createElement('div');
+        var renderer = new Renderer(root);
+        renderer.render(puzzle);
+        puzzle.getState = jest.fn(() => "TEST_COOKIE_VALUE");
+        renderer.update(puzzle);
+        // because document.cookie mimics the behaviour of a real browser,
+        // retrieving the value does NOT include the expires and path properties.
+        expect(document.cookie).toBe("3x3-ipuz=TEST_COOKIE_VALUE");
+    });
+});
 
 describe('renders cell values', () => {
     var puzzle = readPuzzle('3x3.ipuz');
     var root = document.createElement('div');
     var renderer = new Renderer(root);
     renderer.render(puzzle);
-    
+
     test('on first keypress', () => {
-        puzzle.setFocus(0,0);
+        puzzle.setFocus(0, 0);
         puzzle.setCellValue("a");
         renderer.update(puzzle);
         let inputs = root.querySelectorAll("div.puzzle-grid span input");
@@ -25,7 +58,7 @@ describe('renders cell values', () => {
     });
 
     test('on first keypress', () => {
-        puzzle.setFocus(0,0);
+        puzzle.setFocus(0, 0);
         puzzle.setCellValue("b");
         puzzle.setCellValue("c");
         renderer.update(puzzle);
@@ -67,7 +100,7 @@ describe('rendering puzzle with localized headings', () => {
         expect(heading.innerHTML).toBe("Verticale");
     });
 });
-    
+
 describe('rendering puzzle to shadow DOM', () => {
     var puzzle = readPuzzle('3x3.ipuz');
     var root = document.createElement('div');
@@ -249,7 +282,7 @@ describe('rendering clue lists to shadow DOM', () => {
     describe('renders clue labels correctly', () => {
         const cases = [
             ['3x3.ipuz', ["1", "3", "1", "2"]],
-            ['5x5-linked-clues.ipuz', ["1", "4","5,3,1a", "1", "2,4,1d", "3"]]
+            ['5x5-linked-clues.ipuz', ["1", "4", "5,3,1a", "1", "2,4,1d", "3"]]
         ];
         test.each(cases)("for puzzle %p", (filename, expectedLabels) => {
             let listItems = renderClueListItems(filename);

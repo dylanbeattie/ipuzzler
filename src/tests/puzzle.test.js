@@ -1,4 +1,6 @@
+import { executionAsyncId } from "async_hooks";
 import { Parser } from "../parser";
+import { Puzzle } from "../puzzle";
 const fs = require('fs');
 const { test, expect } = require('@jest/globals');
 
@@ -8,7 +10,66 @@ function readPuzzle(filename) {
     let puzzle = Parser.parse(ipuz);
     return (puzzle);
 }
+describe('puzzle load/save state from cookies', () => {
+    describe('puzzle creates cookie name correctly', () => {
+        const cases = [
+            ['3x3.ipuz', '3x3-ipuz'],
+            ['https://example.com/puzzles/some_cryptic_puzzle.ipuz', 'https-example-com-puzzles-some-cryptic-puzzle-ipuz']
+        ];
+        test.each(cases)("when puzzle is %p", (uri, key) => {
+            var puzzle = new Puzzle([], {}, uri);
+            expect(puzzle.cookieName).toBe(key);
+        });
+    });
+    describe('puzzle creates cookie value correctly', () => {
+        test('for empty grid', () => {
+            let puzzle = readPuzzle('3x3.ipuz');
+            let cookie = puzzle.getState();
+            expect(cookie).toBe("_________");
+        });
 
+        test('for full grid', () => {
+            let puzzle = readPuzzle('3x3.ipuz');
+            let values = [ ["A", "B", "C"], ["D", null, "E"], ["F", "G", "H"] ];
+            values.forEach((line, row) => line.forEach((value, col) => {
+                if (value) {
+                    puzzle.setFocus(row, col);
+                    puzzle.setCellValue(value);
+                }
+            }));
+            let cookie = puzzle.getState();
+            expect(cookie).toBe("ABCD_EFGH");
+        });
+
+        test('for semi-full grid', () => {
+            let puzzle = readPuzzle('3x3.ipuz');
+            let values = [ ["A", "b", null], ["d", null, "e"], [null, null, "h"] ];
+            values.forEach((line, row) => line.forEach((value, col) => {
+                if (value) {
+                    puzzle.setFocus(row, col);
+                    puzzle.setCellValue(value);
+                }
+            }));
+            let cookie = puzzle.getState();
+            expect(cookie).toBe("AB_D_E__H");
+        });
+    });
+
+    describe('puzzle restores state from cookie value', () => {
+        const cases = [
+            "ABCDEFGHI",
+            "_________",
+            "A_C_D_F_H"
+        ];
+        test.each(cases)("when cookie is %p", cookie => {
+            let puzzle = readPuzzle('3x3.ipuz');
+            puzzle.setState(cookie);
+            puzzle.cells.flat().forEach((cell, index) => {
+                expect(cell.value).toBe(cookie[index] == "_" ? "" : cookie[index]);
+            });
+        });
+    });
+});
 
 describe('switch puzzle direction works', () => {
     test('when no direction is set', () => {
@@ -53,44 +114,44 @@ describe("pressing a key sets the cell value", () => {
 describe('pressing Home key', () => {
     describe('on across clue', () => {
         let puzzle = readPuzzle('3x3.ipuz');
-        const cases = [0,1,2];
+        const cases = [0, 1, 2];
         test.each(cases)("when focus is (0,%p)", col => {
             puzzle.setFocus(0, col);
             puzzle.home();
             expect(puzzle.focusedCell.position.col).toBe(0);
-        });        
+        });
     });
     describe('on down clue', () => {
         let puzzle = readPuzzle('3x3.ipuz');
         puzzle.direction = "down";
-        const cases = [0,1,2];
+        const cases = [0, 1, 2];
         test.each(cases)("when focus is (%p,0)", row => {
             puzzle.setFocus(row, 0);
             puzzle.home();
             expect(puzzle.focusedCell.position.row).toBe(0);
-        });        
+        });
     });
 });
 
 describe('pressing End key', () => {
     describe('on across clue', () => {
         let puzzle = readPuzzle('3x3.ipuz');
-        const cases = [0,1,2];
+        const cases = [0, 1, 2];
         test.each(cases)("when focus is (0,%p)", col => {
             puzzle.setFocus(0, col);
             puzzle.end();
             expect(puzzle.focusedCell.position.col).toBe(2);
-        });        
+        });
     });
     describe('on down clue', () => {
         let puzzle = readPuzzle('3x3.ipuz');
         puzzle.direction = "down";
-        const cases = [0,1,2];
+        const cases = [0, 1, 2];
         test.each(cases)("when focus is (%p,0)", row => {
             puzzle.setFocus(row, 0);
             puzzle.end();
             expect(puzzle.focusedCell.position.row).toBe(2);
-        });        
+        });
     });
 });
 
@@ -255,14 +316,14 @@ describe('when setting puzzle cell focus', () => {
         expect(puzzle.focusedCell.position.row).toBe(0);
         expect(puzzle.focusedCell.position.col).toBe(0);
     });
-    
+
     test('focused clue matches focused cell', () => {
         let puzzle = readPuzzle('3x3.ipuz');
         puzzle.setFocus(0, 0);
         expect(puzzle.focusedClue.number).toBe(1);
         expect(puzzle.focusedClue.direction).toBe("across");
     });
-    
+
     test('focused clue matches focused cell', () => {
         let puzzle = readPuzzle('3x3.ipuz');
         puzzle.switchDirection();

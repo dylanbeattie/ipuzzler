@@ -1,5 +1,6 @@
 export class Puzzle {
-    constructor(cells, clues) {
+    constructor(cells, clues, uri) {
+        this.uri = uri || "";
         this.cells = cells;
         this.cells.forEach(cell => cell.puzzle = this);
         this.clues = clues;
@@ -24,6 +25,17 @@ export class Puzzle {
 
     get width() { return this.cells[0].length; }
     get height() { return this.cells.length }
+    get cookieName() { return this.uri.replace(/[^a-z0-9]+/ig, '-'); }
+
+    getState() { 
+        return(this.cells.map(row => row.map(cell => (cell.value || "_")).join("")).join(""));
+    }
+
+    setState(cookie) {
+        let values = cookie.split("");
+        let inputs = this.cells.flat();
+        values.forEach((value, index) => inputs[index].setValue(value != "_" ? value : ""));
+    }
 
     setFocus(row, col, toggleDirection) {
         this.setFocusToCell(this.cells[row][col], toggleDirection);
