@@ -1,7 +1,5 @@
-import { Puzzle } from './puzzle.js';
 import { Parser } from './parser.js';
 import { Renderer } from './renderer.js';
-import { Clue } from "./clue";
 
 export class IPuzzler extends HTMLElement {
 
