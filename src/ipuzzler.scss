@@ -15,6 +15,19 @@ div.ipuzzler {
             font-size: 6px;
         }
     }
+    div#clue-buttons {
+        text-align: center;
+        button {
+            margin: 4px 4px 2px 0px;
+            width: 8em;
+            background-color: #36f;
+            border: 0;
+            padding: 4px;
+            color: #fff;
+            font-weight: normal;
+            border-radius: 4px;
+        }
+    }
 
     div.puzzle-grid {
         background-color: #ff0;
@@ -24,7 +37,7 @@ div.ipuzzler {
         border: 1px solid #000;
         width: 420px;
         height: 420px;
-        max-width:100%;
+        max-width: 100%;
 
         // Default grid template; overwritten by renderer
         grid-template: repeat(15, 1fr) / repeat(15, 1fr);
@@ -71,7 +84,7 @@ div.ipuzzler {
                 border-left: 3px solid #000;
             }
             &.highlighted {
-                background-color: #f0f;
+                background-color: #9cf;
             }
 
             input {
@@ -97,8 +110,8 @@ div.ipuzzler {
                 mix-blend-mode: darken;
                 &:focus {
                     font-weight: bold;
-                    background-color: #9999ff;
-                    outline: none;
+                    background-color: #3366ff !important;
+                    outline: 2px solid #000;
                 }
             }
         }
@@ -121,12 +134,12 @@ div.ipuzzler {
             padding: 0;
             li {
                 &.highlighted {
-                    background-color: #f0f;
+                    background-color: #9cf;
                 }
                 &.halflighted {
-                    background-color: #f9f;
+                    background-color: #bdf;
                 }
-                padding: 4px 0px 4px 1.8em;
+                padding: 4px 4px 4px 1.8em;
                 margin: 0 0 2px 0;
                 border-radius: 4px;
                 text-indent: -1.6em;

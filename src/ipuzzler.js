@@ -67,21 +67,22 @@ export class IPuzzler extends HTMLElement {
         this.puzzle.focusClue(clueNumber, clueDirection);
         this.renderer.update(this.puzzle);
     }
-    
+
     buttonClick(event) {
         let button = event.composedPath()[0];
-        switch(button.id) {
+        switch (button.id) {
             case 'check-clue-button': this.puzzle.checkClue(); break;
             case 'clear-clue-button': this.puzzle.clearClue(); break;
             case 'cheat-clue-button': this.puzzle.cheatClue(); break;
             case 'check-grid-button': this.puzzle.checkGrid(); break;
             case 'clear-grid-button': this.puzzle.clearGrid(); break;
-            case 'cheat-grid-button': if(confirm('Are you sure you want to reveal all solutions?')) this.puzzle.cheatGrid(); break;
+            case 'cheat-grid-button': if (confirm('Are you sure you want to reveal all solutions?')) this.puzzle.cheatGrid(); break;
         }
         this.renderer.update(this.puzzle);
     }
 
     keydown(event) {
+        if (event.ctrlKey || event.altKey || event.metaKey) return;
         let code = event.code;
         switch (code) {
             case "ArrowUp": this.puzzle.direction = "down"; this.puzzle.moveFocus("up"); break;
