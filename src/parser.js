@@ -1,16 +1,23 @@
-import { Puzzle} from './puzzle.js';
-import {Clue} from "./clue";
-import {Cell} from "./cell";
+import { Puzzle } from './puzzle.js';
+import { Clue } from "./clue";
+import { Cell } from "./cell";
 
 export class Parser {
     static parse(ipuzData) {
 
         let cells = ipuzData.puzzle.map((ipuzCells, row) => ipuzCells.map((ipuzCell, col) => new Cell(ipuzCell, row, col)));
 
-        let cluesFromAcross = (Array.isArray(ipuzData.clues.Across) ? ipuzData.clues.Across : []);
+        let clueKeys = Object.keys(ipuzData.clues);
+        let acrossKey = clueKeys.find(key => /^across/i.test(key));
+        let downKey = clueKeys.find(key => /^down/i.test(key));
+
+        let acrossData = ipuzData.clues[acrossKey];
+        let downData = ipuzData.clues[downKey];
+
+        let cluesFromAcross = (Array.isArray(acrossData) ? acrossData : []);
         cluesFromAcross = cluesFromAcross.map(c => new Clue(c, "across").toClueList()).flat();
-        
-        let cluesFromDown = (Array.isArray(ipuzData.clues.Down) ? ipuzData.clues.Down : []);
+
+        let cluesFromDown = (Array.isArray(downData) ? downData : []);
         cluesFromDown = cluesFromDown.map(c => new Clue(c, "down").toClueList()).flat();
 
         const clues = { across: [], down: [] };
@@ -21,6 +28,8 @@ export class Parser {
             clue.cells.forEach(cell => cell.clues[clue.direction] = clue);
             clues[clue.direction][clue.number] = clue;
         });
+        clues.across.heading = (acrossKey.split(":")[1] ?? "Across");
+        clues.down.heading = (downKey.split(":")[1] ?? "Down");
 
         return new Puzzle(cells, clues);
     }
@@ -30,8 +39,8 @@ export class Parser {
     }
 
     static findCellList(cells, position, direction, previousCell) {
-        if (! position.isInside(cells)) return [];
-        var cell = cells[position.row][position.col];        
+        if (!position.isInside(cells)) return [];
+        var cell = cells[position.row][position.col];
         cell.previous[direction] = previousCell;
         if (cell.isEndOfRange(direction)) return [];
         if (previousCell) previousCell.next[direction] = cell;

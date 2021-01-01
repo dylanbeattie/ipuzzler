@@ -22,8 +22,8 @@ div.ipuzzler {
         background-color: #000;
         grid-gap: 1px;
         border: 1px solid #000;
-        width: 480px;
-        height: 480px;
+        width: 420px;
+        height: 420px;
         // Default grid template; overwritten by renderer
         grid-template: repeat(15, 1fr) / repeat(15, 1fr);
 

@@ -37,6 +37,12 @@ describe('parsing 3x3 barred puzzle', () => {
     });
 })
 
+test('parser works with non-English puzzle', () => {
+    let puzzle = readPuzzle('italian-15x15.ipuz');
+    expect(puzzle.clues.across.length).toBeGreaterThan(0);
+    expect(puzzle.clues.down.length).toBeGreaterThan(0);
+});
+
 describe('parsing 3x3 puzzle', () => {
     let puzzle = readPuzzle('3x3.ipuz');
 
@@ -83,6 +89,7 @@ describe('parsing 3x3 puzzle', () => {
         expect(puzzle.clues.down[1].text).toBe("Unit of current");
         expect(puzzle.clues.down[2].text).toBe("Rules");
     });
+
 });
 
 describe('cell indicates end of a range', () => {
@@ -221,9 +228,4 @@ describe('parsing clues with continuations', () => {
     test('clue includes continuations', () => {
         expect(clue.continuations.length).toBe(2);
     });
-
-    // test('exposes all clues via toClueList', () => {
-    //     let list = clue.toClueList();
-    //     expect(list.toClueList().length).toBe(3);
-    // });
 });
