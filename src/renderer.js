@@ -88,7 +88,7 @@ export class Renderer {
             this.grid.style.width = (puzzle.width * cellSize) + "px";
             this.grid.style.height = (puzzle.height * cellSize) + "px";
         } else {
-            let width = (window.innerWidth - 10);
+            let width = Math.min(window.innerWidth, document.body.scrollWidth, document.body.clientWidth) - 10;
             this.grid.style.width = width + "px";
             let height = Math.floor((puzzle.height / puzzle.width) * width);
             this.grid.style.height = height + "px";
