@@ -4,6 +4,7 @@ export class Clue {
         this.number = parseInt(ipuzClueData.number);
         this.text = ipuzClueData.clue;
         this.enumeration = ipuzClueData.enumeration;
+        this.label = (ipuzClueData.label || String(this.number)).replace(/\//g, ',').toLowerCase();
         this.cells = [];
         this.continuations = [];
         if (ipuzClueData.continued && ipuzClueData.continued.map) {
@@ -17,14 +18,6 @@ export class Clue {
             this.next = this.continuations[0];
             for (var i = 0; i < this.continuations.length - 1; i++) this.continuations[i].next = this.continuations[i + 1];
         }
-    }
-
-    getContinuationLabel(puzzle) {
-        return (this.number + (puzzle.isClueBirectional(this.number) ? this.direction[0] : ""));
-    }
-
-    getLabel(puzzle) {
-        return [String(this.number)].concat(this.continuations.map(c => c.getContinuationLabel(puzzle))).join(",");
     }
 
     get elementId() {
@@ -60,7 +53,7 @@ export class Clue {
     clear() {
         this.allCells.forEach(cell => cell.clear());
     }
-    
+
     cheat() {
         this.allCells.forEach(cell => cell.cheat());
     }

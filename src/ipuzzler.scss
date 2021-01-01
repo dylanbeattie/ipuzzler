@@ -29,6 +29,32 @@ div.ipuzzler {
         }
     }
 
+    div.clue-bar {
+        display: none;
+
+        @media only screen and (max-width: 768px) {
+            display: block;
+        }
+
+        &#above-clue-bar {
+            margin-bottom: 8px;
+        }
+
+        &#below-clue-bar {
+            margin: 8px 0;
+        }
+
+        label {
+            font-weight: bold;
+            &:after {
+                content: " ";
+            }
+        }
+        span:before {
+            content: " ";
+        }
+    }
+
     div.puzzle-grid {
         background-color: #ff0;
         display: grid;

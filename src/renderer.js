@@ -7,6 +7,8 @@ export class Renderer {
         this.clueListItems = [];
         this.buttons = [];
         this.grid = null;
+        this.aboveClueBar = null;
+        this.belowClueBar = null;
     }
 
     html(tagName, attributes, innerText) {
@@ -43,6 +45,14 @@ export class Renderer {
                 item.classList.remove("halflighted");
             }
         });
+        if (puzzle.focusedClue) {
+            this.drawClue(puzzle.focusedClue, this.aboveClueBar, true);
+            this.drawClue(puzzle.focusedClue, this.belowClueBar, true);
+        } else {
+            this.aboveClueBar.innerHTML = '';
+            this.belowClueBar.innerHTML = '';
+        }
+
         this.savePuzzleStateToCookie(puzzle);
     }
 
@@ -85,18 +95,21 @@ export class Renderer {
         var labelFontSize = (Math.ceil(gridSize / (4 * puzzle.width)));
         this.labels.forEach(label => label.style.fontSize = labelFontSize + "px");
         let windowWidth = Math.min(window.innerWidth, document.body.scrollWidth, document.body.clientWidth);
+        let width, height;
         if (windowWidth > 768) {
             let cellSize = Math.min(420 / puzzle.width);
             if (cellSize < 24) cellSize = 24;
             if (cellSize > 64) cellSize = 64;
-            this.grid.style.width = (puzzle.width * cellSize) + "px";
-            this.grid.style.height = (puzzle.height * cellSize) + "px";
+            width = (puzzle.width * cellSize);
+            height = (puzzle.height * cellSize);
         } else {
-            let width = windowWidth - 10;
-            this.grid.style.width = width + "px";
-            let height = Math.floor((puzzle.height / puzzle.width) * width);
-            this.grid.style.height = height + "px";
+            width = (windowWidth - 10);
+            height = (Math.floor((puzzle.height / puzzle.width) * width));
         }
+        this.grid.style.width = width + "px";
+        this.aboveClueBar.style.width = width + "px";
+        this.belowClueBar.style.width = width + "px";
+        this.grid.style.height = height + "px";
     }
 
     createClueEnumerationSpan(clue) {
@@ -116,17 +129,20 @@ export class Renderer {
         let list = this.html('ol');
         clues.forEach(clue => {
             let item = this.html('li', { id: clue.elementId, 'data-clue-number': clue.number, 'data-clue-direction': clue.direction });
-            item.innerText = clue.text;
-            let label = this.html('label');
-            label.innerText = clue.getLabel(puzzle);
-            item.insertBefore(label, item.firstChild);
-            if (clue.enumeration) item.appendChild(this.createClueEnumerationSpan(clue));
+            this.drawClue(clue, item);
             item.clue = clue;
             this.clueListItems.push(item);
             list.appendChild(item);
         });
         section.appendChild(list);
         return section;
+    }
+    drawClue(clue, container, showDirection) {
+        container.innerText = clue.text;
+        let label = this.html('label');
+        label.innerText = clue.label + (showDirection ? `${clue.direction[0]}` : '');
+        container.insertBefore(label, container.firstChild);
+        if (clue.enumeration) container.appendChild(this.createClueEnumerationSpan(clue));
     }
 
     drawButtons() {
@@ -173,7 +189,12 @@ export class Renderer {
         this.grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;
 
         let puzzleGridWrapper = this.html('div');
+        this.aboveClueBar = this.html('div', { 'class': 'clue-bar', 'id': 'above-clue-bar' });
+        this.belowClueBar = this.html('div', { 'class': 'clue-bar', 'id': 'below-clue-bar' });
+
+        puzzleGridWrapper.appendChild(this.aboveClueBar);
         puzzleGridWrapper.appendChild(this.grid);
+        puzzleGridWrapper.appendChild(this.belowClueBar);
         puzzleGridWrapper.appendChild(this.drawButtons());
 
         div.appendChild(puzzleGridWrapper);

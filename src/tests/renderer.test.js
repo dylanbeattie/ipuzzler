@@ -194,6 +194,15 @@ describe('rendering puzzle to shadow DOM', () => {
             expect(button.innerText).toBe(text);
         });
     });
+
+    describe('renders clue bars', () => {
+        test('above', () => {
+            expect(root.querySelector("div#above-clue-bar")).not.toBeNull();
+        });
+        test('below', () => {
+            expect(root.querySelector("div#below-clue-bar")).not.toBeNull();
+        });
+    })
 });
 
 describe('rendering clue lists to shadow DOM', () => {
