@@ -71,7 +71,7 @@ export class Renderer {
         this.labels.forEach(label => label.style.fontSize = labelFontSize + "px");
         
         if (window.innerWidth > 768) {
-            let cellSize = Math.min(480 / puzzle.width, 32);
+            let cellSize = Math.min(480 / puzzle.width, 28);
             this.grid.style.width = (puzzle.width * cellSize) + "px";
             this.grid.style.height = (puzzle.height * cellSize) + "px";
         } else {
@@ -88,15 +88,16 @@ export class Renderer {
         return (span);
     }
 
-    createClueList(puzzle, title) {
-        let id = `${title.toLowerCase()}-clue-list`;
+    createClueList(puzzle, direction) {
+        let clues = puzzle.clues[direction.toLowerCase()];
+        let id = `${direction.toLowerCase()}-clue-list`;
         let section = this.html('section', { 'class': 'puzzle-clue-list', 'id': id });
         let heading = this.html('h2');
-        heading.innerHTML = title;
+        heading.innerHTML = clues.heading;
         section.appendChild(heading);
 
         let list = this.html('ol');
-        puzzle.clues[title.toLowerCase()].forEach(clue => {
+        clues.forEach(clue => {
             let item = this.html('li', { id: clue.elementId, 'data-clue-number': clue.number, 'data-clue-direction': clue.direction });
             item.innerText = clue.text;
             let label = this.html('label');

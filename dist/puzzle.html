@@ -22,18 +22,29 @@
             min-height: 100vh;
             min-height: -webkit-fill-available;
         }
+        article {
+            max-width: 960px;
+            margin: 0px auto;
+            padding: 16px 0;
+        }
     </style>
 </head>
-<ipuzzler-puzzle>
-    Sorry - iPuzzle does not work on your browser.
-</ipuzzler-puzzle>
-<hr />
-<a href="/">list puzzles</a>
-<script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const path = urlParams.get('ipuz');
-    document.querySelector("ipuzzler-puzzle").setAttribute("url", path);
-</script>
+
+<body>
+    <article>
+        <h1>iPuzzler Demo</h1>
+        <hr />
+        <ipuzzler-puzzle>
+            Sorry - iPuzzle does not work on your browser.
+        </ipuzzler-puzzle>
+        <hr />
+        <a href="/">Back to puzzle list</a>
+    </article>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const path = urlParams.get('ipuz');
+        document.querySelector("ipuzzler-puzzle").setAttribute("url", path);
+    </script>
 </body>
 
 </html>

@@ -5,6 +5,8 @@ export class Puzzle {
         this.clues = clues;
         this.focusedCell = null;
         this.direction = 'across';
+        this.acrossHeading = "Across";
+        this.downHeading = "Down";
     }
 
     isClueBirectional(number) {

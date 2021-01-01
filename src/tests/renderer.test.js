@@ -35,6 +35,39 @@ describe('renders cell values', () => {
     });
 });
 
+describe('rendering puzzle with localized headings', () => {
+    let puzzle;
+    let renderer;
+    let root;
+    beforeEach(() => {
+        puzzle = readPuzzle('3x3.ipuz');
+        root = document.createElement('div');
+        renderer = new Renderer(root);
+    });
+    test('renders default Across clue list title', () => {
+        renderer.render(puzzle);
+        let heading = root.querySelector("section.puzzle-clue-list#across-clue-list h2");
+        expect(heading.innerHTML).toBe("Across");
+    });
+    test('renders localised Across clue list title', () => {
+        puzzle.clues.across.heading = "Sideways";
+        renderer.render(puzzle);
+        let heading = root.querySelector("section.puzzle-clue-list#across-clue-list h2");
+        expect(heading.innerHTML).toBe("Sideways");
+    });
+    test('renders default Down clue list title', () => {
+        renderer.render(puzzle);
+        let heading = root.querySelector("section.puzzle-clue-list#down-clue-list h2");
+        expect(heading.innerHTML).toBe("Down");
+    });
+    test('renders localised Across clue list title', () => {
+        puzzle.clues.down.heading = "Verticale";
+        renderer.render(puzzle);
+        let heading = root.querySelector("section.puzzle-clue-list#down-clue-list h2");
+        expect(heading.innerHTML).toBe("Verticale");
+    });
+});
+    
 describe('rendering puzzle to shadow DOM', () => {
     var puzzle = readPuzzle('3x3.ipuz');
     var root = document.createElement('div');
@@ -108,11 +141,6 @@ describe('rendering puzzle to shadow DOM', () => {
     test('renders Down clues', () => {
         let section = root.querySelector("section.puzzle-clue-list#down-clue-list");
         expect(section).not.toBeNull();
-    });
-
-    test('renders Across clue list title', () => {
-        let heading = root.querySelector("section.puzzle-clue-list#across-clue-list h2");
-        expect(heading.innerHTML).toBe("Across");
     });
 
     test('renders Across clue list items', () => {
