@@ -41,7 +41,21 @@ export class Renderer {
                 item.classList.remove("halflighted");
             }
         });
+        this.savePuzzleStateToCookie(puzzle);
     }
+
+    savePuzzleStateToCookie(puzzle) {
+        var cookieValue = puzzle.getState();
+        var cookieDate = new Date(2100, 1, 1);
+        document.cookie = puzzle.cookieName + "=" + cookieValue + ";expires=" + cookieDate.toUTCString() + ";path=/";
+    }
+
+    loadPuzzleStateFromCookie(puzzle) {
+        var cookies = decodeURIComponent(document.cookie).split(/; */);        
+        var cookie = cookies.map(c => c.split('=')).find(pair => pair[0] == puzzle.cookieName);
+        if (cookie && cookie.length > 1) puzzle.setState(cookie[1]);        
+    }
+
 
     createCellSpan(cell, row, col) {
         let span = this.html('span');
@@ -52,9 +66,8 @@ export class Renderer {
             span.appendChild(label);
             this.labels.push(label);
         }
-        if (cell.hasInput) {
-            let value = (Math.random() > 0.5 ? String.fromCharCode(65 + Math.floor(Math.random() * 26)) : "");
-            let input = this.html('input', { "data-row": row, "data-col": col, "value":  value });
+        if (cell.hasInput) {            
+            let input = this.html('input', { "data-row": row, "data-col": col, "value":  cell.value });
             span.appendChild(input);
             span.input = input;
             this.inputs.push(input);
@@ -113,6 +126,9 @@ export class Renderer {
     }
 
     render(puzzle) {
+        
+        this.loadPuzzleStateFromCookie(puzzle);
+        
         const div = this.html('div', { 'class': 'ipuzzler' });
         this.dom.appendChild(div);
 

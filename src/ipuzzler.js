@@ -13,11 +13,11 @@ export class IPuzzler extends HTMLElement {
     }
 
     load(url) {
-        fetch(url).then(response => response.json()).then(json => this.init(json));
+        fetch(url).then(response => response.json()).then(json => this.init(json, url));
     }
 
-    init(json) {
-        this.puzzle = Parser.parse(json);
+    init(json, url) {
+        this.puzzle = Parser.parse(json, url);
         this.renderer = new Renderer(this.shadow);
         this.renderer.render(this.puzzle);
         this.renderer.inputs.forEach(input => {

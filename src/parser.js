@@ -3,7 +3,7 @@ import { Clue } from "./clue";
 import { Cell } from "./cell";
 
 export class Parser {
-    static parse(ipuzData) {
+    static parse(ipuzData, uri) {
 
         let cells = ipuzData.puzzle.map((ipuzCells, row) => ipuzCells.map((ipuzCell, col) => new Cell(ipuzCell, row, col)));
 
@@ -33,7 +33,7 @@ export class Parser {
         clues.across.heading = (acrossKey.split(":")[1] ?? "Across");
         clues.down.heading = (downKey.split(":")[1] ?? "Down");
 
-        return new Puzzle(cells, clues);
+        return new Puzzle(cells, clues, uri);
     }
 
     static findCellForClue(cells, clue) {
