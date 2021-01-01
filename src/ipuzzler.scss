@@ -15,17 +15,22 @@ div.ipuzzler {
             font-size: 6px;
         }
     }
-    div#clue-buttons {
+    div#buttons {
         text-align: center;
         button {
             margin: 4px 4px 2px 0px;
-            width: 8em;
+            width: 6em;
             background-color: #36f;
             border: 0;
             padding: 4px;
             color: #fff;
             font-weight: normal;
             border-radius: 4px;
+        }
+        div#grid-buttons {
+            button {
+                background-color: #9cf;
+            }
         }
     }
 

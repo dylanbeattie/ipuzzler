@@ -99,7 +99,7 @@ export class Renderer {
         if (windowWidth > 768) {
             let cellSize = Math.min(420 / puzzle.width);
             if (cellSize < 24) cellSize = 24;
-            if (cellSize > 64) cellSize = 64;
+            if (cellSize > 32) cellSize = 32;
             width = (puzzle.width * cellSize);
             height = (puzzle.height * cellSize);
         } else {
@@ -157,7 +157,7 @@ export class Renderer {
         const checkGridButton = this.html('button', { 'id': 'check-grid-button' }, "Check grid");
         const clearGridButton = this.html('button', { 'id': 'clear-grid-button' }, "Clear grid");
         const cheatGridButton = this.html('button', { 'id': 'cheat-grid-button' }, "Cheat grid");
-        const gridButtonContainer = this.html('div', { 'id': 'clue-buttons' });
+        const gridButtonContainer = this.html('div', { 'id': 'grid-buttons' });
         gridButtonContainer.appendChild(checkGridButton);
         gridButtonContainer.appendChild(clearGridButton);
         gridButtonContainer.appendChild(cheatGridButton);
@@ -169,7 +169,7 @@ export class Renderer {
         this.buttons.push(clearGridButton);
         this.buttons.push(cheatGridButton);
 
-        const buttonBar = this.html('div');
+        const buttonBar = this.html('div', { 'id': 'buttons' });
         buttonBar.appendChild(clueButtonContainer);
         buttonBar.appendChild(gridButtonContainer);
         return buttonBar;
