@@ -82,13 +82,15 @@ export class Renderer {
         this.inputs.forEach(input => input.style.fontSize = inputFontSize + "px");
         var labelFontSize = (Math.ceil(gridSize / (4 * puzzle.width)));
         this.labels.forEach(label => label.style.fontSize = labelFontSize + "px");
-        
-        if (window.innerWidth > 768) {
-            let cellSize = Math.min(480 / puzzle.width, 28);
+        let windowWidth = Math.min(window.innerWidth, document.body.scrollWidth, document.body.clientWidth);
+        if (windowWidth > 768) {
+            let cellSize = Math.min(420 / puzzle.width);
+            if (cellSize < 24) cellSize = 24;
+            if (cellSize > 48) cellSize = 48;
             this.grid.style.width = (puzzle.width * cellSize) + "px";
             this.grid.style.height = (puzzle.height * cellSize) + "px";
         } else {
-            let width = Math.min(window.innerWidth, document.body.scrollWidth, document.body.clientWidth) - 10;
+            let width = windowWidth - 10;
             this.grid.style.width = width + "px";
             let height = Math.floor((puzzle.height / puzzle.width) * width);
             this.grid.style.height = height + "px";
