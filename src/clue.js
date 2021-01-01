@@ -52,4 +52,16 @@ export class Clue {
     toClueList() {
         return [this].concat(this.continuations);
     }
+
+    check() {
+        this.allCells.forEach(cell => cell.check());
+    }
+
+    clear() {
+        this.allCells.forEach(cell => cell.clear());
+    }
+    
+    cheat() {
+        this.allCells.forEach(cell => cell.cheat());
+    }
 }

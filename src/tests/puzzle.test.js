@@ -57,9 +57,9 @@ describe('puzzle load/save state from cookies', () => {
 
     describe('puzzle restores state from cookie value', () => {
         const cases = [
-            "ABCDEFGHI",
+            "ABCD_FGHI",
             "_________",
-            "A_C_D_F_H"
+            "A_CD_EF_H"
         ];
         test.each(cases)("when cookie is %p", cookie => {
             let puzzle = readPuzzle('3x3.ipuz');
@@ -307,6 +307,157 @@ describe('when focusing a cell with linked clues', () => {
         puzzle.cells.flat().forEach((cell, index) => expect(cell.isActive).toBe(!!expected[index]));
     });
 
+});
+
+/* 3x3.ipuz:
+ * AWL
+ * M#A
+ * PEW
+ */
+describe('check across clue sets incorrect cells to blank', () => {
+    const cases = [
+        ["AWL___PEW", "AWL___PEW"],
+        ["ARC___PEW", "A_____PEW"],
+        ["ARC___XXX", "A_____XXX"],
+        ["ARC___XYZ", "A_____XYZ"],
+        ["ALL______", "A_L______"]
+    ]
+    test.each(cases)("%p", (supplied, expected) => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.setState(supplied);
+        puzzle.setFocus(0,0);
+        puzzle.direction = "across";
+        puzzle.checkClue();
+        expect(puzzle.getState()).toBe(expected);
+    });
+});
+
+describe('check down clue sets incorrect cells to blank', () => {
+    const cases = [
+        ["AWLM_APEW", "AWLM_APEW"],
+        ["ARCL__PEW", "ARC___PEW"],
+        ["ARCM__XXX", "ARCM___XX"],
+        ["BRCA__DYZ", "_RC____YZ"]
+    ];
+    test.each(cases)("%p", (supplied, expected) => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.setState(supplied);
+        puzzle.direction = "down";
+        puzzle.setFocus(0,0);
+        puzzle.checkClue();
+        expect(puzzle.getState()).toBe(expected);
+    });
+});
+
+describe('check grid sets incorrect cells to blank', () => {
+    const cases = [
+        ["AWL___PEW", "AWL___PEW"],
+        ["AWLM_APEW", "AWLM_APEW"],
+        ["ARC___PEW", "A_____PEW"],
+        ["XXXXXXXXX", "_________"]
+    ];
+    test.each(cases)("%p", (supplied, expected) => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.setState(supplied);
+        puzzle.setFocus(0,0);
+        puzzle.direction = "across";
+        puzzle.checkGrid();
+        expect(puzzle.getState()).toBe(expected);
+    });
+});
+
+describe('clear across clue clears clue', () => {
+    const cases = [
+        ["AWL___PEW", "______PEW"],
+        ["ABCM_APEW", "___M_APEW"],
+        ["BIGB_DCAT", "___B_DCAT"]
+    ];
+    test.each(cases)("%p", (supplied, expected) => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.setState(supplied);
+        puzzle.setFocus(0,0);
+        puzzle.direction = "across";
+        puzzle.clearClue();
+        expect(puzzle.getState()).toBe(expected);
+    });
+});
+
+
+describe('clear down clue clears clue', () => {
+    const cases = [
+        ["AWL___PEW", "_WL____EW"],
+        ["_BCM_APEW", "_BC__A_EW"],
+        ["BIGB_DCAT", "_IG__D_AT"]
+    ];
+    test.each(cases)("%p", (supplied, expected) => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.setState(supplied);
+        puzzle.direction = "down";
+        puzzle.setFocus(0,0);
+        puzzle.clearClue();
+        expect(puzzle.getState()).toBe(expected);
+    });
+});
+
+describe('clear grid clears grid', () => {
+    const cases = [
+        "AWLM_APEW",
+        "ABCDEFGHI",
+        "_________"
+    ];
+    test.each(cases)("%p", (supplied) => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.setState(supplied);
+        puzzle.clearGrid();
+        expect(puzzle.getState()).toBe("_________");
+    });
+});
+
+describe('cheat across clue reveals solution', () => {
+    const cases = [
+        ["______PEW", "AWL___PEW"],
+        ["BOBM_APEW", "AWLM_APEW"],
+        ["_________", "AWL______"]
+    ];
+    test.each(cases)("%p", (supplied, expected) => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.setState(supplied);
+        puzzle.setFocus(0,0);
+        puzzle.direction = "across";
+        puzzle.cheatClue();
+        expect(puzzle.getState()).toBe(expected);
+    });
+});
+
+
+describe('clear down clue clears clue', () => {
+    const cases = [
+        ["_________", "A__M__P__"],
+        ["X__Y__Z__", "A__M__P__"],
+        ["OWLO_AFEW", "AWLM_APEW"]
+    ];
+    test.each(cases)("%p", (supplied, expected) => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.setState(supplied);
+        puzzle.direction = "down";
+        puzzle.setFocus(0,0);
+        puzzle.cheatClue();
+        expect(puzzle.getState()).toBe(expected);
+    });
+});
+
+describe('cheat grid reveals all solutions', () => {
+    const cases = [
+        ["_________", "AWLM_APEW"],
+        ["X__Y__Z__", "AWLM_APEW"],
+        ["BIGBADCAT", "AWLM_APEW"]
+    ];
+    test.each(cases)("%p", (supplied, expected) => {
+        let puzzle = readPuzzle('3x3.ipuz');
+        puzzle.setState(supplied);
+        puzzle.cheatGrid();
+        expect(puzzle.getState()).toBe(expected);
+    });
 });
 
 describe('when setting puzzle cell focus', () => {

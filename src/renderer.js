@@ -5,12 +5,14 @@ export class Renderer {
         this.inputs = [];
         this.labels = [];
         this.clueListItems = [];
+        this.buttons = [];
         this.grid = null;
     }
 
-    html(tagName, attributes) {
+    html(tagName, attributes, innerText) {
         const element = document.createElement(tagName);
         for (const [key, value] of Object.entries(attributes || {})) element.setAttribute(key, value);
+        if (innerText) element.innerText = innerText;
         return element;
     }
 
@@ -27,7 +29,7 @@ export class Renderer {
                 span.classList.add("highlighted");
             } else {
                 span.classList.remove("highlighted");
-            }            
+            }
         }));
         this.clueListItems.forEach(item => {
             if (item.clue.isActive) {
@@ -51,9 +53,9 @@ export class Renderer {
     }
 
     loadPuzzleStateFromCookie(puzzle) {
-        var cookies = decodeURIComponent(document.cookie).split(/; */);        
+        var cookies = decodeURIComponent(document.cookie).split(/; */);
         var cookie = cookies.map(c => c.split('=')).find(pair => pair[0] == puzzle.cookieName);
-        if (cookie && cookie.length > 1) puzzle.setState(cookie[1]);        
+        if (cookie && cookie.length > 1) puzzle.setState(cookie[1]);
     }
 
 
@@ -66,8 +68,8 @@ export class Renderer {
             span.appendChild(label);
             this.labels.push(label);
         }
-        if (cell.hasInput) {            
-            let input = this.html('input', { "data-row": row, "data-col": col, "value":  cell.value });
+        if (cell.hasInput) {
+            let input = this.html('input', { "data-row": row, "data-col": col, "value": cell.value });
             span.appendChild(input);
             span.input = input;
             this.inputs.push(input);
@@ -75,10 +77,10 @@ export class Renderer {
         return (span);
     }
 
-    recalculateFontSizes(gridSize, puzzle) {        
+    recalculateFontSizes(gridSize, puzzle) {
         var inputFontSize = (Math.ceil(gridSize / (1.8 * puzzle.width)));
         // for sizes just under 16, we bump the size to 16px to prevent zooming on iOS when input is focused.
-        if (inputFontSize > 10 && inputFontSize < 16) inputFontSize = 16;        
+        if (inputFontSize > 10 && inputFontSize < 16) inputFontSize = 16;
         this.inputs.forEach(input => input.style.fontSize = inputFontSize + "px");
         var labelFontSize = (Math.ceil(gridSize / (4 * puzzle.width)));
         this.labels.forEach(label => label.style.fontSize = labelFontSize + "px");
@@ -86,7 +88,7 @@ export class Renderer {
         if (windowWidth > 768) {
             let cellSize = Math.min(420 / puzzle.width);
             if (cellSize < 24) cellSize = 24;
-            if (cellSize > 48) cellSize = 48;
+            if (cellSize > 64) cellSize = 64;
             this.grid.style.width = (puzzle.width * cellSize) + "px";
             this.grid.style.height = (puzzle.height * cellSize) + "px";
         } else {
@@ -127,10 +129,40 @@ export class Renderer {
         return section;
     }
 
+    drawButtons() {
+        const checkClueButton = this.html('button', { 'id': 'check-clue-button' }, "Check clue");
+        const clearClueButton = this.html('button', { 'id': 'clear-clue-button' }, "Clear clue");
+        const cheatClueButton = this.html('button', { 'id': 'cheat-clue-button' }, "Cheat clue");
+        const clueButtonContainer = this.html('div', { 'id': 'clue-buttons' });
+        clueButtonContainer.appendChild(checkClueButton);
+        clueButtonContainer.appendChild(clearClueButton);
+        clueButtonContainer.appendChild(cheatClueButton);
+
+        const checkGridButton = this.html('button', { 'id': 'check-grid-button' }, "Check grid");
+        const clearGridButton = this.html('button', { 'id': 'clear-grid-button' }, "Clear grid");
+        const cheatGridButton = this.html('button', { 'id': 'cheat-grid-button' }, "Cheat grid");
+        const gridButtonContainer = this.html('div', { 'id': 'clue-buttons' });
+        gridButtonContainer.appendChild(checkGridButton);
+        gridButtonContainer.appendChild(clearGridButton);
+        gridButtonContainer.appendChild(cheatGridButton);
+
+        this.buttons.push(checkClueButton);
+        this.buttons.push(clearClueButton);
+        this.buttons.push(cheatClueButton);
+        this.buttons.push(checkGridButton);
+        this.buttons.push(clearGridButton);
+        this.buttons.push(cheatGridButton);
+
+        const buttonBar = this.html('div');
+        buttonBar.appendChild(clueButtonContainer);
+        buttonBar.appendChild(gridButtonContainer);
+        return buttonBar;
+    }
+
     render(puzzle) {
-        
+
         this.loadPuzzleStateFromCookie(puzzle);
-        
+
         const div = this.html('div', { 'class': 'ipuzzler' });
         this.dom.appendChild(div);
 
@@ -138,15 +170,20 @@ export class Renderer {
         div.appendChild(css);
 
         this.grid = this.html('div', { 'class': 'puzzle-grid' });
-        this.grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;        
+        this.grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;
 
-        div.appendChild(this.grid);
+        let puzzleGridWrapper = this.html('div');
+        puzzleGridWrapper.appendChild(this.grid);
+        puzzleGridWrapper.appendChild(this.drawButtons());
+
+        div.appendChild(puzzleGridWrapper);
 
         this.spans = puzzle.cells.map((cells, row) => cells.map((cell, col) => {
             let span = this.createCellSpan(cell, row, col);
             this.grid.appendChild(span);
             return span;
         }));
+
         div.appendChild(this.createClueList(puzzle, "Across"));
         div.appendChild(this.createClueList(puzzle, "Down"));
     }

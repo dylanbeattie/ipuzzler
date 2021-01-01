@@ -134,6 +134,39 @@ describe('test event handlers', () => {
         expect(mock).toHaveBeenCalledTimes(1);
     });
 
+    describe('puzzle handles buttons', () => {
+        const cases = [
+            ['check-clue-button', 'checkClue'],
+            ['clear-clue-button', 'clearClue'],
+            ['cheat-clue-button', 'cheatClue'],
+            ['check-grid-button', 'checkGrid'],
+            ['clear-grid-button', 'clearGrid']
+        ];
+        test.each(cases)("pressing button with id %p calls method %p", (id, methodName) => {
+            let button = html('button', { id: id });
+            let event = { composedPath: () => [button], preventDefault: () => { }  };
+            let method = jest.fn(() => null);
+            ipuzzler.puzzle[methodName] = method;
+            ipuzzler.buttonClick(event);
+            expect(method).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('puzzle handles buttons requiring confirmation', () => {
+        const cases = [
+            ['cheat-grid-button', 'cheatGrid']
+        ];
+        test.each(cases)("pressing button with id %p calls method %p", (id, methodName) => {
+            window.confirm = message => true;
+            let button = html('button', { id: id });
+            let event = { composedPath: () => [button], preventDefault: () => { }  };
+            let method = jest.fn(() => null);
+            ipuzzler.puzzle[methodName] = method;
+            ipuzzler.buttonClick(event);
+            expect(method).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe('alphanumeric keys set input values via mocks', () => {
         const cases = "abcdefghijklmnopqrstuvwxyz".split("");
         test.each(cases)("key down %p", (key) => {

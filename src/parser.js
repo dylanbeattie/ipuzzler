@@ -7,6 +7,8 @@ export class Parser {
 
         let cells = ipuzData.puzzle.map((ipuzCells, row) => ipuzCells.map((ipuzCell, col) => new Cell(ipuzCell, row, col)));
 
+        Parser.attachSolutions(cells, ipuzData.solution);
+
         let clueKeys = Object.keys(ipuzData.clues);
         
         // Internationalized puzzles will have JSON keys like { "clues" : "Across:Orizzontali" : [] } }
@@ -34,6 +36,16 @@ export class Parser {
         clues.down.heading = (downKey.split(":")[1] ?? "Down");
 
         return new Puzzle(cells, clues, uri);
+    }
+
+    static attachSolutions(cells, solution) {
+        if (! solution) return;
+        cells.forEach((line, row) => line.forEach((cell, col) => {
+            if (solution[row] && solution[row][col]) {
+                let value = (solution[row][col].value || solution[row][col]);
+                if (value.toUpperCase && /[A-Z]/i.test(value)) cell.solution = value.toUpperCase();
+            }
+        }));
     }
 
     static findCellForClue(cells, clue) {

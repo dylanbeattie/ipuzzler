@@ -2,7 +2,7 @@ export class Puzzle {
     constructor(cells, clues, uri) {
         this.uri = uri || "";
         this.cells = cells;
-        this.cells.forEach(cell => cell.puzzle = this);
+        this.allCells.forEach(cell => cell.puzzle = this);
         this.clues = clues;
         this.focusedCell = null;
         this.direction = 'across';
@@ -19,6 +19,10 @@ export class Puzzle {
         return this.clues.across.concat(this.clues.down).filter(clue => clue);
     }
 
+    get allCells() {
+        return this.cells.flat();
+    }
+
     switchDirection() {
         return (this.direction == 'across' ? this.direction = 'down' : this.direction = 'across');
     }
@@ -27,8 +31,8 @@ export class Puzzle {
     get height() { return this.cells.length }
     get cookieName() { return this.uri.replace(/[^a-z0-9]+/ig, '-'); }
 
-    getState() { 
-        return(this.cells.map(row => row.map(cell => (cell.value || "_")).join("")).join(""));
+    getState() {
+        return (this.cells.map(row => row.map(cell => (cell.value || "_")).join("")).join(""));
     }
 
     setState(cookie) {
@@ -96,13 +100,13 @@ export class Puzzle {
             if (index >= 0) this.setFocusToCell(clue.cells[index]);
         }
     }
-    
+
     home() {
         this.setFocusToCell(this.focusedClue.cells[0]);
     }
 
     end() {
-        this.setFocusToCell(this.focusedClue.cells[this.focusedClue.cells.length-1]);
+        this.setFocusToCell(this.focusedClue.cells[this.focusedClue.cells.length - 1]);
     }
 
     backspace() {
@@ -129,4 +133,11 @@ export class Puzzle {
         }
         this.setFocusToCell(nextCell);
     }
+
+    checkClue() { if (this.focusedClue) this.focusedClue.check(); }
+    clearClue() { if (this.focusedClue) this.focusedClue.clear(); }
+    cheatClue() { if (this.focusedClue) this.focusedClue.cheat();}
+    checkGrid() { this.allCells.forEach(cell => cell.check()); }
+    clearGrid() { this.allCells.forEach(cell => cell.clear()); }
+    cheatGrid() { this.allCells.forEach(cell => cell.cheat());}
 }
