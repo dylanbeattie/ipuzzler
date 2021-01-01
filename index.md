@@ -36,3 +36,5 @@ That's it.
 <dt><a href="puzzle.,d?src=puzzles/15x15-american-example">American</a></dt>
 <dd>An American-style puzzle</dd>
 </dl>
+
+## More
