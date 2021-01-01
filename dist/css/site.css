@@ -1,0 +1,12 @@
+html, body {
+    font-family:Arial, Helvetica, sans-serif
+}
+
+body {
+    max-width: 960px;
+    margin: 0px auto;
+}
+
+header {
+    border-bottom: 1px solid #000;
+}
