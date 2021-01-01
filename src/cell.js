@@ -1,4 +1,4 @@
-import {Position} from "./position";
+import { Position } from "./position";
 
 export class Cell {
     constructor(ipuzCellData, row, col) {
@@ -38,7 +38,7 @@ export class Cell {
     }
 
     setValue(value) {
-        this.value = (value && value.toUpperCase ? value.toUpperCase() : "");
+        if (this.hasInput) this.value = (value && value.toUpperCase ? value.toUpperCase() : "");
     }
 
     get isBirectional() {
@@ -62,5 +62,18 @@ export class Cell {
         if (direction == "across" && this.previous.across && /left/.test(this.style)) return (true);
         if (direction == "down" && this.previous.down && /top/.test(this.style)) return (true);
         return (false);
+    }
+
+    check() {
+        let value = (this.value && this.value.toUpperCase ? this.value.toUpperCase() : "");
+        let solution = (this.solution && this.solution.toUpperCase ? this.solution.toUpperCase() : "");
+        if (value !== solution) this.clear();
+    }
+    cheat() {
+        if (this.solution) this.setValue(this.solution);
+    }
+
+    clear() {
+        this.setValue("");
     }
 }

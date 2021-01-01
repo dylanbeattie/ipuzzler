@@ -147,6 +147,7 @@ ul.clue-list li a label {
         font-size: 16px;
     } */
     div.ipuzzler div.puzzle-grid {
+        max-width:100%;
         width: calc(100vw - 10px);
         height: calc(100vw - 10px);
     }

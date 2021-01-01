@@ -24,9 +24,8 @@ export class IPuzzler extends HTMLElement {
             input.addEventListener("focus", this.inputFocus.bind(this));
             input.addEventListener("mousedown", this.inputMouseDown.bind(this));
         });
-        this.renderer.clueListItems.forEach(li => {
-            li.addEventListener("click", this.clueListItemClick.bind(this));
-        });
+        this.renderer.clueListItems.forEach(li => li.addEventListener("click", this.clueListItemClick.bind(this)));
+        this.renderer.buttons.forEach(button => button.addEventListener("click", this.buttonClick.bind(this)));
         this.resize();
     }
 
@@ -66,6 +65,19 @@ export class IPuzzler extends HTMLElement {
         let clueNumber = parseInt(li.getAttribute("data-clue-number"));
         let clueDirection = li.getAttribute("data-clue-direction");
         this.puzzle.focusClue(clueNumber, clueDirection);
+        this.renderer.update(this.puzzle);
+    }
+    
+    buttonClick(event) {
+        let button = event.composedPath()[0];
+        switch(button.id) {
+            case 'check-clue-button': this.puzzle.checkClue(); break;
+            case 'clear-clue-button': this.puzzle.clearClue(); break;
+            case 'cheat-clue-button': this.puzzle.cheatClue(); break;
+            case 'check-grid-button': this.puzzle.checkGrid(); break;
+            case 'clear-grid-button': this.puzzle.clearGrid(); break;
+            case 'cheat-grid-button': if(confirm('Are you sure you want to reveal all solutions?')) this.puzzle.cheatGrid(); break;
+        }
         this.renderer.update(this.puzzle);
     }
 

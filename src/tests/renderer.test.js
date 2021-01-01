@@ -180,6 +180,20 @@ describe('rendering puzzle to shadow DOM', () => {
         let listItems = root.querySelectorAll("section.puzzle-clue-list#across-clue-list ol li");
         expect(listItems.length).toBe(2);
     });
+    describe('renders', () => {
+        const cases = [
+            ["Check clue", "check-clue-button"],
+            ["Clear clue", "clear-clue-button"],
+            ["Cheat clue", "cheat-clue-button"],
+            ["Check grid", "check-grid-button"],
+            ["Clear grid", "clear-grid-button"],
+            ["Cheat grid", "cheat-grid-button"],
+        ]
+        test.each(cases)("'%p' button", (text, id) => {
+            let button = root.querySelector(`button#${id}`);
+            expect(button.innerText).toBe(text);
+        });
+    });
 });
 
 describe('rendering clue lists to shadow DOM', () => {

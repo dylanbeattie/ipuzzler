@@ -1,9 +1,9 @@
-import {Clue} from "../clue";
+import { Clue } from "../clue";
 
 const fs = require('fs');
 const { test, expect } = require('@jest/globals');
 import { Parser } from '../parser.js';
-import {Cell} from "../cell";
+import { Cell } from "../cell";
 
 function readPuzzle(filename) {
     let json = fs.readFileSync(`${__dirname}/fixtures/${filename}`, "utf8");
@@ -90,6 +90,12 @@ describe('parsing 3x3 puzzle', () => {
         expect(puzzle.clues.down[2].text).toBe("Rules");
     });
 
+    test('parses solution correctly', () => {
+        let solution = ["AWL", "M_A", "PEW"];
+        solution.forEach((word, row) => word.split("").forEach((value, col) => {
+            if (/[A-Z]/i.test(value)) expect(puzzle.cells[row][col].solution).toBe(value);
+        }));
+    });
 });
 
 describe('cell indicates end of a range', () => {
