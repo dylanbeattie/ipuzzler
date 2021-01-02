@@ -157,8 +157,9 @@ export class Renderer {
         const div = this.html('div', { 'class': 'ipuzzler' });
         this.dom.appendChild(div);
 
-        const css = this.html('link', { 'type': 'text/css', 'href': 'css/ipuzzler.css', 'rel': 'stylesheet' });
-        div.appendChild(css);
+        const style = this.html('style');
+        style.innerText = "/*_REPLACED_WITH_STYLES_BY_WEBPACK_BUILD_*/";
+        div.appendChild(style);
 
         this.grid = this.html('div', { 'class': 'puzzle-grid' });
         this.grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;

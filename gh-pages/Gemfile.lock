@@ -240,12 +240,14 @@ GEM
     tzinfo (1.2.9)
       thread_safe (~> 0.1)
     unicode-display_width (1.7.0)
+    wdm (0.1.1)
 
 PLATFORMS
   x64-mingw32
 
 DEPENDENCIES
   github-pages
+  wdm (>= 0.1.0)
 
 BUNDLED WITH
    2.2.4

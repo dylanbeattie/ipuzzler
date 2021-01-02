@@ -4,3 +4,4 @@ coverage/
 
 dist/_site/
 dist/.jekyll-cache/
+gh-pages/_site/

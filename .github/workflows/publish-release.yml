@@ -25,7 +25,7 @@ jobs:
         run: npm ci
 
       - name: build using webpack (babel, SASS, etc.)
-        run: npm run build --if-present
+        run: npm run build --if-present -- --mode=production
 
       - name: run tests
         run: npm test
