@@ -219,13 +219,13 @@ describe('rendering clue lists to shadow DOM', () => {
         const cases = [
             ['3x3.ipuz', ["Leatherworking tool", "Church bench", "Unit of current", "Rules"]],
             ['5x5-linked-clues.ipuz', [
-                "See 5", "See 2 down", 'Test clue for &quot;token clean attic&quot;',
-                "See 2", 'Test clue for &quot;trick slice asset&quot;', "See 5 across"
+                "See 5", "See 2 down", 'Test clue for "token clean attic"',
+                "See 2", 'Test clue for "trick slice asset"', "See 5 across"
             ]]
         ];
         test.each(cases)("for puzzle '%p', clues %p", (filename, clues) => {
             let listItems = renderClueListItems(filename);
-            clues.forEach((value, index) => expect(listItems[index].innerText).toContain(value));
+            clues.forEach((value, index) => expect(listItems[index].innerHTML).toContain(value));
         });
     });
 
