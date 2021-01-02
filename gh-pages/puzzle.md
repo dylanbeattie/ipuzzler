@@ -1,8 +1,9 @@
 ---
 path: /puzzle
+layout: default
+title: iPuzzler
 ---
 # iPuzzler Demo
-<script type="module" src="js/ipuzzler.js"></script>
 <ipuzzler-puzzle>
     Sorry - iPuzzle does not work on your browser.
 </ipuzzler-puzzle>
