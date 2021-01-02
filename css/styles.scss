@@ -1,47 +1,69 @@
 ---
 ---
 
+@import "syntax.css";
+
 html,
 body {
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
 }
 
 body {
     margin: 0px auto;
-}
-
-header,
-footer {
-    background-color: #213;
-    color: #fff;
-    margin: 0;
-    h1,
-    h2 {
-        max-width: 960px;
-        margin: 0px auto;
-    }
-    h1 {
-        padding: 8px;
-    }
-    h2 {
-        font-size: 100%;
-        font-weight: normal;
-        padding: 8px;
-    }
-}
-footer {
-    p {
-        max-width: 960px;
-        margin: 0px auto;
-        font-size: 80%;
-        padding: 16px;
-        a {
-            color: #fff;
+    header,
+    footer {
+        background-color: #213;
+        color: #fff;
+        margin: 0;
+        h1,
+        h2 {
+            max-width: 960px;
+            margin: 0px auto;
+        }
+        h1 {
+            padding: 16px 0;
+            a {
+                text-decoration: none;
+                color: #fff;
+            }
+        }
+        h2 {
+            font-size: 100%;
+            font-weight: normal;
+            padding: 8px;
         }
     }
-}
+    footer {
+        p {
+            max-width: 960px;
+            margin: 0px auto;
+            font-size: 80%;
+            padding: 16px;
+            a {
+                color: #fff;
+            }
+            span.version-info {
+                float: right;
+            }
+        }
+    }
 
-article {
-    max-width: 960px;
-    margin: 16px auto;
+    article {
+        line-height: 1.4em;
+        max-width: 960px;
+        margin: 16px auto;
+        li {
+            margin: 0 0 8px 0;
+        }
+    }
+    pre {
+        padding: 8px;
+    }
+    p code, li code {
+        display: inline-block;
+        background-color: #eee;
+        padding: 2px 4px;
+        border-radius: 2px;
+    }
 }

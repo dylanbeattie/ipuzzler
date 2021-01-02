@@ -26,7 +26,6 @@ description: >- # this means to ignore newlines until "baseurl:"
 url: "https://dylanbeattie.github.io/ipuzzler" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: dylanbeattie
 github_username:  dylanbeattie
-
 # Build settings
 # theme: jekyll-theme-slate
 # plugins:
@@ -51,3 +50,8 @@ github_username:  dylanbeattie
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+## BEGIN variables that are modified by Webpack during build ##
+version: 0.1.2
+build_date: "Sat, 02 Jan 2021 19:51:31 GMT"
+## END variables that are modified by Webpack during build ##
