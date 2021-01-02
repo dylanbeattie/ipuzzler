@@ -1,8 +1,7 @@
 ---
+layout: default
 title: iPuzzler
-description: Like a hat.
 ---
-<script type="module" src="js/ipuzzler.js"></script>
 ## Live Demo
 <ipuzzler-puzzle src="puzzles/homepage.ipuz">
 Looks likeiPuzzler doesn't work on your web browser. Sorry!
@@ -31,9 +30,12 @@ That's it.
 ## Examples
 
 <dl>
-<dt><a href="puzzle.md?src=puzzles/15x15-cryptic-example">British cryptic</a></dt>
+<dt><a href="puzzle?ipuz=puzzles/guardian-cryptic-28283-boatman.ipuz">The Guardian cryptic 28283, set by Boatman</a></dt>
 <dd>A 15x15 cryptic puzzle of the sort found in British newspapers</dd>
-<dt><a href="puzzle.,d?src=puzzles/15x15-american-example">American</a></dt>
+<dt><a href="puzzle?ipuz=puzzles/guardian-prize-22089-araucaria-20001223.ipuz">The Guardian prize crossword no 28283, set by Araucaria</a></dt>
+<dd>A 21x21 cryptic puzzle from The Guardian</dd>
+
+<dt><a href="puzzle?ipuz=puzzles/new-york-times-20060427.ipuz">The <em>New York Times</em>, 27 April 2006</a></dt>
 <dd>An American-style puzzle</dd>
 </dl>
 
