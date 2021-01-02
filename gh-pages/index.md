@@ -24,7 +24,7 @@ Looks like iPuzzler doesn't work on your web browser. Sorry!
 
 iPuzzler is distributed as a single standalone JavaScript module. It requires no libraries, frameworks or external CSS.
 
-1. [Download ipuzzler.js](/ipuzzler/ipuzzler-{{site.version}}.js) - the current release is {{ site.version }}.
+1. [Download ipuzzler.js](ipuzzler/ipuzzler-{{site.version}}.js) - the current release is {{ site.version }}.
 1. Save it somewhere in your website. These instructions assume you've saved it into `/js/`.
 1. Add `<script type="module" src="/js/ipuzzler-{{site.version}}.js"></script>` to the `<head>` of your page.
 1. Publish your crossword puzzle in [iPuz format](http://www.ipuz.org/)
