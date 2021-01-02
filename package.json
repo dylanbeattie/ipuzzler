@@ -33,6 +33,7 @@
   },
   "browserslist": "defaults",
   "dependencies": {
+    "archiver": "^5.1.0",
     "copy-webpack-plugin": "^7.0.0"
   }
 }
