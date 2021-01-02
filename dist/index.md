@@ -1,8 +1,7 @@
 ---
+layout: default
 title: iPuzzler
-description: Like a hat.
 ---
-<script type="module" src="js/ipuzzler.js"></script>
 ## Live Demo
 <ipuzzler-puzzle src="puzzles/homepage.ipuz">
 Looks likeiPuzzler doesn't work on your web browser. Sorry!
