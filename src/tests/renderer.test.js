@@ -110,10 +110,8 @@ describe('rendering puzzle to shadow DOM', () => {
     test('initialises spans array', () => expect(renderer.spans.length).toBe(3));
 
     test('includes stylesheet link', () => {
-        let style = root.querySelector("link");
-        expect(style.getAttribute("type")).toBe("text/css");
-        expect(style.getAttribute("rel")).toBe("stylesheet");
-        expect(style.getAttribute("href")).toBe("css/ipuzzler.css");
+        let style = root.querySelector("style");
+        expect(style.innerText).toBe("/*_REPLACED_WITH_STYLES_BY_WEBPACK_BUILD_*/");
     });
 
     test('includes div.puzzle-grid', () => {
