@@ -1,0 +1,13 @@
+html, body { font-family: Arial, Helvetica, sans-serif; }
+
+body { margin: 0px auto; }
+
+header, footer { background-color: #213; color: #fff; margin: 0; }
+header h1, header h2, footer h1, footer h2 { max-width: 960px; margin: 0px auto; }
+header h1, footer h1 { padding: 8px; }
+header h2, footer h2 { font-size: 100%; font-weight: normal; padding: 8px; }
+
+footer p { max-width: 960px; margin: 0px auto; font-size: 80%; padding: 16px; }
+footer p a { color: #fff; }
+
+article { max-width: 960px; margin: 16px auto; }

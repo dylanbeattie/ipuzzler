@@ -1,0 +1,1 @@
+document.body.appendChild(function(){const e=document.createElement("ul");return["zero"].concat(...function*(){yield"one",yield"two",yield"three"}()).forEach((n=>{const t=document.createElement("li");t.innerHTML=n,e.appendChild(t)})),e}());

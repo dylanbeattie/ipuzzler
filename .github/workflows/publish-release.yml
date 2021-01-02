@@ -30,14 +30,18 @@ jobs:
       - name: run tests
         run: npm test
 
+      - name: Get the release version from the GitHub tag
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
       - name: Create Draft Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: <tofill>
-          release_name: <tofill>
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          release_name: v${{ steps.get_version.outputs.VERSION }}
           draft: true
           prerelease: false
 
@@ -56,9 +60,9 @@ jobs:
         with:
           release_id: ${{ steps.create_release.outputs.id }}
 
-      - name: Publish website to GitHub Pages
+      - name: Publish iPuzzler website to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./gh-pages
           enable_jekyll: true
