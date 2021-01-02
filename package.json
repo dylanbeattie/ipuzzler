@@ -1,7 +1,7 @@
 {
-  "name": "webpax",
+  "name": "ipuzzler",
   "version": "0.0.2",
-  "description": "",
+  "description": "A web component for publishing crossword puzzles in iPuz format",
   "private": true,
   "scripts": {
     "test": "jest",
