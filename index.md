@@ -34,6 +34,12 @@ That's it.
 
 ## Example Puzzles
 
+I created iPuzzler after I created a special crossword to commemorate the US 2020 election, and then discovered there was no way to publish it online. That puzzle is a *little* bit special - same grid, same clues, but it has two valid solutions, and at the time of publishing, we didn't know yet which one was correct:
+
+* Dylan Beattie's Election 2020 Crossword: [TRUMP version](puzzle?ipuz=puzzles/dylanbeattie-2020-us-election-special-trump-version.ipuz) / [BIDEN version](puzzle?ipuz=puzzles/dylanbeattie-2020-us-election-special-biden-version.ipuz)
+
+(The [solution and explanation](https://dylanbeattie.net/miscellany/us-election-2020-crossword-solution) is available online)
+
 [Crossword Compiler](https://www.crossword-compiler.com/) ships with several sample puzzles, that have exported in iPuz format to demonstrate iPuzzler:
 
 * [Cryptic Demo](puzzle?ipuz=puzzles/ccw-cryptic-demo.ipuz)
