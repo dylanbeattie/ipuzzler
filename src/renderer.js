@@ -87,31 +87,6 @@ export class Renderer {
         return (span);
     }
 
-    recalculateFontSizes(gridSize, puzzle) {
-        var inputFontSize = (Math.ceil(gridSize / (1.8 * puzzle.width)));
-        // for sizes just under 16, we bump the size to 16px to prevent zooming on iOS when input is focused.
-        if (inputFontSize > 10 && inputFontSize < 16) inputFontSize = 16;
-        this.inputs.forEach(input => input.style.fontSize = inputFontSize + "px");
-        var labelFontSize = (Math.ceil(gridSize / (4 * puzzle.width)));
-        this.labels.forEach(label => label.style.fontSize = labelFontSize + "px");
-        let windowWidth = Math.min(window.innerWidth, document.body.scrollWidth, document.body.clientWidth);
-        let width, height;
-        if (windowWidth > 768) {
-            let cellSize = Math.min(420 / puzzle.width);
-            if (cellSize < 24) cellSize = 24;
-            if (cellSize > 32) cellSize = 32;
-            width = (puzzle.width * cellSize);
-            height = (puzzle.height * cellSize);
-        } else {
-            width = (windowWidth - 10);
-            height = (Math.floor((puzzle.height / puzzle.width) * width));
-        }
-        this.grid.style.width = width + "px";
-        this.aboveClueBar.style.width = width + "px";
-        this.belowClueBar.style.width = width + "px";
-        this.grid.style.height = height + "px";
-    }
-
     createClueEnumerationSpan(clue) {
         let span = this.html('span');
         span.innerText = `(${clue.enumeration.trim().replace(/ /g, ",")})`;
@@ -138,7 +113,7 @@ export class Renderer {
         return section;
     }
     drawClue(clue, container, showDirection) {
-        container.innerText = clue.text;
+        container.innerHTML = clue.text; // We use innerHTML here becuase iPuz includes HTML formatting in clues.
         let label = this.html('label');
         label.innerText = clue.label + (showDirection ? `${clue.direction[0]}` : '');
         container.insertBefore(label, container.firstChild);
@@ -207,10 +182,33 @@ export class Renderer {
 
         div.appendChild(this.createClueList(puzzle, "Across"));
         div.appendChild(this.createClueList(puzzle, "Down"));
+        this.resize(puzzle);
     }
 
     resize(puzzle) {
         let gridSize = Math.min(this.grid.offsetWidth, this.grid.offsetHeight);
-        this.recalculateFontSizes(gridSize, puzzle);
+        var inputFontSize = (Math.ceil(gridSize / (1.8 * puzzle.width)));
+        // for sizes just under 16, we bump the size to 16px to prevent zooming on iOS when input is focused.
+        if (inputFontSize > 10 && inputFontSize < 16) inputFontSize = 16;
+        this.inputs.forEach(input => input.style.fontSize = inputFontSize + "px");
+        var labelFontSize = (Math.ceil(gridSize / (4 * puzzle.width)));
+        this.labels.forEach(label => label.style.fontSize = labelFontSize + "px");
+        let windowWidth = Math.min(window.innerWidth, document.body.scrollWidth, document.body.clientWidth);
+        let width, height;
+        if (windowWidth > 768) {
+            let cellSize = 28;
+            // let cellSize = Math.floor(Math.min(420 / puzzle.width));
+            // if (cellSize < 24) cellSize = 24;
+            // if (cellSize > 32) cellSize = 32;
+            width = (puzzle.width * cellSize) + puzzle.width + 1;
+            height = (puzzle.height * cellSize) + puzzle.height + 1;
+        } else {
+            width = (windowWidth - 10);
+            height = (Math.floor((puzzle.height / puzzle.width) * width));
+        }
+        this.grid.style.width = width + "px";
+        this.aboveClueBar.style.width = width + "px";
+        this.belowClueBar.style.width = width + "px";
+        this.grid.style.height = height + "px";
     }
 } 

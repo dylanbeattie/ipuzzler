@@ -69,6 +69,7 @@ div.ipuzzler {
         width: 420px;
         height: 420px;
         max-width: 100%;
+        box-sizing: border-box;
 
         // Default grid template; overwritten by renderer
         grid-template: repeat(15, 1fr) / repeat(15, 1fr);

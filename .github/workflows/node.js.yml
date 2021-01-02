@@ -27,7 +27,7 @@ jobs:
 
     - name: run npm ci to get a clean environment
       run: npm ci
-
+    
     - name: build using webpack (babel, SASS, etc.)
       run: npm run build --if-present
     
