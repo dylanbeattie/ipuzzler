@@ -313,7 +313,7 @@ function iPuzzler(ipuz, $container) {
     this.layoutPuzzleGrid = function () {
         $grid.html("");
         let gridCss = { "grid-template": `repeat(${ipuz.dimensions.width}, 1fr) / repeat(${ipuz.dimensions.height}, 1fr)` }
-        if ($(window).width() > 768) {
+        if ($(window).width() > 640) {
             gridCss.width = `${ipuz.dimensions.width * 32}px`;
             gridCss.height = `${ipuz.dimensions.height * 32}px`;
         }

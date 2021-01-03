@@ -1,3 +1,5 @@
+$tablet-width: 640px;
+
 div.ipuzzler {
     * { line-height: 1.0em; }
     font-family: Arial, Helvetica, sans-serif;
@@ -7,7 +9,7 @@ div.ipuzzler {
     display: grid;
     grid-template: 1fr / auto 1fr 1fr;
 
-    @media only screen and (max-width: 768px) {
+    @media only screen and (max-width: $tablet-width) {
         display: block;
     }
 
@@ -38,7 +40,7 @@ div.ipuzzler {
     div.clue-bar {
         display: none;
 
-        @media only screen and (max-width: 768px) {
+        @media only screen and (max-width: $tablet-width) {
             display: block;
         }
 
@@ -75,7 +77,7 @@ div.ipuzzler {
         // Default grid template; overwritten by renderer
         grid-template: repeat(15, 1fr) / repeat(15, 1fr);
 
-        @media only screen and (max-width: 768px) {
+        @media only screen and (max-width: $tablet-width) {
             width: calc(100vw - 10px);
             height: calc(100vw - 10px);
         }
@@ -152,7 +154,7 @@ div.ipuzzler {
 
     section.puzzle-clue-list {
         padding: 0 8px;
-        @media only screen and (max-width: 768px) {
+        @media only screen and (max-width: $tablet-width) {
             padding: 0;
         }
         h2 {
