@@ -7,6 +7,7 @@ title: iPuzzler
 <ipuzzler-puzzle id="ipuzzler-demo" src="puzzles/homepage.ipuz">
 Looks like iPuzzler doesn't work on your web browser. Sorry!
 </ipuzzler-puzzle>
+
 ## Example Usage
 
 ```html
