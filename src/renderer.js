@@ -175,8 +175,8 @@ export class Renderer {
 
         div.appendChild(puzzleGridWrapper);
 
-        this.spans = puzzle.cells.map((cells, row) => cells.map((cell, col) => {
-            let span = this.createCellSpan(cell, row, col);
+        this.spans = puzzle.cells.map((row, rowIndex) => row.map((cell, colIndex) => {
+            let span = this.createCellSpan(cell, rowIndex, colIndex);
             this.grid.appendChild(span);
             return span;
         }));
