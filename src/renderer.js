@@ -150,6 +150,11 @@ export class Renderer {
         return buttonBar;
     }
 
+    addDeveloperStylesheetLink(dom) {
+        const stylesheetLink = this.html("link", { 'type': 'text/css', 'rel': 'stylesheet', 'href': '../css/ipuzzler.css'});
+        this.dom.appendChild(stylesheetLink);
+    }
+
     render(puzzle) {
 
         this.loadPuzzleStateFromCookie(puzzle);
@@ -160,6 +165,8 @@ export class Renderer {
         const style = this.html('style');
         style.innerText = "/*_REPLACED_WITH_STYLES_BY_WEBPACK_BUILD_*/";
         div.appendChild(style);
+
+        this.addDeveloperStylesheetLink(this.dom);
 
         this.grid = this.html('div', { 'class': 'puzzle-grid' });
         this.grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;

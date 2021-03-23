@@ -11,6 +11,7 @@ fs.readFile(jsFile, UTF8, (err, js) => {
     fs.readFile(`dist/css/ipuzzler.css`, UTF8, (err, css) => {
         if (err) return (console.log(err));
         let modified = js.replace("\"/*_REPLACED_WITH_STYLES_BY_WEBPACK_BUILD_*/\"", "`" + css + "`");
+        modified = modified.replace("this.addDeveloperStylesheetLink(this.dom);", "");
         fs.writeFile(jsFile, modified, UTF8, err => {
             if (err) return (console.log(err));
             console.log(`Copying ${jsFile} to gh-pages/ipuzzler/ipuzzler-${VERSION}.js`);

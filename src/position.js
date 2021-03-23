@@ -12,9 +12,14 @@ export class Position {
 
     increment(direction) {
         switch (direction) {
+            case "up":
+                return new Position(this.row - 1, this.col);
+            case "left":
+                return new Position(this.row, this.col-1);
             case 'down':
                 return new Position(this.row + 1, this.col);
             case 'across':
+            case 'right':
                 return new Position(this.row, this.col + 1);
         }
     }
