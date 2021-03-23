@@ -43,17 +43,15 @@ export class IPuzzler extends HTMLElement {
     }
 
     inputMouseDown(event) {
-        let target = event.composedPath()[0];
-        let row = target.getAttribute("data-row");
-        let col = target.getAttribute("data-col");
+        let row = event.target.getAttribute("data-row");
+        let col = event.target.getAttribute("data-col");
         this.puzzle.setFocus(row, col, true);
         this.renderer.update(this.puzzle);
     }
 
     inputFocus(event) {
-        let target = event.composedPath()[0];
-        let row = target.getAttribute("data-row");
-        let col = target.getAttribute("data-col");
+        let row = event.target.getAttribute("data-row");
+        let col = event.target.getAttribute("data-col");
         this.puzzle.setFocus(row, col);
         this.renderer.update(this.puzzle);
     }
@@ -67,7 +65,7 @@ export class IPuzzler extends HTMLElement {
     }
 
     buttonClick(event) {
-        let button = event.composedPath()[0];
+        let button = event.target;
         switch (button.id) {
             case 'check-clue-button': this.puzzle.checkClue(); break;
             case 'clear-clue-button': this.puzzle.clearClue(); break;
@@ -99,20 +97,6 @@ export class IPuzzler extends HTMLElement {
         }
         this.renderer.update(this.puzzle);
     }
-
-    // mousedown(event) {
-    //     event.preventDefault();
-    //     let target = event.composedPath()[0];
-    //     switch (target.tagName) {
-    //         case 'INPUT':
-    //             let row = target.getAttribute("data-row");
-    //             let col = target.getAttribute("data-col");
-    //             this.puzzle.setFocus(row, col);
-    //             break;
-    //     }
-    //     this.renderer.update(this.puzzle);
-    //     return (false);
-    // }
 
     static get observedAttributes() {
         return ['url'];

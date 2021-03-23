@@ -39,7 +39,7 @@ describe('test event handlers', () => {
     test('inputMouseDown sets cell focus', () => {
 
         let input = html('input', { 'data-row': 1, 'data-col': 2 });
-        let event = { composedPath: () => [input], preventDefault: () => { } };
+        let event = { target: input, preventDefault: () => { } };
 
         expect(ipuzzler.puzzle.focusedCell).toBeNull();
         ipuzzler.inputMouseDown(event);
@@ -50,7 +50,7 @@ describe('test event handlers', () => {
     test('inputMouseDown highlights row', () => {
         // We pick a cell that only associates with an Across clue
         let input = html('input', { 'data-row': 0, 'data-col': 1 });
-        let event = { composedPath: () => [input], preventDefault: () => { } };
+        let event = { target: input, preventDefault: () => { } };
 
         ipuzzler.inputMouseDown(event);
         let cells = ipuzzler.puzzle.cells;
@@ -65,7 +65,7 @@ describe('test event handlers', () => {
     test('mousedown highlights column', () => {
         // we pick a cell that only associates with a Down clue
         let input = html('input', { 'data-row': 1, 'data-col': 0 });
-        let event = { composedPath: () => [input], preventDefault: () => { } };
+        let event = { target: input, preventDefault: () => { } };
 
         ipuzzler.inputMouseDown(event);
         let cells = ipuzzler.puzzle.cells;
@@ -80,7 +80,7 @@ describe('test event handlers', () => {
     test('mousedown switches direction', () => {
         // we pick a cell that associates with both an Across and a Down clue
         let input = html('input', { 'data-row': 0, 'data-col': 0 });
-        let event = { composedPath: () => [input], preventDefault: () => { } };
+        let event = { target: input, preventDefault: () => { } };
         ipuzzler.puzzle.direction = "across";
         ipuzzler.inputMouseDown(event);
         let cells = ipuzzler.puzzle.cells;
@@ -96,7 +96,7 @@ describe('test event handlers', () => {
     test('puzzle handles backspace', () => {
         let mock = jest.fn(event => event);
         ipuzzler.puzzle.backspace = mock;
-        let event = { composedPath: () => [html('input')], preventDefault: () => { }, code: "Backspace" };
+        let event = { target: html('input'), preventDefault: () => { }, code: "Backspace" };
         ipuzzler.keydown(event);
         expect(mock).toHaveBeenCalledTimes(1);
     });
@@ -104,7 +104,7 @@ describe('test event handlers', () => {
     test('puzzle handles Home key', () => {
         let mock = jest.fn(event => event);
         ipuzzler.puzzle.home = mock;
-        let event = { composedPath: () => [html('input')], preventDefault: () => { }, code: "Home" };
+        let event = { target: html('input'), preventDefault: () => { }, code: "Home" };
         ipuzzler.keydown(event);
         expect(mock).toHaveBeenCalledTimes(1);
     });
@@ -112,7 +112,7 @@ describe('test event handlers', () => {
     test('puzzle handles End key', () => {
         let mock = jest.fn(event => event);
         ipuzzler.puzzle.end = mock;
-        let event = { composedPath: () => [html('input')], preventDefault: () => { }, code: "End" };
+        let event = { target: html('input'), preventDefault: () => { }, code: "End" };
         ipuzzler.keydown(event);
         expect(mock).toHaveBeenCalledTimes(1);
     });
@@ -120,7 +120,7 @@ describe('test event handlers', () => {
     test('puzzle handles delete', () => {
         let mock = jest.fn(event => event);
         ipuzzler.puzzle.setCellValue = mock;
-        let event = { composedPath: () => [html('input')], preventDefault: () => { }, code: "Delete" };
+        let event = { target: html('input'), preventDefault: () => { }, code: "Delete" };
         ipuzzler.keydown(event);
         expect(mock).toHaveBeenCalledTimes(1);
         expect(mock).toHaveBeenCalledWith("");
@@ -129,7 +129,7 @@ describe('test event handlers', () => {
     test('puzzle handles Escape key', () => {
         let mock = jest.fn(event => event);
         ipuzzler.puzzle.clearFocus = mock;
-        let event = { composedPath: () => [html('input')], preventDefault: () => { }, code: "Escape" };
+        let event = { target: html('input'), preventDefault: () => { }, code: "Escape" };
         ipuzzler.keydown(event);
         expect(mock).toHaveBeenCalledTimes(1);
     });
@@ -144,7 +144,7 @@ describe('test event handlers', () => {
         ];
         test.each(cases)("pressing button with id %p calls method %p", (id, methodName) => {
             let button = html('button', { id: id });
-            let event = { composedPath: () => [button], preventDefault: () => { }  };
+            let event = { target: button, preventDefault: () => { }  };
             let method = jest.fn(() => null);
             ipuzzler.puzzle[methodName] = method;
             ipuzzler.buttonClick(event);
@@ -159,7 +159,7 @@ describe('test event handlers', () => {
         test.each(cases)("pressing button with id %p calls method %p", (id, methodName) => {
             window.confirm = message => true;
             let button = html('button', { id: id });
-            let event = { composedPath: () => [button], preventDefault: () => { }  };
+            let event = { target: button, preventDefault: () => { }  };
             let method = jest.fn(() => null);
             ipuzzler.puzzle[methodName] = method;
             ipuzzler.buttonClick(event);
@@ -171,7 +171,7 @@ describe('test event handlers', () => {
         const cases = "abcdefghijklmnopqrstuvwxyz".split("");
         test.each(cases)("key down %p", (key) => {
             let input = html('input', { });
-            let event = { composedPath: () => [input], preventDefault: () => { }, key: key };
+            let event = { target: input, preventDefault: () => { }, key: key };
             ipuzzler.puzzle.setCellValue = jest.fn(v => v);
             ipuzzler.keydown(event);
             expect(ipuzzler.puzzle.setCellValue).toHaveBeenCalledWith(key);        
@@ -184,7 +184,7 @@ describe('test event handlers', () => {
             let cell = ipuzzler.puzzle.cells[0][0];
             ipuzzler.puzzle.setFocus(0, 0);
             let input = html('input', { "data-row": cell.position.row, "data-col": cell.position.col });
-            let event = { composedPath: () => [input], preventDefault: () => { }, key: key };
+            let event = { target: input, preventDefault: () => { }, key: key };
             ipuzzler.keydown(event);
             expect(cell.value).toBe(key.toUpperCase());
         });
@@ -193,14 +193,14 @@ describe('test event handlers', () => {
     describe('alphanumeric keys move focus to next cell', () => {
         test('when direction is across', () => {
             let input = html('input', { "data-row": 0, "data-col": 0 });
-            let event = { composedPath: () => [input], preventDefault: () => { }, key: "a" };
+            let event = { target: input, preventDefault: () => { }, key: "a" };
             ipuzzler.puzzle.setFocus(0, 0);
             ipuzzler.keydown(event);
             expect(updated.focusedCell.position.row).toBe(0);
             expect(updated.focusedCell.position.col).toBe(1);
 
             input = html('input', { "data-row": 0, "data-col": 1 });
-            event = { composedPath: () => [input], preventDefault: () => { }, key: "b" };
+            event = { target: input, preventDefault: () => { }, key: "b" };
             ipuzzler.puzzle.setFocus(0, 1);
             ipuzzler.keydown(event);
             expect(updated.focusedCell.position.row).toBe(0);
@@ -209,7 +209,7 @@ describe('test event handlers', () => {
 
         test('when direction is down', () => {
             let input = html('input', { "data-row": 0, "data-col": 0 });
-            let event = { composedPath: () => [input], preventDefault: () => { }, key: "a" };
+            let event = { target: input, preventDefault: () => { }, key: "a" };
             ipuzzler.puzzle.direction = "down";
             ipuzzler.puzzle.setFocus(0, 0);
             ipuzzler.keydown(event);
@@ -217,7 +217,7 @@ describe('test event handlers', () => {
             expect(updated.focusedCell.position.col).toBe(0);
 
             input = html('input', { "data-row": 0, "data-col": 1 });
-            event = { composedPath: () => [input], preventDefault: () => { }, key: "b" };
+            event = { target: input, preventDefault: () => { }, key: "b" };
             ipuzzler.puzzle.setFocus(1, 0);
             ipuzzler.keydown(event);
             expect(updated.focusedCell.position.row).toBe(2);
@@ -246,7 +246,7 @@ describe('test event handlers', () => {
 
         test.each(cases)("%p in (%p,%p) focuses (%p,%p)", (oldRow, oldCol, code, newRow, newCol) => {
             let input = html('input', { "data-row": oldRow, "data-col": oldCol });
-            let event = { composedPath: () => [input], preventDefault: () => { }, code: code };
+            let event = { target: input, preventDefault: () => { }, code: code };
             ipuzzler.puzzle.setFocus(oldRow, oldCol);
             ipuzzler.keydown(event);
             expect(updated.focusedCell.position.row).toBe(newRow);
@@ -274,7 +274,7 @@ describe('arrow keys change puzzle direction', () => {
     ];
     test.each(cases)("%p key changes puzzle direction from %p to %p", (code, oldDirection, newDirection) => {
         let input = html('input', { "data-row": 1, "data-col": 1 });
-        let event = { composedPath: () => [input], preventDefault: () => { }, code: code };
+        let event = { target: input, preventDefault: () => { }, code: code };
         ipuzzler.puzzle.setFocus(1, 1);
         ipuzzler.puzzle.direction = oldDirection;
         expect(ipuzzler.puzzle.direction).toBe(oldDirection);
