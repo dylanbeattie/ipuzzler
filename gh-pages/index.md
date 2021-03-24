@@ -41,6 +41,8 @@ I created iPuzzler after I created a special crossword to commemorate the US 202
 
 (The [solution and explanation](https://dylanbeattie.net/miscellany/us-election-2020-crossword-solution) is available online)
 
+* [CityJS 2021 Crossword Puzzle](puzzle?ipuz=puzzles/cityjs-2021-puzzle.ipuz) - a puzzle I created to accompany a talk about iPuzzler presented at CityJS online in March 2021.
+
 [Crossword Compiler](https://www.crossword-compiler.com/) ships with several sample puzzles, that have exported in iPuz format to demonstrate iPuzzler:
 
 * [Cryptic Demo](puzzle?ipuz=puzzles/ccw-cryptic-demo.ipuz)
