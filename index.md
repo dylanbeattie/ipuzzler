@@ -7,6 +7,7 @@ title: iPuzzler
 <ipuzzler-puzzle id="ipuzzler-demo" src="puzzles/homepage.ipuz">
 Looks like iPuzzler doesn't work on your web browser. Sorry!
 </ipuzzler-puzzle>
+
 ## Example Usage
 
 ```html
@@ -39,6 +40,8 @@ I created iPuzzler after I created a special crossword to commemorate the US 202
 * Dylan Beattie's Election 2020 Crossword: [TRUMP version](puzzle?ipuz=puzzles/dylanbeattie-2020-us-election-special-trump-version.ipuz) / [BIDEN version](puzzle?ipuz=puzzles/dylanbeattie-2020-us-election-special-biden-version.ipuz)
 
 (The [solution and explanation](https://dylanbeattie.net/miscellany/us-election-2020-crossword-solution) is available online)
+
+* [CityJS 2021 Crossword Puzzle](puzzle?ipuz=puzzles/cityjs-2021-puzzle.ipuz) - a puzzle I created to accompany a talk about iPuzzler presented at CityJS online in March 2021.
 
 [Crossword Compiler](https://www.crossword-compiler.com/) ships with several sample puzzles, that have exported in iPuz format to demonstrate iPuzzler:
 
