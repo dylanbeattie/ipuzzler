@@ -20,7 +20,7 @@ Enjoy!
 
 ## License
 
-ISC.
+MIT license.
 
 ## About iPuz
 
