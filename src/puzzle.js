@@ -1,5 +1,5 @@
 export class Puzzle {
-    constructor(cells, clues, uri) {
+    constructor(cells, clues, uri, hasSolution, submitUrl) {
         this.uri = uri || "";
         this.cells = cells;
         this.allCells.forEach(cell => cell.puzzle = this);
@@ -8,6 +8,8 @@ export class Puzzle {
         this.direction = 'across';
         this.acrossHeading = "Across";
         this.downHeading = "Down";
+        this.hasSolution = hasSolution;
+        this.submitUrl = submitUrl;
     }
 
     isClueBirectional(number) {
@@ -129,8 +131,23 @@ export class Puzzle {
 
     checkClue() { if (this.focusedClue) this.focusedClue.check(); }
     clearClue() { if (this.focusedClue) this.focusedClue.clear(); }
-    cheatClue() { if (this.focusedClue) this.focusedClue.cheat();}
+    cheatClue() { if (this.focusedClue) this.focusedClue.cheat(); }
     checkGrid() { this.allCells.forEach(cell => cell.check()); }
     clearGrid() { this.allCells.forEach(cell => cell.clear()); }
-    cheatGrid() { this.allCells.forEach(cell => cell.cheat());}
+    cheatGrid() { this.allCells.forEach(cell => cell.cheat()); }
+
+    submitGrid(form) {
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var cookie = decodedCookie.split(/; */).map(token => token.split('=')).find(pair => pair[0] == this.cookieName);
+        if (cookie && cookie.length > 1) {
+            // validate that entered all boxes
+            if (this.allCells.some(e => e.style === "" && e.value === "")) {
+                alert("You are missing some answers");
+            }
+            else {
+                form.elements["answers"].value = cookie[1];
+                form.submit();
+            }
+        }
+    }
 }

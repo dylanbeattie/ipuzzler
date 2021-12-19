@@ -10,12 +10,12 @@ export class IPuzzler extends HTMLElement {
         window.addEventListener("resize", this.resize.bind(this));
     }
 
-    load(url) {
-        fetch(url).then(response => response.json()).then(json => this.init(json, url));
+    load(url, submitUrl) {
+        fetch(url).then(response => response.json()).then(json => this.init(json, url, submitUrl));
     }
 
-    init(json, url) {
-        this.puzzle = Parser.parse(json, url);
+    init(json, url, submitUrl) {
+        this.puzzle = Parser.parse(json, url, submitUrl);
         this.renderer = new Renderer(this.shadow);
         this.renderer.render(this.puzzle);
         this.renderer.inputs.forEach(input => {
@@ -29,11 +29,13 @@ export class IPuzzler extends HTMLElement {
 
     connectedCallback() {
         let url = this.getAttribute("src");
-        if (url) this.load(url);
+        let submitUrl = this.getAttribute("submitUrl");
+        if (url) this.load(url, submitUrl);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
+            // how do we get the submitUrl?
             case 'url': this.load(newValue); break;
         }
     }
@@ -73,6 +75,7 @@ export class IPuzzler extends HTMLElement {
             case 'check-grid-button': this.puzzle.checkGrid(); break;
             case 'clear-grid-button': this.puzzle.clearGrid(); break;
             case 'cheat-grid-button': if (confirm('Are you sure you want to reveal all solutions?')) this.puzzle.cheatGrid(); break;
+            case 'submit-button': this.puzzle.submitGrid(button.closest("form")); break;
         }
         this.renderer.update(this.puzzle);
     }
