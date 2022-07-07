@@ -79,17 +79,29 @@ export class Renderer {
             this.labels.push(label);
         }
         if (cell.hasInput) {
-            let input = this.html('input', { "data-row": row, "data-col": col, "value": cell.value });
+	    let clues = Object.entries(cell.clues).map((directionClues) => {
+	      const [direction, clue] = directionClues;
+	      return `clue-${clue.number}-${direction}`;
+	    });
+
+	    const attributes = { "data-row": row, "data-col": col, "value": cell.value };
+	    if (clues.length > 0) {
+	      attributes['aria-labelledby'] = clues.join(' ');
+	    }
+
+            let input = this.html('input', attributes);
             span.appendChild(input);
             span.input = input;
             this.inputs.push(input);
+
         }
         return (span);
     }
 
     createClueEnumerationSpan(clue) {
-        let span = this.html('span');
-        span.innerText = `(${clue.enumeration.trim().replace(/ /g, ",")})`;
+        const text = `${clue.enumeration.trim().replace(/ /g, ",")}`;
+        let span = this.html('span', { 'aria-label': `${text} characters.` });
+        span.innerText = `(${text})`;
         return (span);
     }
 
@@ -114,7 +126,7 @@ export class Renderer {
     }
     drawClue(clue, container, showDirection) {
         container.innerHTML = clue.text; // We use innerHTML here becuase iPuz includes HTML formatting in clues.
-        let label = this.html('label');
+        let label = this.html('label', { 'aria-label': `Direction ${clue.direction}:` });
         label.innerText = clue.label + (showDirection ? `${clue.direction[0]}` : '');
         container.insertBefore(label, container.firstChild);
         if (clue.enumeration) container.appendChild(this.createClueEnumerationSpan(clue));
