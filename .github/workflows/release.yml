@@ -38,6 +38,9 @@ jobs:
 
       - name: build using vite
         run: yarn build --if-present -- --mode=production
+      
+      - name: Updage gh-pages build info
+        run: node publish.js
 
       - name: Create Draft Release
         id: create_release
