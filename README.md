@@ -18,7 +18,8 @@ To use this for your puzzle follow these instructions:
 4. Publish your crossword puzzle in [iPuz format](http://www.ipuz.org/). Say, as  `my-puzzle.ipuz`.
 5. Add `<ipuzzler-puzzle src="my-puzzle.ipuz"></ipuzzler-puzzle>` to your page.
 
-Enjoy!
+### Submitting answers to a form
+
 
 ## Development
 
