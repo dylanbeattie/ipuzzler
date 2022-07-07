@@ -24,12 +24,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: run npm ci to get a clean environment
-        run: npm ci
       
       - name: install yarn
         run: npm install yarn
+
+      - name: yarn install
+        run: yarn install
 
       - name: run tests
         run: yarn test
