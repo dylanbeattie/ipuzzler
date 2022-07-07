@@ -9,7 +9,8 @@ class Puzzle {
     this.acrossHeading = "Across";
     this.downHeading = "Down";
     this.hasSolution = hasSolution;
-    this.submitUrl = submitUrl;
+    this.submitUrl = submitUrl != null ? submitUrl : "";
+    console.log("SUBMIT" + this.submitUrl);
   }
   isClueBirectional(number) {
     return this.clues.across[number] && this.clues.down[number];
@@ -525,7 +526,8 @@ class Renderer {
     const buttonBar = this.html("div", { "id": "buttons" });
     buttonBar.appendChild(clueButtonContainer);
     buttonBar.appendChild(gridButtonContainer);
-    if (submitUrl !== null) {
+    console.log("SUBMIT URL:" + submitUrl);
+    if (submitUrl) {
       const submitButton = this.html("button", { "id": "submit-button", "type": "button" }, "Submit Answers");
       const submitButtonContainer = this.html("div", { "id": "submit-buttons" });
       const submitFormContainer = this.html("form", { "method": "POST", "action": submitUrl });
@@ -538,10 +540,6 @@ class Renderer {
     }
     return buttonBar;
   }
-  addDeveloperStylesheetLink(dom) {
-    const stylesheetLink = this.html("link", { "type": "text/css", "rel": "stylesheet", "href": "../css/ipuzzler.css" });
-    this.dom.appendChild(stylesheetLink);
-  }
   render(puzzle) {
     this.loadPuzzleStateFromCookie(puzzle);
     const div = this.html("div", { "class": "ipuzzler" });
@@ -549,7 +547,6 @@ class Renderer {
     const style = this.html("style");
     style.innerText = styles;
     div.appendChild(style);
-    this.addDeveloperStylesheetLink(this.dom);
     this.grid = this.html("div", { "class": "puzzle-grid" });
     this.grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;
     let puzzleGridWrapper = this.html("div");
@@ -604,6 +601,7 @@ class IPuzzler extends HTMLElement {
     fetch(url).then((response) => response.json()).then((json) => this.init(json, url, submitUrl));
   }
   init(json, url, submitUrl) {
+    console.log(submitUrl);
     this.puzzle = Parser.parse(json, url, submitUrl);
     this.renderer = new Renderer(this.shadow);
     this.renderer.render(this.puzzle);
@@ -622,9 +620,10 @@ class IPuzzler extends HTMLElement {
       this.load(url, submitUrl);
   }
   attributeChangedCallback(name, oldValue, newValue) {
+    let submitUrl = this.getAttribute("submitUrl");
     switch (name) {
       case "url":
-        this.load(newValue);
+        this.load(newValue, submitUrl);
         break;
     }
   }

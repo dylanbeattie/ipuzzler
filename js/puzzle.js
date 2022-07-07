@@ -9,7 +9,8 @@ export class Puzzle {
         this.acrossHeading = "Across";
         this.downHeading = "Down";
         this.hasSolution = hasSolution;
-        this.submitUrl = submitUrl;
+        this.submitUrl = submitUrl ?? "";
+        console.log("SUBMIT" + this.submitUrl);
     }
 
     isClueBirectional(number) {

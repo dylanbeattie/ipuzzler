@@ -182,8 +182,9 @@ export class Renderer {
         const buttonBar = this.html('div', { 'id': 'buttons' });
         buttonBar.appendChild(clueButtonContainer);
         buttonBar.appendChild(gridButtonContainer);
+        console.log("SUBMIT URL:" + submitUrl);
 
-        if (submitUrl !== null) {
+        if (submitUrl) {
             const submitButton = this.html('button', { 'id': 'submit-button', 'type': 'button' }, "Submit Answers");
             const submitButtonContainer = this.html('div', { 'id': 'submit-buttons' });
             const submitFormContainer = this.html('form', { 'method': 'POST', 'action': submitUrl });
@@ -198,11 +199,6 @@ export class Renderer {
         return buttonBar;
     }
 
-    addDeveloperStylesheetLink(dom) {
-        const stylesheetLink = this.html("link", { 'type': 'text/css', 'rel': 'stylesheet', 'href': '../css/ipuzzler.css'});
-        this.dom.appendChild(stylesheetLink);
-    }
-
     render(puzzle) {
 
         this.loadPuzzleStateFromCookie(puzzle);
@@ -213,8 +209,6 @@ export class Renderer {
         const style = this.html('style');
         style.innerText = styles;
         div.appendChild(style);
-
-        this.addDeveloperStylesheetLink(this.dom);
 
         this.grid = this.html('div', { 'class': 'puzzle-grid' });
         this.grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;

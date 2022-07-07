@@ -11,10 +11,13 @@ export class IPuzzler extends HTMLElement {
     }
 
     load(url, submitUrl) {
-        fetch(url).then(response => response.json()).then(json => this.init(json, url, submitUrl));
+        fetch(url)
+            .then(response => response.json())
+            .then(json => this.init(json, url, submitUrl));
     }
 
     init(json, url, submitUrl) {
+        console.log(submitUrl);
         this.puzzle = Parser.parse(json, url, submitUrl);
         this.renderer = new Renderer(this.shadow);
         this.renderer.render(this.puzzle);
@@ -34,9 +37,10 @@ export class IPuzzler extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
+        let submitUrl = this.getAttribute("submitUrl");
         switch (name) {
             // how do we get the submitUrl?
-            case 'url': this.load(newValue); break;
+            case 'url': this.load(newValue, submitUrl); break;
         }
     }
 
