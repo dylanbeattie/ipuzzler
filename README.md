@@ -18,6 +18,22 @@ To use this for your puzzle follow these instructions:
 
 Enjoy!
 
+## Local development
+
+So you want to contribute? Great!
+
+Here's how to get a local setup running:
+
+1. Clone the repo: `git clone https://github.com/dylanbeattie/ipuzzler.git`.
+2. Switch into it: `cd ipuzzler`.
+3. Install dependencies: `npm install`.
+4. Start a dev server: `npm start`.
+5. Open the site in web browser: `http://localhost:8080/show-puzzle.html?ipuz=/puzzles/homepage.ipuz`.
+6. Find all puzzles [in `/github/puzzles/`](https://github.com/dylanbeattie/ipuzzler/tree/main/gh-pages/puzzles).
+7. Edit files in `/src` and see the changes updated live.
+
+Looking forward to what you come up with :)
+
 ## License
 
 MIT license.
