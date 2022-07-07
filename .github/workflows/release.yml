@@ -5,7 +5,7 @@ name: Publish Release on tag push
 
 on:
   push:
-    tags: ["*"]    
+    tags: ['*']
   workflow_dispatch:
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      
+
       - name: Get the release version from the GitHub tag
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
