@@ -5,9 +5,8 @@ name: Publish Release on tag push
 
 on:
   push:
-    tags: ["*"]
+    tags: ["*"]    
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -73,7 +72,7 @@ jobs:
           asset_name: ipuzzler-${{ steps.get_version.outputs.VERSION }}.umd.js
           asset_content_type: text/javascript
 
-       - uses: eregon/publish-release@v1
+      - uses: eregon/publish-release@v1
          env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
          with:
