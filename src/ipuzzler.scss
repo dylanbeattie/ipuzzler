@@ -21,7 +21,7 @@ div.ipuzzler {
     div#buttons {
         text-align: center;
         button {
-            margin: 4px 4px 2px 0px;
+            margin: 6px 4px 2px 0px;
             width: 6em;
             background-color: #36f;
             border: 0;
@@ -32,7 +32,23 @@ div.ipuzzler {
         }
         div#grid-buttons {
             button {
-                background-color: #9cf;
+                background-color: lighten(#36f,15%);
+            }
+        }
+        div#grid-buttons.no-solution {
+            display: inline;
+        }
+        div#clue-buttons.no-solution {
+            display: inline;
+            button {
+                background-color: lighten(#36f,15%);
+            }
+        }
+        div#submit-buttons {
+            button {
+                background-color: #36f;
+                padding: 6px;
+                width: 10em;
             }
         }
     }

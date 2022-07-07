@@ -132,33 +132,62 @@ export class Renderer {
         if (clue.enumeration) container.appendChild(this.createClueEnumerationSpan(clue));
     }
 
-    drawButtons() {
+    drawButtons(hasSolution, submitUrl) {
         const checkClueButton = this.html('button', { 'id': 'check-clue-button' }, "Check clue");
         const clearClueButton = this.html('button', { 'id': 'clear-clue-button' }, "Clear clue");
         const cheatClueButton = this.html('button', { 'id': 'cheat-clue-button' }, "Cheat clue");
-        const clueButtonContainer = this.html('div', { 'id': 'clue-buttons' });
-        clueButtonContainer.appendChild(checkClueButton);
-        clueButtonContainer.appendChild(clearClueButton);
-        clueButtonContainer.appendChild(cheatClueButton);
+        const clueButtonContainer = hasSolution ? 
+            this.html('div', { 'id': 'clue-buttons' }) : 
+            this.html('div', { 'id': 'clue-buttons', 'class': 'no-solution' });
 
         const checkGridButton = this.html('button', { 'id': 'check-grid-button' }, "Check grid");
         const clearGridButton = this.html('button', { 'id': 'clear-grid-button' }, "Clear grid");
         const cheatGridButton = this.html('button', { 'id': 'cheat-grid-button' }, "Cheat grid");
-        const gridButtonContainer = this.html('div', { 'id': 'grid-buttons' });
-        gridButtonContainer.appendChild(checkGridButton);
-        gridButtonContainer.appendChild(clearGridButton);
-        gridButtonContainer.appendChild(cheatGridButton);
+        const gridButtonContainer = hasSolution ? 
+            this.html('div', { 'id': 'grid-buttons' }) :
+            this.html('div', { 'id': 'grid-buttons', 'class': 'no-solution' });
+        ;
 
-        this.buttons.push(checkClueButton);
-        this.buttons.push(clearClueButton);
-        this.buttons.push(cheatClueButton);
-        this.buttons.push(checkGridButton);
-        this.buttons.push(clearGridButton);
-        this.buttons.push(cheatGridButton);
+        if (hasSolution) {
+            clueButtonContainer.appendChild(checkClueButton);
+            clueButtonContainer.appendChild(clearClueButton);
+            clueButtonContainer.appendChild(cheatClueButton);
+   
+            gridButtonContainer.appendChild(checkGridButton);
+            gridButtonContainer.appendChild(clearGridButton);
+            gridButtonContainer.appendChild(cheatGridButton);
+
+            this.buttons.push(checkClueButton);
+            this.buttons.push(clearClueButton);
+            this.buttons.push(cheatClueButton);
+            this.buttons.push(checkGridButton);
+            this.buttons.push(clearGridButton);
+            this.buttons.push(cheatGridButton);   
+        } else {
+            clueButtonContainer.appendChild(clearClueButton);
+            gridButtonContainer.appendChild(clearGridButton);
+
+            this.buttons.push(clearClueButton);
+            this.buttons.push(clearGridButton);
+        }
 
         const buttonBar = this.html('div', { 'id': 'buttons' });
         buttonBar.appendChild(clueButtonContainer);
         buttonBar.appendChild(gridButtonContainer);
+
+        if (submitUrl !== null) {
+            console.log("submitUrl: " + submitUrl);
+            const submitButton = this.html('button', { 'id': 'submit-button', 'type': 'button' }, "Submit Answers");
+            const submitButtonContainer = this.html('div', { 'id': 'submit-buttons' });
+            const submitFormContainer = this.html('form', { 'method': 'POST', 'action': submitUrl });
+            const submitFormFieldContainer = this.html('input', { 'type': 'hidden', 'id': 'answers', 'name': 'answers' });
+            submitButtonContainer.appendChild(submitButton);
+            submitFormContainer.appendChild(submitButtonContainer);
+            submitFormContainer.appendChild(submitFormFieldContainer);
+            this.buttons.push(submitButton);
+            buttonBar.appendChild(submitFormContainer);
+        }
+
         return buttonBar;
     }
 
@@ -190,7 +219,7 @@ export class Renderer {
         puzzleGridWrapper.appendChild(this.aboveClueBar);
         puzzleGridWrapper.appendChild(this.grid);
         puzzleGridWrapper.appendChild(this.belowClueBar);
-        puzzleGridWrapper.appendChild(this.drawButtons());
+        puzzleGridWrapper.appendChild(this.drawButtons(puzzle.hasSolution, puzzle.submitUrl));
 
         div.appendChild(puzzleGridWrapper);
 
