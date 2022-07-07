@@ -329,10 +329,12 @@ class Parser {
     const clues = { across: [], down: [] };
     cluesFromAcross.concat(cluesFromDown).forEach((clue) => {
       let cell = Parser.findCellForClue(cells, clue);
-      clue.position = cell.position;
-      clue.cells = Parser.findCellList(cells, clue.position, clue.direction);
-      clue.cells.forEach((cell2) => cell2.clues[clue.direction] = clue);
-      clues[clue.direction][clue.number] = clue;
+      if (cell) {
+        clue.position = cell.position;
+        clue.cells = Parser.findCellList(cells, clue.position, clue.direction);
+        clue.cells.forEach((cell2) => cell2.clues[clue.direction] = clue);
+        clues[clue.direction][clue.number] = clue;
+      }
     });
     clues.across.heading = (_a = acrossKey.split(":")[1]) != null ? _a : "Across";
     clues.down.heading = (_b = downKey.split(":")[1]) != null ? _b : "Down";
@@ -536,7 +538,10 @@ class Renderer {
     }
     return buttonBar;
   }
-
+  addDeveloperStylesheetLink(dom) {
+    const stylesheetLink = this.html("link", { "type": "text/css", "rel": "stylesheet", "href": "../css/ipuzzler.css" });
+    this.dom.appendChild(stylesheetLink);
+  }
   render(puzzle) {
     this.loadPuzzleStateFromCookie(puzzle);
     const div = this.html("div", { "class": "ipuzzler" });
@@ -544,6 +549,7 @@ class Renderer {
     const style = this.html("style");
     style.innerText = styles;
     div.appendChild(style);
+    this.addDeveloperStylesheetLink(this.dom);
     this.grid = this.html("div", { "class": "puzzle-grid" });
     this.grid.style.gridTemplate = `repeat(${puzzle.height}, 1fr) / repeat(${puzzle.width}, 1fr)`;
     let puzzleGridWrapper = this.html("div");

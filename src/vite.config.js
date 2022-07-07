@@ -1,16 +1,18 @@
-// vite.config.js
-const path = require('path')
-const { defineConfig } = require('vite')
+import * as path from 'path';
+import { defineConfig, loadEnv } from 'vite';
 
-module.exports = defineConfig({
-    build: {
-        lib: {
-            entry: path.resolve(__dirname, 'js/ipuzzler.js'),
-            name: 'iPuzzler',
-            fileName: (format) => `js/ipuzzler.${format}.js`
-        }
-    },
-    test: {
-        environment: 'jsdom'
-    }
-});
+export default ({ mode }) => {
+    process.env = { ...process.env, ...loadEnv(mode, process.cwd(), '') };
+    return defineConfig({
+        build: {
+            lib: {
+                entry: path.resolve(__dirname, 'js/ipuzzler.js'),
+                name: 'iPuzzler',
+                fileName: (format) => `js/ipuzzler-${process.env.VITE_IPUZZLER_BUILD_VERSION}${format == 'es' ? '' : '.' + format}.js`
+            }
+        },
+        test: {
+            environment: 'jsdom'
+        },        
+    });
+}

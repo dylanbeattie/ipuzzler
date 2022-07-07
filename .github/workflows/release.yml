@@ -25,6 +25,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       
+      - name: Get the release version from the GitHub tag
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+
+      - name: write the release version into the IPUZZLER_RELEASE_VERSION environment variable
+        run: echo "VITE_IPUZZLER_BUILD_VERSION=${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_ENV
+
       - name: install yarn
         run: npm install yarn
 
@@ -36,10 +43,6 @@ jobs:
 
       - name: build using vite
         run: yarn build --if-present -- --mode=production
-
-      - name: Get the release version from the GitHub tag
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
 
       - name: Create Draft Release
         id: create_release
@@ -57,14 +60,23 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./ipuzzler-${{ steps.get_version.outputs.VERSION }}.zip
-          asset_name: ipuzzler-${{ steps.get_version.outputs.VERSION }}.zip
-          asset_content_type: application/zip
+          asset_path: ./dist/js/ipuzzler-${{ steps.get_version.outputs.VERSION }}.js
+          asset_name: ipuzzler-${{ steps.get_version.outputs.VERSION }}.js
+          asset_content_type: text/javascript
 
-      - uses: eregon/publish-release@v1
+      - uses: actions/upload-release-asset@v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/js/ipuzzler-${{ steps.get_version.outputs.VERSION }}.umd.js
+          asset_name: ipuzzler-${{ steps.get_version.outputs.VERSION }}.umd.js
+          asset_content_type: text/javascript
+
+       - uses: eregon/publish-release@v1
+         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         with:
           release_id: ${{ steps.create_release.outputs.id }}
 
       - name: Publish iPuzzler website to GitHub Pages
