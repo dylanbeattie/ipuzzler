@@ -73,9 +73,9 @@ jobs:
           asset_content_type: text/javascript
 
       - uses: eregon/publish-release@v1
-         env:
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-         with:
+        with:
           release_id: ${{ steps.create_release.outputs.id }}
 
       - name: Publish iPuzzler website to GitHub Pages
