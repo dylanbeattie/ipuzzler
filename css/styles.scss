@@ -1,0 +1,84 @@
+---
+---
+
+@import "syntax.css";
+
+html,
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+body {
+    margin: 0px auto;
+    header,
+    footer {
+        padding: 8px;
+        background-color: #213;
+        color: #fff;
+        margin: 0;
+        h1,
+        h2 {
+            max-width: 960px;
+            margin: 0px auto;
+        }
+        h1 {
+            padding: 8px 0;
+            a {
+                text-decoration: none;
+                color: #fff;
+            }
+        }
+        h2 {
+            font-size: 100%;
+            font-weight: normal;
+            padding: 8px 0;
+        }
+    }
+    footer {
+        p {
+            @media only screen and (max-width: 640px) { 
+                text-align: center;
+            }
+
+            max-width: 960px;
+            margin: 0px auto;
+            font-size: 80%;
+            padding: 4px 0;
+            a {
+                color: #fff;
+            }
+            span.version-info {
+                @media only screen and (max-width: 640px) { 
+                    display: block;
+                    float: none;
+                    text-align: center;
+                    margin: 8px 0 0 0;
+                }
+                float: right;
+            }
+        }
+    }
+
+    article {
+        line-height: 1.4em;
+        max-width: 960px;
+        margin: 0px auto;
+        padding: 0px 8px;
+        li {
+            margin: 0 0 8px 0;
+        }
+    }
+    pre {
+        padding: 8px;
+        box-sizing: border-box;
+        max-width: 100%;
+        overflow: auto;
+    }
+    p code, li code {
+        display: inline-block;
+        background-color: #eee;
+        padding: 2px 4px;
+        border-radius: 2px;
+    }
+}

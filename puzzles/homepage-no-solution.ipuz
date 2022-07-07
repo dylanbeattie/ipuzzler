@@ -1,0 +1,79 @@
+{
+	"showenumerations": true,
+	"notes": "",
+	"puzzle": [
+		[1, ":", ":", ":", 2, ":", 3, ":", 4],
+		[":", "#", "#", "#", ":", "#", ":", "#", ":"],
+		[5, ":", 6, ":", ":", ":", ":", "#", ":"],
+		[":", "#", ":", "#", ":", "#", ":", "#", ":"],
+		[7, ":", ":", ":", "#", 8, ":", ":", ":"],
+		[":", "#", ":", "#", 9, "#", ":", "#", ":"],
+		[":", "#", 10, ":", ":", ":", ":", ":", ":"],
+		[":", "#", ":", "#", ":", "#", "#", "#", ":"],
+		[11, ":", ":", ":", ":", ":", ":", ":", ":"]
+	],
+	"copyright": "",
+	"intro": "",
+	"version": "http://ipuz.org/v2",
+	"origin": "Crossword Compiler 10.21",
+	"empty": ":",
+	"title": "",
+	"kind": ["http://ipuz.org/crossword#1"],
+	"clues": {
+		"Across": [{
+			"enumeration": "9",
+			"number": 1,
+			"clue": "Angry exclamation? You're looking at it!"
+		}, {
+			"enumeration": "7",
+			"number": 5,
+			"clue": "Hacker man, heartless type, in front of computer"
+		}, {
+			"enumeration": "4",
+			"number": 7,
+			"clue": "Promises often appeal to heart at first"
+		}, {
+			"enumeration": "4",
+			"number": 8,
+			"clue": "Go pound around journal"
+		}, {
+			"enumeration": "7",
+			"number": 10,
+			"clue": "Annoyed, confused - but inoffensive"
+		}, {
+			"enumeration": "9",
+			"number": 11,
+			"clue": "Vessel following flavour the French considered vulgar"
+		}],
+		"Down": [{
+			"enumeration": "9",
+			"number": 1,
+			"clue": "Con men opt to reassemble part"
+		}, {
+			"enumeration": "4",
+			"number": 2,
+			"clue": "Stop in furious temper"
+		}, {
+			"enumeration": "7",
+			"number": 3,
+			"clue": "Cover amateur after six balls"
+		}, {
+			"enumeration": "9",
+			"number": 4,
+			"clue": "Creative types sensed rig toppling"
+		}, {
+			"enumeration": "7",
+			"number": 6,
+			"clue": "Fire girl with sword"
+		}, {
+			"enumeration": "4",
+			"number": 9,
+			"clue": "Instructions aren't even cloudier"
+		}]
+	},
+	"dimensions": {
+		"width": 9,
+		"height": 9
+	},
+	"author": ""
+}
