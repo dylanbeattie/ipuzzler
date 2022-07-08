@@ -4,22 +4,11 @@ A JavaScript client and game grid for ipuz format crossword puzzles.
 
 ![Demo of iPuzzler](./ipuzzler.gif)
 
-Find out more on the [iPuzzler website](https://dylanbeattie.github.io/ipuzzler/)
-
 ## Usage
 
 iPuzzler is distributed as a single JS file; CSS is inlined into the JS file so there's no external CSS file to use.
 
-To use this for your puzzle follow these instructions:
-
-1. Download the [latest release](https://github.com/dylanbeattie/ipuzzler/releases/latest).
-2. Save it somewhere on your website. These instructions assume you’ve saved it into `/js/`.
-3. Add `<script type="module" src="js/ipuzzler-0.1.22.js"></script>` to the `<head>` of your page.
-4. Publish your crossword puzzle in [iPuz format](http://www.ipuz.org/). Say, as  `my-puzzle.ipuz`.
-5. Add `<ipuzzler-puzzle src="my-puzzle.ipuz"></ipuzzler-puzzle>` to your page.
-
-### Submitting answers to a form
-
+See the [iPuzzler website](https://dylanbeattie.github.io/ipuzzler/) for instructions on how to use it to host puzzles on your own websites and pages.
 
 ## Development
 
@@ -61,9 +50,29 @@ Test Files  6 passed (6)
        press h to show help, press q to quit
 ```
 
+### Publishing a new release
+
+iPuzzler uses a weird blend of vite/nodeJS (for the actual iPuzzler component) and Ruby/Jekyll (so that the iPuzzler site can run on GitHub Pages). 
+
+There's a nodeJS script `publish.js` which will copy the latest release of the component into the `gh-pages` folder, and update the version and build date in the associated `_config.yml` file.
+
+To publish a new release:
+
+1. `git add` and `git commit` all the changes
+1. `npm version patch` -- will update the version stored in `package.json` to the next patch version. This will also create a Git tag with the new version number, in the format `v0.1.2`.
+1. `git push && git push --tags` to push the code and associated tags to GitHub.
+
+The GitHub actions script in `.github/workflows/release.yml` will:
+
+1. Build the project, run all the tests, and update the Jekyll `_config.yml` with the version number pulled from the Git tag.
+1. Create the actual GitHub release and publish it at [https://github.com/dylanbeattie/ipuzzler/releases](https://github.com/dylanbeattie/ipuzzler/releases)
+1. Push the updated `gh-pages` code to the `gh-pages` branch -- this will trigger the GitHub Pages build and deploy a new version of [https://dylanbeattie.github.io/ipuzzler](https://dylanbeattie.github.io/ipuzzler) 
+
 ## License
 
-MIT license.
+iPuzzler is released under the [MIT license](LICENSE). 
+
+You are free to use it, hack it, modify it, ship it, you can even sell it -- but don't pretend you wrote it. 
 
 ## About iPuz
 
