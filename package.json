@@ -1,6 +1,6 @@
 {
   "name": "ipuzzler",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "A web component for publishing crossword puzzles in iPuz format",
   "files": [
     "dist"
