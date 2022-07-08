@@ -33,6 +33,14 @@ iPuzzler is distributed as a single standalone JavaScript module. It requires no
 
 That's it.
 
+## Submitting Answers
+
+If you add a `submitUrl` attribute to the HTML tag, iPuzzler will add a `Submit Answers` button, that will submit your solution as an HTTP post to the specified URL.
+
+```
+<ipuzzler-puzzle src="my-puzzle.ipuz" submitUrl="https://example.com/puzzle/submit"></ipuzzler-puzzle>
+```
+
 ## Example Puzzles
 
 I created iPuzzler after I created a special crossword to commemorate the US 2020 election, and then discovered there was no way to publish it online. That puzzle is a *little* bit special - same grid, same clues, but it has two valid solutions, and at the time of publishing, we didn't know yet which one was correct:

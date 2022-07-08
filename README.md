@@ -20,7 +20,24 @@ Here's how to get a local setup running:
 4. Start a dev server: `npm run dev`.
 5. Open the site in web browser: `http://localhost:3000/`.
 
-iPuzzler uses [vite](https://vitejs.dev), which means it has hot module replacement at dev time; edit any of the project files and your browser will automatically reload to show your changes. 
+iPuzzler uses [vite](https://vitejs.dev), which means it has hot module replacement at dev time; edit any of the project files and your browser will automatically reload to show your changes.
+
+## Customising iPuzzler
+
+Want to ship a customised version of iPuzzler with different CSS or something? No problem.
+
+1. Clone the repo, and edit whatever you need
+    * The CSS for the component is built using [SASS](https://sass-lang.com), and is in `js/ipuzzler.scss`
+    * CSS is imported into the `renderer.js` module by Vite when you run or build the project.
+1. Run `npm run build`
+1. Look in `dist/js/` - you should find two files:
+    * `ipuzzler-0.0.0.js` - an ECMAScript module version of your customised iPuzzler
+    * `ipuzzler-0.0.0.umd.js` - a [UMD](https://github.com/umdjs/umd) version of your customised iPuzzler
+
+> The version number comes from an environment variable called `VITE_IPUZZLER_BUILD_VERSION`
+> 
+> For local development, it's set to 0.0.0 via a `.env` file. For production builds, the GitHub Actions script uses the git tag associated with the release that's being built.
+
 
 ## Running Tests
 
@@ -52,7 +69,7 @@ Test Files  6 passed (6)
 
 ### Publishing a new release
 
-iPuzzler uses a weird blend of vite/nodeJS (for the actual iPuzzler component) and Ruby/Jekyll (so that the iPuzzler site can run on GitHub Pages). 
+iPuzzler itself is built using nodeJS modules and vite, but the [iPuzzler site](https://dylanbeattie.github.io/ipuzzler) is built with Jekyll and hosted on GitHub Pages. A GitHub Actions script will update the `gh-pages` branch when a new release is published, which in turn will publish a new version of the site.
 
 There's a nodeJS script `publish.js` which will copy the latest release of the component into the `gh-pages` folder, and update the version and build date in the associated `_config.yml` file.
 
