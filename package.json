@@ -27,6 +27,7 @@
     "vitest": "^0.17.1"
   },
   "dependencies": {
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.1",
+    "yarn": "^1.22.19"
   }
 }
